@@ -1,4 +1,5 @@
 
+import urllib
 import urllib2
 from urlparse import urljoin
 
@@ -13,10 +14,14 @@ def proxy(request, path, base_url):
     request_headers = normalize_headers(request)
 
     if request.user and request.user.is_active:
-        request_headers['REMOTE_USER'] = request.user
+        request_headers['REMOTE_USER'] = request.user.username
 
     request_url = urljoin(base_url, path)
     proxy_request = urllib2.Request(request_url, headers=request_headers)
+
+    data = request.POST.items()
+    if data:
+        proxy_request.add_data(urllib.urlencode(data))
 
     try:
         proxy_response = urllib2.urlopen(proxy_request)
