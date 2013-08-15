@@ -3,6 +3,7 @@ import urllib
 import urllib2
 from urlparse import urljoin
 
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from .response import HttpProxyResponse
@@ -12,9 +13,11 @@ from .utils import normalize_headers, NoHTTPRedirectHandler
 @csrf_exempt
 def proxy(request, path, base_url):
 
+    add_remote_user = getattr(settings, 'REVPROXY_ADD_REMOTE_USER', False)
+
     request_headers = normalize_headers(request)
 
-    if request.user and request.user.is_active:
+    if add_remote_user and request.user and request.user.is_active:
         request_headers['REMOTE_USER'] = request.user.username
 
     request_url = urljoin(base_url, path)
