@@ -1,3 +1,2 @@
 TODO
 =====
-* Handle redirects

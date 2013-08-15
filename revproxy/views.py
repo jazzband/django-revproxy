@@ -24,7 +24,6 @@ def proxy(request, path, base_url):
     if data:
         proxy_request.add_data(urllib.urlencode(data))
 
-
     opener = urllib2.build_opener(NoHTTPRedirectHandler)
     urllib2.install_opener(opener)
 
