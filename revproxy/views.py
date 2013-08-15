@@ -6,7 +6,8 @@ from urlparse import urljoin
 from django.views.decorators.csrf import csrf_exempt
 
 from .response import HttpProxyResponse
-from .utils import normalize_headers
+from .utils import normalize_headers, NoHTTPRedirectHandler
+
 
 @csrf_exempt
 def proxy(request, path, base_url):
@@ -22,6 +23,10 @@ def proxy(request, path, base_url):
     data = request.POST.items()
     if data:
         proxy_request.add_data(urllib.urlencode(data))
+
+
+    opener = urllib2.build_opener(NoHTTPRedirectHandler)
+    urllib2.install_opener(opener)
 
     try:
         proxy_response = urllib2.urlopen(proxy_request)
