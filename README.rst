@@ -16,8 +16,19 @@ Features
 * Handles redirects
 * No external dependencies (uses only Python standard library)
 
-
 .. _hop-by-hop: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.5.1
+
+
+Install
+--------
+
+Because ``django-revproxy`` still in development it is not on python package index (pypi).
+For now you can install it using ``pip`` directly from the github repo.
+
+.. code-block::
+
+    pip install https://github.com/TracyWebTech/django-revproxy
+
 
 
 
