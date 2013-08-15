@@ -18,11 +18,15 @@ def proxy(request, path, base_url):
         request_headers['REMOTE_USER'] = request.user.username
 
     request_url = urljoin(base_url, path)
+
+    if request.GET:
+        request_url += '?' + urllib.urlencode(request.GET.items())
+
     proxy_request = urllib2.Request(request_url, headers=request_headers)
 
-    data = request.POST.items()
-    if data:
-        proxy_request.add_data(urllib.urlencode(data))
+    if request.POST:
+        post_data = request.POST.items()
+        proxy_request.add_data(urllib.urlencode(post_data))
 
     opener = urllib2.build_opener(NoHTTPRedirectHandler)
     urllib2.install_opener(opener)
