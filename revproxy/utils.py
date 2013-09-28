@@ -12,6 +12,9 @@ class NoHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
 def normalize_headers(request):
     norm_headers = {}
     for header, value in request.META.items():
+        if header == 'HTTP_HOST':
+            continue
+
         if header.startswith('HTTP_'):
             norm_header = header[5:].title().replace('_', '-')
             norm_headers[norm_header] = value
