@@ -17,6 +17,7 @@ class ProxyView(View):
     add_remote_user = False
     diazo_rules = None
     diazo_theme_template = None
+    html5 = False
 
     @csrf_exempt
     def dispatch(self, request, path):
@@ -49,6 +50,7 @@ class ProxyView(View):
         if self.diazo_rules and self.diazo_theme_template:
             diazo = DiazoTransformer(request, response)
             response = diazo.transform(self.diazo_rules,
-                                       self.diazo_theme_template)
+                                       self.diazo_theme_template,
+                                       self.html5)
 
         return response

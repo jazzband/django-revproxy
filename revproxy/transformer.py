@@ -1,4 +1,6 @@
 
+import re
+
 from lxml import etree
 from io import BytesIO
 
@@ -10,6 +12,8 @@ except ImportError:
     has_diazo = False
 else:
     has_diazo = True
+
+doctype_re = re.compile(r"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
 
 class DiazoTransformer(object):
@@ -49,7 +53,7 @@ class DiazoTransformer(object):
 
         return True
 
-    def transform(self, rules, theme_template):
+    def transform(self, rules, theme_template, is_html5):
 
         if not self.should_transform():
             return self.response
@@ -69,8 +73,20 @@ class DiazoTransformer(object):
 
         self.response.content = transform(content_doc)
 
+        if is_html5:
+            self.set_html5_doctype()
+
         self.reset_headers()
         return self.response
 
     def reset_headers(self):
         del self.response['Content-Length']
+
+    def set_html5_doctype(self):
+        doctype = u'<!DOCTYPE html>\n'
+        content, subs = doctype_re.subn(doctype, self.response.content, 1)
+
+        if not subs:
+            self.response.content = doctype + self.response.content
+
+        self.response.content = content
