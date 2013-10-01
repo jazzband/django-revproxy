@@ -4,7 +4,12 @@ from io import BytesIO
 
 from django.template import loader, RequestContext
 
-from diazo.compiler import compile_theme
+try:
+    from diazo.compiler import compile_theme
+except ImportError:
+    has_diazo = False
+else:
+    has_diazo = True
 
 
 class DiazoTransformer(object):
@@ -15,6 +20,9 @@ class DiazoTransformer(object):
 
     def should_transform(self):
         """Determine if we should transform the response"""
+
+        if not has_diazo:
+            return False
 
         if self.response.streaming:
             return False
