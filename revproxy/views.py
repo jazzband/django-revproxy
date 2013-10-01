@@ -9,6 +9,7 @@ from django.views.generic import View
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler
+from .transformer import DiazoTransformer
 
 
 class ProxyView(View):
@@ -43,7 +44,11 @@ class ProxyView(View):
         except urllib2.HTTPError as e:
             proxy_response = e
 
-        request.diazo_rules = self.diazo_rules
-        request.diazo_theme_template = self.diazo_theme_template
+        response = HttpProxyResponse(proxy_response)
 
-        return HttpProxyResponse(proxy_response)
+        if self.diazo_rules and self.diazo_theme_template:
+            diazo = DiazoTransformer(request, response)
+            response = diazo.transform(self.diazo_rules,
+                                       self.diazo_theme_template)
+
+        return response
