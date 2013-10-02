@@ -28,6 +28,9 @@ class DiazoTransformer(object):
         if not has_diazo:
             return False
 
+        if self.request.is_ajax():
+            return False
+
         if self.response.streaming:
             return False
 
