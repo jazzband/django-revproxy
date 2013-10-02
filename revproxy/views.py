@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from .response import HttpProxyResponse
-from .utils import normalize_headers, NoHTTPRedirectHandler
+from .utils import normalize_headers, ConditionalHTTPRedirectHandler
 from .transformer import DiazoTransformer
 
 
@@ -37,7 +37,7 @@ class ProxyView(View):
             post_data = request.POST.items()
             proxy_request.add_data(urllib.urlencode(post_data))
 
-        opener = urllib2.build_opener(NoHTTPRedirectHandler)
+        opener = urllib2.build_opener(ConditionalHTTPRedirectHandler)
         urllib2.install_opener(opener)
 
         try:

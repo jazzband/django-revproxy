@@ -1,12 +1,37 @@
 
 import urllib2
+from urlparse import urlparse
 
 
-class NoHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
-    def http_error_301(self, *args, **kwargs):
-        return None
+class ConditionalHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
 
-    http_error_302 = http_error_303 = http_error_307 = http_error_301
+    def redirect_request(self, *args, **kwargs):
+        """Only perform a redirect in case it is to the same host than
+        the original requests.
+
+        Example 1:
+            Original request: http://domain.com/
+            Redirect response: http://domain.com/search
+
+            domain.com == domain.com, so perform the redirect.
+
+        Example 2:
+            Original request: http://domain.com/
+            Redirect response: http://domain.org/
+
+            domain.com != domain.org, so just send the redirect
+            response as a result and let the client decide what
+            to do.
+
+        """
+
+        newurl = kwargs.get('newurl', args[-1])
+        req = kwargs.get('req', args[0])
+        url_parsed = urlparse(newurl)
+
+        if url_parsed.netloc == req.host:
+            return super(ConditionalHTTPRedirectHandler, self)\
+                                    .redirect_request(*args, **kwargs)
 
 
 IGNORE_HEADERS = (
