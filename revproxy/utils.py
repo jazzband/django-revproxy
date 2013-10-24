@@ -3,6 +3,11 @@ import urllib2
 from urlparse import urlparse
 
 
+class NoHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
 class ConditionalHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
 
     def redirect_request(self, *args, **kwargs):
