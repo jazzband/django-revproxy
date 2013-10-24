@@ -29,9 +29,3 @@ For now you can install it using ``pip`` directly from the github repo.
 
     pip install https://github.com/TracyWebTech/django-revproxy
 
-
-
-
-
-
-

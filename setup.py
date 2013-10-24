@@ -13,7 +13,7 @@ setup(
     name='django-revproxy',
     description='Yet another Django reverse proxy application.',
     version='0.2',
-    #long_description=read('README.rst'),
+    long_description=read('README.rst'),
     packages=['revproxy'],
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
