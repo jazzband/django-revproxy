@@ -26,7 +26,7 @@ class ProxyView(View):
         if self.add_remote_user and request.user.is_active:
             request_headers['REMOTE_USER'] = request.user.username
 
-        request_url = urljoin(self.base_url, path)
+        request_url = urljoin(self.base_url, urllib2.quote(path))
 
         if request.GET:
             request_url += '?' + urllib.urlencode(request.GET.items())
