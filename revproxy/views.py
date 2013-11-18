@@ -5,8 +5,7 @@ from urlparse import urljoin, urlparse
 
 from django.conf import settings
 from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.utils.decorators import classonlymethod
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler
@@ -20,7 +19,12 @@ class ProxyView(View):
     diazo_theme_template = None
     html5 = False
 
-    @method_decorator(csrf_exempt)
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        view = super(ProxyView, cls).as_view(**initkwargs)
+        view.csrf_exempt = True
+        return view
+
     def dispatch(self, request, path):
         request_headers = normalize_headers(request)
 
