@@ -26,6 +26,7 @@ class ProxyView(View):
         return view
 
     def dispatch(self, request, path):
+        request_payload = request.body
         request_headers = normalize_headers(request)
 
         if self.add_remote_user and request.user.is_active:
@@ -39,8 +40,11 @@ class ProxyView(View):
         proxy_request = urllib2.Request(request_url, headers=request_headers)
 
         if request.POST:
-            post_data = request.POST.items()
-            proxy_request.add_data(urllib.urlencode(post_data))
+            if 'multipart/form-data' in request_headers:
+                proxy_request.add_data(request_payload)
+            else:
+                post_data = request.POST.items()
+                proxy_request.add_data(urllib.urlencode(post_data))
 
         opener = urllib2.build_opener(NoHTTPRedirectHandler)
         urllib2.install_opener(opener)
