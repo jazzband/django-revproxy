@@ -61,7 +61,7 @@ def normalize_headers(request):
     norm_headers = {}
     for header, value in request.META.items():
         if required_header(header):
-            norm_header = header[5:].title().replace('_', '-')
+            norm_header = header.replace('HTTP_', '').title().replace('_', '-')
             norm_headers[norm_header] = value
 
     return norm_headers

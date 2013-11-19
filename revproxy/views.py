@@ -40,7 +40,7 @@ class ProxyView(View):
         proxy_request = urllib2.Request(request_url, headers=request_headers)
 
         if request.POST:
-            if 'multipart/form-data' in request_headers.get('Content-Type'):
+            if 'multipart/form-data' in request_headers.get('Content-Type', ''):
                 proxy_request.add_data(request_payload)
             else:
                 post_data = request.POST.items()
