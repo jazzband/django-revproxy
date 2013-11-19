@@ -43,15 +43,24 @@ IGNORE_HEADERS = (
     'HTTP_ACCEPT_ENCODING', # We want content to be uncompressed so
                             #   we remove the Accept-Encoding from
                             #   original request
+    'HTTP_HOST',
 )
+
+
+def required_header(header):
+    if header in IGNORE_HEADERS:
+        return False
+
+    if header.startswith('HTTP_') or header.lower() == 'content-type':
+        return True
+
+    return False
+
 
 def normalize_headers(request):
     norm_headers = {}
     for header, value in request.META.items():
-        if header == 'HTTP_HOST':
-            continue
-
-        if header.startswith('HTTP_') and header not in IGNORE_HEADERS:
+        if required_header(header):
             norm_header = header[5:].title().replace('_', '-')
             norm_headers[norm_header] = value
 
