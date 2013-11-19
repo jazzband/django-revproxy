@@ -63,6 +63,11 @@ class ProxyView(View):
         if location and location.startswith(location):
             location = location.replace(self.base_url.strip('/'),
                                         request.get_host())
+            if request.is_secure():
+                location = 'https://' + location
+            else:
+                location = 'http://' + location
+
             proxy_response.headers['Location'] = location
 
         response = HttpProxyResponse(proxy_response)
