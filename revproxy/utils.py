@@ -51,7 +51,7 @@ def required_header(header):
     if header in IGNORE_HEADERS:
         return False
 
-    if header.startswith('HTTP_') or header.lower() == 'content-type':
+    if header.startswith('HTTP_') or header == 'CONTENT_TYPE':
         return True
 
     return False
