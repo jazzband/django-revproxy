@@ -65,3 +65,10 @@ def normalize_headers(request):
             norm_headers[norm_header] = value
 
     return norm_headers
+
+
+def encode_items(items):
+    encoded = []
+    for key, value in items:
+        encoded.append((key.encode('utf-8'), value.encode('utf-8')))
+    return encoded

@@ -8,7 +8,7 @@ from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
 from .response import HttpProxyResponse
-from .utils import normalize_headers, NoHTTPRedirectHandler
+from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
 from .transformer import DiazoTransformer
 
 
@@ -35,7 +35,8 @@ class ProxyView(View):
         request_url = urljoin(self.base_url, urllib2.quote(path))
 
         if request.GET:
-            request_url += '?' + urllib.urlencode(request.GET.items())
+            items = encode_items(request.GET.items())
+            request_url += '?' + urllib.urlencode(items)
 
         proxy_request = urllib2.Request(request_url, headers=request_headers)
 
