@@ -61,7 +61,7 @@ class DiazoTransformer(object):
         if not self.should_transform():
             return self.response
 
-        context_instance = RequestContext(self.request, current_app=None)
+        context_instance = RequestContext(self.request)
         theme = loader.render_to_string(theme_template,
                                         context_instance=context_instance)
         output_xslt = compile_theme(
@@ -71,8 +71,8 @@ class DiazoTransformer(object):
 
         transform = etree.XSLT(output_xslt)
 
-        content_doc = etree.fromstring(self.response.content,
-                                       parser=etree.HTMLParser())
+        content = self.response.unicode_content or self.response.content
+        content_doc = etree.fromstring(content, parser=etree.HTMLParser())
 
         self.response.content = transform(content_doc)
 
