@@ -16,7 +16,8 @@ class HttpProxyResponse(HttpResponse):
 
         super(HttpProxyResponse, self).__init__(content, status=status,
                                                 *args, **kwargs)
-        if self._charset:
+
+        if 'charset' in headers.get('content-type', '') and self._charset:
             self.unicode_content = content.decode(self._charset)
         else:
             self.unicode_content = None
