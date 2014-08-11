@@ -9,6 +9,7 @@ from django.utils.decorators import classonlymethod
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
+from .utils import unique_cookies
 from .transformer import DiazoTransformer
 
 SUPPORTED_FORM_TYPES = ['multipart/form-data', 'application/octet-stream']
@@ -60,6 +61,9 @@ class ProxyView(View):
                     parsed[key] = value[0]
                     encoded += urllib.urlencode(parsed) + "&"
             proxy_request.add_data(encoded[:-1])
+
+        fixed_cookies = unique_cookies(request.META['HTTP_COOKIE'])
+        proxy_request.add_header('Cookie', fixed_cookies)
 
         opener = urllib2.build_opener(NoHTTPRedirectHandler)
         urllib2.install_opener(opener)
