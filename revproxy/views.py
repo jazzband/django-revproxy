@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 import urllib
 import urllib2
 from urlparse import urljoin, urlparse
@@ -15,13 +17,18 @@ from .transformer import DiazoTransformer
 
 class ProxyView(View):
     add_remote_user = False
-    diazo_rules = None
-    diazo_theme_template = None
+    diazo_theme_template = 'diazo.html'
     html5 = False
 
     @property
     def upstream(self):
         raise NotImplementedError('Upstream server must be set')
+
+    @property
+    def diazo_rules(self):
+        child_class_file = sys.modules[self.__module__].__file__
+        app_path = os.path.abspath(os.path.dirname(child_class_file))
+        return os.path.join(app_path, 'diazo.xml')
 
     @classonlymethod
     def as_view(cls, **initkwargs):
