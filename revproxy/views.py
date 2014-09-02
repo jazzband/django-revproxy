@@ -14,11 +14,14 @@ from .transformer import DiazoTransformer
 
 
 class ProxyView(View):
-    base_url = None
     add_remote_user = False
     diazo_rules = None
     diazo_theme_template = None
     html5 = False
+
+    @property
+    def upstream(self):
+        raise NotImplementedError('Upstream server must be set')
 
     @classonlymethod
     def as_view(cls, **initkwargs):
@@ -34,7 +37,7 @@ class ProxyView(View):
             request_headers['REMOTE_USER'] = request.user.username
 
         request_url = urljoin(
-            self.base_url,
+            self.upstream,
             urllib2.quote(path.encode('utf8'))
         )
 
@@ -67,10 +70,10 @@ class ProxyView(View):
                 scheme = 'http://'
             request_host = scheme + request.get_host()
 
-            url = urlparse(self.base_url)
-            base_url_host = url.scheme + '://' + url.netloc
+            url = urlparse(self.upstream)
+            upstream_host = url.scheme + '://' + url.netloc
 
-            location = location.replace(base_url_host, request_host)
+            location = location.replace(upstream_host, request_host)
             proxy_response.headers['Location'] = location
 
         response = HttpProxyResponse(proxy_response)
