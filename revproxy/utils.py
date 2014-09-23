@@ -1,4 +1,5 @@
 
+import re
 import urllib2
 from urlparse import urlparse
 
@@ -40,9 +41,9 @@ class ConditionalHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
 
 
 IGNORE_HEADERS = (
-    'HTTP_ACCEPT_ENCODING', # We want content to be uncompressed so
-                            #   we remove the Accept-Encoding from
-                            #   original request
+    'HTTP_ACCEPT_ENCODING',  # We want content to be uncompressed so
+                             #  we remove the Accept-Encoding from
+                             #  original request
     'HTTP_HOST',
 )
 
@@ -72,3 +73,19 @@ def encode_items(items):
     for key, value in items:
         encoded.append((key.encode('utf-8'), value.encode('utf-8')))
     return encoded
+
+
+def unique_cookies(cookie_string):
+    fixed_cookie = ' %s' % cookie_string
+    matcher = re.compile(r'.*[^\w](\w+)=[^;]*;.*[^\w]\1=[^;]*;')
+    while True:
+        duplicate = matcher.match(fixed_cookie)
+        if duplicate and len(duplicate.groups()) > 0:
+            cookie_name = duplicate.group(1)
+            begin = fixed_cookie.index(cookie_name)
+            end = fixed_cookie.index('; ', begin + 1)
+            fixed_cookie = fixed_cookie[:begin] + fixed_cookie[end + 2:]
+        else:
+            break
+
+    return fixed_cookie[1:]

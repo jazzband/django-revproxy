@@ -6,13 +6,15 @@ import urllib
 import urllib2
 from urlparse import urljoin, urlparse
 
-from django.conf import settings
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
+from .utils import unique_cookies
 from .transformer import DiazoTransformer
+
+SUPPORTED_FORM_TYPES = ['multipart/form-data', 'application/octet-stream']
 
 
 class ProxyView(View):
@@ -54,12 +56,24 @@ class ProxyView(View):
 
         proxy_request = urllib2.Request(request_url, headers=request_headers)
 
+        if request_headers.get('Content-Type', '') in SUPPORTED_FORM_TYPES:
+            proxy_request.add_data(request_payload)
+
         if request.POST:
-            if 'multipart/form-data' in request_headers.get('Content-Type', ''):
-                proxy_request.add_data(request_payload)
-            else:
-                post_data = request.POST.items()
-                proxy_request.add_data(urllib.urlencode(post_data))
+            encoded = ""
+            for (key, value) in request.POST.lists():
+                parsed = {}
+                if len(value) > 1:
+                    for subvalue in value:
+                        parsed[key] = subvalue
+                        encoded += urllib.urlencode(parsed) + "&"
+                else:
+                    parsed[key] = value[0]
+                    encoded += urllib.urlencode(parsed) + "&"
+            proxy_request.add_data(encoded[:-1])
+
+        fixed_cookies = unique_cookies(request.META['HTTP_COOKIE'])
+        proxy_request.add_header('Cookie', fixed_cookies)
 
         opener = urllib2.build_opener(NoHTTPRedirectHandler)
         urllib2.install_opener(opener)
