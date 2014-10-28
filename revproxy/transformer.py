@@ -1,7 +1,6 @@
 
 import re
 
-from lxml import etree
 from io import BytesIO
 
 from django.template import loader, RequestContext
@@ -12,6 +11,7 @@ except ImportError:
     has_diazo = False
 else:
     has_diazo = True
+    from lxml import etree
 
 doctype_re = re.compile(r"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
