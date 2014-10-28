@@ -15,6 +15,7 @@ setup(
     version='0.2.8',
     long_description=read('README.rst'),
     packages=['revproxy'],
+    tests_require=['mock'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
@@ -28,7 +29,8 @@ setup(
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         ],
 )

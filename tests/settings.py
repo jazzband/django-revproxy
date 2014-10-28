@@ -17,8 +17,6 @@ INSTALLED_APPS = (
     'revproxy',
 )
 
-ROOT_URLCONF = 'urls'
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
