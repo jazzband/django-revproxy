@@ -5,8 +5,8 @@
 
 
 # vim
-.swp
-.swo
+*.swp
+*.swo
 
 # C extensions
 *.so
