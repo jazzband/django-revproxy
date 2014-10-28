@@ -15,7 +15,7 @@ setup(
     version='0.2.8',
     long_description=read('README.rst'),
     packages=['revproxy'],
-    test_suite = "tests.run.runtests",
+    test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
     url='https://github.com/TracyWebTech/django-revproxy',
