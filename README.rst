@@ -22,10 +22,7 @@ Features
 Install
 --------
 
-Because ``django-revproxy`` still in development it is not on python package index (pypi).
-For now you can install it using ``pip`` directly from the github repo.
-
 .. code-block::
 
-    pip install https://github.com/TracyWebTech/django-revproxy
+    pip install django-revproxy
 
