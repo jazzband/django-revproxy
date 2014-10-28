@@ -1,14 +1,21 @@
 
-import urllib2
-from urlparse import urlparse
+import sys
+
+if sys.version_info >= (3, 0, 0):
+    from urllib.parse import urlparse
+    from urllib.request import HTTPRedirectHandler
+else:
+    # Fallback to Python 2.7
+    from urlparse import urlparse
+    from urllib2 import HTTPRedirectHandler
 
 
-class NoHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
+class NoHTTPRedirectHandler(HTTPRedirectHandler, object):
     def redirect_request(self, *args, **kwargs):
         return None
 
 
-class ConditionalHTTPRedirectHandler(urllib2.HTTPRedirectHandler, object):
+class ConditionalHTTPRedirectHandler(HTTPRedirectHandler, object):
 
     def redirect_request(self, *args, **kwargs):
         """Only perform a redirect in case it is to the same host than
