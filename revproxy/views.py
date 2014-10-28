@@ -49,8 +49,8 @@ class ProxyView(View):
         )
 
         if request.GET:
-            items = encode_items(request.GET.items())
-            request_url += '?' + urllib.urlencode(items)
+            get_data = encode_items(request.GET.lists())
+            request_url += '?' + urllib.urlencode(get_data)
 
         proxy_request = urllib2.Request(request_url, headers=request_headers)
 
@@ -58,7 +58,7 @@ class ProxyView(View):
             if 'multipart/form-data' in request_headers.get('Content-Type', ''):
                 proxy_request.add_data(request_payload)
             else:
-                post_data = request.POST.items()
+                post_data = encode_items(request.POST.lists())
                 proxy_request.add_data(urllib.urlencode(post_data))
 
         opener = urllib2.build_opener(NoHTTPRedirectHandler)
