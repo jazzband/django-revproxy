@@ -69,6 +69,7 @@ def normalize_headers(request):
 
 def encode_items(items):
     encoded = []
-    for key, value in items:
-        encoded.append((key.encode('utf-8'), value.encode('utf-8')))
+    for key, values in items:
+        for value in values:
+            encoded.append((key.encode('utf-8'), value.encode('utf-8')))
     return encoded
