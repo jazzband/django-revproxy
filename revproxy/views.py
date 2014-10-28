@@ -2,9 +2,17 @@
 
 import os
 import sys
-import urllib
-import urllib2
-from urlparse import urljoin, urlparse
+
+if sys.version_info >= (3, 0, 0):
+    from urllib.parse import urljoin, urlparse, urlencode, quote
+    from urllib.request import urlopen, build_opener, install_opener, Request
+    from urllib.error import HTTPError
+else:
+    # Fallback to Python 2.7
+    from urllib import urlencode
+    from urllib2 import (quote, urlopen, build_opener, install_opener,
+                         HTTPError, Request)
+    from urlparse import urljoin, urlparse
 
 from django.conf import settings
 from django.views.generic import View
@@ -45,28 +53,28 @@ class ProxyView(View):
 
         request_url = urljoin(
             self.upstream,
-            urllib2.quote(path.encode('utf8'))
+            quote(path.encode('utf8'))
         )
 
         if request.GET:
             get_data = encode_items(request.GET.lists())
-            request_url += '?' + urllib.urlencode(get_data)
+            request_url += '?' + urlencode(get_data)
 
-        proxy_request = urllib2.Request(request_url, headers=request_headers)
+        proxy_request = Request(request_url, headers=request_headers)
 
         if request.POST:
             if 'multipart/form-data' in request_headers.get('Content-Type', ''):
                 proxy_request.add_data(request_payload)
             else:
                 post_data = encode_items(request.POST.lists())
-                proxy_request.add_data(urllib.urlencode(post_data))
+                proxy_request.add_data(urlencode(post_data))
 
-        opener = urllib2.build_opener(NoHTTPRedirectHandler)
-        urllib2.install_opener(opener)
+        opener = build_opener(NoHTTPRedirectHandler)
+        install_opener(opener)
 
         try:
-            proxy_response = urllib2.urlopen(proxy_request)
-        except urllib2.HTTPError as e:
+            proxy_response = urlopen(proxy_request)
+        except HTTPError as e:
             proxy_response = e
 
         location = proxy_response.headers.get('Location')
