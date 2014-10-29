@@ -62,12 +62,8 @@ class ProxyView(View):
 
         proxy_request = Request(request_url, headers=request_headers)
 
-        if request.POST:
-            if 'multipart/form-data' in request_headers.get('Content-Type', ''):
-                proxy_request.add_data(request_payload)
-            else:
-                post_data = encode_items(request.POST.lists())
-                proxy_request.add_data(urlencode(post_data))
+        if request_payload:
+            proxy_request.add_data(request_payload)
 
         opener = build_opener(NoHTTPRedirectHandler)
         install_opener(opener)
