@@ -14,7 +14,6 @@ else:
                          HTTPError, Request)
     from urlparse import urljoin, urlparse
 
-from django.conf import settings
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
 

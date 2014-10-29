@@ -1,6 +1,13 @@
 django-revproxy
 ===============
 
+.. image:: https://travis-ci.org/TracyWebTech/django-revproxy.svg
+       :target: https://travis-ci.org/TracyWebTech/django-revproxy
+
+.. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.png
+       :target: https://coveralls.io/r/TracyWebTech/django-revproxy 
+
+
 A simple reverse proxy using Django. It allows to use Django as a 
 reverse Proxy to HTTP requets. It also allows to use Django as an
 authentication Proxy.

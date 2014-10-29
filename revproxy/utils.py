@@ -43,13 +43,13 @@ class ConditionalHTTPRedirectHandler(HTTPRedirectHandler, object):
 
         if url_parsed.netloc == req.host:
             return super(ConditionalHTTPRedirectHandler, self)\
-                                    .redirect_request(*args, **kwargs)
+                .redirect_request(*args, **kwargs)
 
 
 IGNORE_HEADERS = (
-    'HTTP_ACCEPT_ENCODING', # We want content to be uncompressed so
-                            #   we remove the Accept-Encoding from
-                            #   original request
+    'HTTP_ACCEPT_ENCODING',  # We want content to be uncompressed so
+                             #   we remove the Accept-Encoding from
+                             #   original request
     'HTTP_HOST',
 )
 
