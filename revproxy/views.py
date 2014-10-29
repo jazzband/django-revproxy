@@ -72,6 +72,9 @@ class ProxyView(View):
         opener = build_opener(NoHTTPRedirectHandler)
         install_opener(opener)
 
+        # Make sure we'll keep the request method
+        request.get_method = lambda: request.method
+
         try:
             proxy_response = urlopen(proxy_request)
         except HTTPError as e:
