@@ -16,6 +16,7 @@ else:
 
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
+from django.contrib.auth.views import redirect_to_login
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
@@ -45,11 +46,19 @@ class ProxyView(View):
         return view
 
     def dispatch(self, request, path):
+
         request_payload = request.body
         request_headers = normalize_headers(request)
 
-        if self.add_remote_user and request.user.is_active:
-            request_headers['REMOTE_USER'] = request.user.username
+        if self.add_remote_user:
+            if request.user.is_active:
+                request_headers['REMOTE_USER'] = request.user.username
+
+            if request.path_info == self.login_url:
+                next = request.GET.get('next')
+                return_to = request.GET.get('return_to')
+
+                return redirect_to_login(next or return_to or '')
 
         request_url = urljoin(
             self.upstream,
