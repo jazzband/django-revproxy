@@ -26,6 +26,7 @@ class ProxyView(View):
     add_remote_user = False
     diazo_theme_template = 'diazo.html'
     html5 = False
+    login_url = None
 
     @property
     def upstream(self):

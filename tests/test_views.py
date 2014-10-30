@@ -48,3 +48,7 @@ class ViewTest(TestCase):
     def test_default_add_remote_user_attr(self):
         proxy_view = ProxyView()
         self.assertFalse(proxy_view.add_remote_user)
+
+    def test_default_login_url(self):
+        proxy_view = ProxyView()
+        self.assertEqual(proxy_view.login_url, None)
