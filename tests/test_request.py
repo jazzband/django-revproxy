@@ -25,13 +25,17 @@ class RequestTest(TestCase):
 
         self.urllib2_Request_patcher = patch('revproxy.views.Request')
         self.urllib2_urlopen_patcher = patch('revproxy.views.urlopen')
+        self.response_patcher = patch('revproxy.views.HttpProxyResponse')
 
         self.urllib2_Request = self.urllib2_Request_patcher.start()
         self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
+        self.responser = self.response_patcher.start()
 
     def tearDown(self):
         self.urllib2_Request_patcher.stop()
         self.urllib2_urlopen_patcher.stop()
+        self.responser = self.response_patcher.stop()
+
 
     def test_default_add_remote_user_attr(self):
         proxy_view = ProxyView()
