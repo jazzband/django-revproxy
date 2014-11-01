@@ -10,48 +10,17 @@ else:
     from urllib2 import HTTPRedirectHandler
 
 
-class NoHTTPRedirectHandler(HTTPRedirectHandler, object):
-    def redirect_request(self, *args, **kwargs):
-        return None
-
-
-class ConditionalHTTPRedirectHandler(HTTPRedirectHandler, object):
-
-    def redirect_request(self, *args, **kwargs):
-        """Only perform a redirect in case it is to the same host than
-        the original requests.
-
-        Example 1:
-            Original request: http://domain.com/
-            Redirect response: http://domain.com/search
-
-            domain.com == domain.com, so perform the redirect.
-
-        Example 2:
-            Original request: http://domain.com/
-            Redirect response: http://domain.org/
-
-            domain.com != domain.org, so just send the redirect
-            response as a result and let the client decide what
-            to do.
-
-        """
-
-        newurl = kwargs.get('newurl', args[-1])
-        req = kwargs.get('req', args[0])
-        url_parsed = urlparse(newurl)
-
-        if url_parsed.netloc == req.host:
-            return super(ConditionalHTTPRedirectHandler, self)\
-                .redirect_request(*args, **kwargs)
-
-
 IGNORE_HEADERS = (
     'HTTP_ACCEPT_ENCODING',  # We want content to be uncompressed so
                              #   we remove the Accept-Encoding from
                              #   original request
     'HTTP_HOST',
 )
+
+
+class NoHTTPRedirectHandler(HTTPRedirectHandler, object):
+    def redirect_request(self, *args, **kwargs):
+        return None
 
 
 def required_header(header):
