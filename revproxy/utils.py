@@ -18,7 +18,7 @@ IGNORE_HEADERS = (
 
 
 # Default from HTTP RFC 2616
-#   See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.4.1
+#   See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7.1
 DEFAULT_CHARSET = 'latin-1'
 
 
