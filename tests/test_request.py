@@ -1,5 +1,4 @@
 
-import os
 import sys
 
 if sys.version_info >= (3, 0, 0):
@@ -35,7 +34,6 @@ class RequestTest(TestCase):
         self.urllib2_Request_patcher.stop()
         self.urllib2_urlopen_patcher.stop()
         self.responser = self.response_patcher.stop()
-
 
     def test_default_add_remote_user_attr(self):
         proxy_view = ProxyView()
@@ -178,6 +176,7 @@ class RequestTest(TestCase):
         self.assertEqual(response.url, '/accounts/login/?next=')
 
     def test_no_login_redirect(self):
+
         class CustomProxyView(ProxyView):
             upstream = 'http://www.example.com'
             login_url = '/login/'
@@ -188,5 +187,7 @@ class RequestTest(TestCase):
 
         response = CustomProxyView.as_view()(request, '/login/')
         request_headers = {u'Cookie': u''}
-        self.urllib2_Request.assert_called_with('http://www.example.com/login/',
+        request_url = '{}{}'.format(CustomProxyView.upstream,
+                                    CustomProxyView.login_url)
+        self.urllib2_Request.assert_called_with(request_url,
                                                 headers=request_headers)
