@@ -1,8 +1,6 @@
-
 from django.http import HttpResponse
 
 from .utils import get_charset
-
 
 HOP_BY_HOP_HEADERS = (
     'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
