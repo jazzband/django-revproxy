@@ -1,6 +1,6 @@
-from django.test import RequestFactory, TestCase
 from json import dumps as json_dumps
 
+from django.test import RequestFactory, TestCase
 from mock import patch
 from revproxy.utils import DEFAULT_CHARSET, get_charset
 from revproxy.views import ProxyView
@@ -24,13 +24,20 @@ class ResponseTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
 
-        path = "/example"
+        path = "/"
         content_type = 'application/json; charset=%s' % DEFAULT_CHARSET
-        request = self.factory.post(path, json_dumps({'lala' : 'lalala'}), content_type=content_type)
+        request = self.factory.post(
+            path,
+            json_dumps({'lala': 'lalala'}),
+            content_type=content_type
+            )
 
-        proxy_response = response_like_factory(request, self.headers, 200)
+        proxy_response = response_like_factory(request, request.META, 200)
 
-        self.urllib2_urlopen_patcher = patch('revproxy.views.urlopen', new=proxy_response)
+        self.urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=proxy_response
+            )
         self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
 
         response = CustomProxyView.as_view()(request, path)
@@ -45,12 +52,15 @@ class ResponseTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
 
-        path = "/example"
+        path = "/"
         request = self.factory.get(path)
 
         proxy_response = response_like_factory(request, self.headers, 200)
 
-        self.urllib2_urlopen_patcher = patch('revproxy.views.urlopen', new=proxy_response)
+        self.urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=proxy_response
+            )
         self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
 
         response = CustomProxyView.as_view()(request, path)
@@ -61,21 +71,49 @@ class ResponseTest(TestCase):
 
         self.urllib2_urlopen_patcher.stop()
 
-    def test_location_not_in_headers(self):
+    def test_location_replaces_request_host(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
 
-        self.headers = {'Location' : '/'}
+        self.headers = {'Location': 'http://www.example.com'}
         path = "/path"
         request = self.factory.get(path)
 
         proxy_response = response_like_factory(request, self.headers, 200)
 
-        self.urllib2_urlopen_patcher = patch('revproxy.views.urlopen', new=proxy_response)
+        self.urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=proxy_response
+            )
+        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
+
+        response = CustomProxyView.as_view()(request, path)
+        location = "http://" + request.get_host()
+
+        self.assertEquals(location, response['Location'])
+
+        self.urllib2_urlopen_patcher.stop()
+
+    def test_location_replaces_secure_request_host(self):
+        class CustomProxyView(ProxyView):
+            upstream = "https://www.example.com"
+
+        self.headers = {'Location': 'https://www.example.com'}
+        path = "/path"
+        request = self.factory.get(path, secure=True)
+
+        proxy_response = response_like_factory(request, self.headers, 200)
+
+        self.urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=proxy_response
+            )
         self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
 
         response = CustomProxyView.as_view()(request, path)
 
-        response = self.factory.get('/',CONTENT_TYPE=utf8_content_type)
-        http_response = CustomProxyView.as_view()(response, '/')
+        location = "https://" + request.get_host()
+
+        self.assertEquals(location, response['Location'])
+
         self.urllib2_urlopen_patcher.stop()
