@@ -94,9 +94,11 @@ class ProxyView(View):
             request_host = scheme + request.get_host()
 
             url = urlparse(self.upstream)
-            upstream_host = url.scheme + '://' + url.netloc
+            upstream_host_http = 'http://' + url.netloc
+            upstream_host_https = 'https://' + url.netloc
 
-            location = location.replace(upstream_host, request_host)
+            location = location.replace(upstream_host_http, request_host)
+            location = location.replace(upstream_host_https, request_host)
             proxy_response.headers['Location'] = location
 
         response = HttpProxyResponse(proxy_response)
