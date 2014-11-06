@@ -1,13 +1,6 @@
-import sys
-
-if sys.version_info >= (3, 0, 0):
-    from urllib.request import Request, urlopen
-else:
-    # Fallback to Python 2.7
-    from urllib2 import Request, urlopen
-
 from django.test import RequestFactory, TestCase
 from mock import patch
+from revproxy.response import HOP_BY_HOP_HEADERS
 from revproxy.utils import DEFAULT_CHARSET, get_charset
 from revproxy.views import ProxyView
 
@@ -17,14 +10,6 @@ from .utils import response_like_factory
 class ResponseTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.urllib2_Request_patcher = patch('revproxy.views.Request')
-
-        self.urllib2_Request = self.urllib2_Request_patcher.start()
-        self.headers = {}
-
-    def tearDown(self):
-        self.urllib2_Request_patcher.stop()
-        self.headers = {}
 
     def test_charset_is_not_default_charset(self):
         class CustomProxyView(ProxyView):
@@ -33,7 +18,7 @@ class ResponseTest(TestCase):
         path = "/"
         request = self.factory.get(path)
 
-        get_proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, {}, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
@@ -48,11 +33,11 @@ class ResponseTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
 
-        self.headers = {'Location': 'http://www.example.com'}
+        headers = {'Location': 'http://www.example.com'}
         path = "/path"
         request = self.factory.get(path)
 
-        get_proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, headers, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
@@ -67,7 +52,7 @@ class ResponseTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = "https://www.example.com"
 
-        self.headers = {'Location': 'https://www.example.com'}
+        headers = {'Location': 'https://www.example.com'}
         path = "/path"
         request = self.factory.get(
             path,
@@ -78,7 +63,7 @@ class ResponseTest(TestCase):
                 }
             )
 
-        get_proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, headers, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
@@ -89,13 +74,13 @@ class ResponseTest(TestCase):
             location = "https://" + request.get_host()
             self.assertEquals(location, response['Location'])
 
-    def test_request(self):
+    def test_response_headers_are_not_in_hop_by_hop_headers(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
 
         path = "/"
         request = self.factory.get(path)
-        get_proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, {}, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
@@ -104,3 +89,58 @@ class ResponseTest(TestCase):
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
+            response_headers = response._headers
+
+            for header in response_headers:
+                self.assertTrue(header not in HOP_BY_HOP_HEADERS)
+
+    def test_response_code_remains_the_same(self):
+        class CustomProxyView(ProxyView):
+            upstream = "http://www.example.com"
+
+        path = "/"
+        request = self.factory.get(path)
+        retcode = 300
+        get_proxy_response = response_like_factory(
+            request,
+            {},
+            retcode
+            )
+
+        urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+            )
+
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
+            response_code = response.status_code
+
+            self.assertEquals(response_code, retcode)
+
+    def test_response_content_remains_the_same(self):
+        class CustomProxyView(ProxyView):
+            upstream = "http://www.example.com"
+
+        path = "/"
+        request = self.factory.get(path)
+        retcode = 300
+        get_proxy_response = response_like_factory(
+            request,
+            {},
+            retcode
+            )
+
+        urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+            )
+
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
+            response_content = response.content
+
+            # had to prefix it with 'b' because Python 3 treats str and byte
+            # differently
+            self.assertEquals(b'Fake file', response_content)
+
