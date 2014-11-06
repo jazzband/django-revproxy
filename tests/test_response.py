@@ -1,4 +1,10 @@
-from json import dumps as json_dumps
+import sys
+
+if sys.version_info >= (3, 0, 0):
+    from urllib.request import Request, urlopen
+else:
+    # Fallback to Python 2.7
+    from urllib2 import Request, urlopen
 
 from django.test import RequestFactory, TestCase
 from mock import patch
@@ -20,34 +26,6 @@ class ResponseTest(TestCase):
         self.urllib2_Request_patcher.stop()
         self.headers = {}
 
-    def test_charset_is_default_charset(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-
-        path = "/"
-        content_type = 'application/json; charset=%s' % DEFAULT_CHARSET
-        request = self.factory.post(
-            path,
-            json_dumps({'lala': 'lalala'}),
-            content_type=content_type
-            )
-
-        proxy_response = response_like_factory(request, request.META, 200)
-
-        self.urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=proxy_response
-            )
-        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
-
-        response = CustomProxyView.as_view()(request, path)
-
-        charset = get_charset(response['Content-Type'])
-
-        self.assertEquals(DEFAULT_CHARSET, charset)
-
-        self.urllib2_urlopen_patcher.stop()
-
     def test_charset_is_not_default_charset(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
@@ -55,21 +33,16 @@ class ResponseTest(TestCase):
         path = "/"
         request = self.factory.get(path)
 
-        proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, self.headers, 200)
 
-        self.urllib2_urlopen_patcher = patch(
+        urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
-            new=proxy_response
+            new=get_proxy_response
             )
-        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
-
-        response = CustomProxyView.as_view()(request, path)
-
-        charset = get_charset(response['Content-Type'])
-
-        self.assertNotEquals(DEFAULT_CHARSET, charset)
-
-        self.urllib2_urlopen_patcher.stop()
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
+            charset = get_charset(response['Content-Type'])
+            self.assertNotEquals(DEFAULT_CHARSET, charset)
 
     def test_location_replaces_request_host(self):
         class CustomProxyView(ProxyView):
@@ -79,20 +52,16 @@ class ResponseTest(TestCase):
         path = "/path"
         request = self.factory.get(path)
 
-        proxy_response = response_like_factory(request, self.headers, 200)
+        get_proxy_response = response_like_factory(request, self.headers, 200)
 
-        self.urllib2_urlopen_patcher = patch(
+        urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
-            new=proxy_response
+            new=get_proxy_response
             )
-        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
-
-        response = CustomProxyView.as_view()(request, path)
-        location = "http://" + request.get_host()
-
-        self.assertEquals(location, response['Location'])
-
-        self.urllib2_urlopen_patcher.stop()
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
+            location = "http://" + request.get_host()
+            self.assertEquals(location, response['Location'])
 
     def test_location_replaces_secure_request_host(self):
         class CustomProxyView(ProxyView):
@@ -100,20 +69,38 @@ class ResponseTest(TestCase):
 
         self.headers = {'Location': 'https://www.example.com'}
         path = "/path"
-        request = self.factory.get(path, secure=True)
-
-        proxy_response = response_like_factory(request, self.headers, 200)
-
-        self.urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=proxy_response
+        request = self.factory.get(
+            path,
+            # using kwargs instead of the secure parameter because it works only
+            # after Django 1.7
+            **{
+                'wsgi.url_scheme': 'https'  # tell factory to use https over http
+                }
             )
-        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
 
-        response = CustomProxyView.as_view()(request, path)
+        get_proxy_response = response_like_factory(request, self.headers, 200)
 
-        location = "https://" + request.get_host()
+        urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+            )
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
+            location = "https://" + request.get_host()
+            self.assertEquals(location, response['Location'])
 
-        self.assertEquals(location, response['Location'])
+    def test_request(self):
+        class CustomProxyView(ProxyView):
+            upstream = "http://www.example.com"
 
-        self.urllib2_urlopen_patcher.stop()
+        path = "/"
+        request = self.factory.get(path)
+        get_proxy_response = response_like_factory(request, self.headers, 200)
+
+        urllib2_urlopen_patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+            )
+
+        with urllib2_urlopen_patcher:
+            response = CustomProxyView.as_view()(request, path)
