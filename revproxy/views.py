@@ -3,11 +3,11 @@
 import os
 import sys
 
-if sys.version_info >= (3, 0, 0):
+if sys.version_info >= (3, 0, 0):  # pragma: no cover
     from urllib.parse import urljoin, urlparse, urlencode, quote
     from urllib.request import urlopen, build_opener, install_opener, Request
     from urllib.error import HTTPError
-else:
+else:  # pragma: no cover
     # Fallback to Python 2.7
     from urllib import urlencode
     from urllib2 import (quote, urlopen, build_opener, install_opener,

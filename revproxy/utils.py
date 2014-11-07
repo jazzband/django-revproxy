@@ -2,9 +2,9 @@
 import re
 import sys
 
-if sys.version_info >= (3, 0, 0):
+if sys.version_info >= (3, 0, 0):  # pragma: no cover
     from urllib.request import HTTPRedirectHandler
-else:
+else:  # pragma: no cover
     # Fallback to Python 2.7
     from urllib2 import HTTPRedirectHandler
 
