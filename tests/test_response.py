@@ -7,15 +7,20 @@ from revproxy.views import ProxyView
 from .utils import response_like_factory
 
 
+class CustomProxyView(ProxyView):
+    upstream = "http://www.example.com"
+    diazo_rules = None
+
+
 class ResponseTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def test_charset_is_not_default_charset(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-            diazo_rules = None
+    def tearDown(self):
+        CustomProxyView.upstream = "http://www.example.com"
+        CustomProxyView.diazo_rules = None
 
+    def test_charset_is_not_default_charset(self):
         path = "/"
         request = self.factory.get(path)
 
@@ -31,10 +36,6 @@ class ResponseTest(TestCase):
             self.assertNotEquals(DEFAULT_CHARSET, charset)
 
     def test_location_replaces_request_host(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-            diazo_rules = None
-
         headers = {'Location': 'http://www.example.com'}
         path = "/path"
         request = self.factory.get(path)
@@ -51,9 +52,7 @@ class ResponseTest(TestCase):
             self.assertEquals(location, response['Location'])
 
     def test_location_replaces_secure_request_host(self):
-        class CustomProxyView(ProxyView):
-            upstream = "https://www.example.com"
-            diazo_rules = None
+        CustomProxyView.upstream = "https://www.example.com"
 
         headers = {'Location': 'https://www.example.com'}
         path = "/path"
@@ -78,10 +77,6 @@ class ResponseTest(TestCase):
             self.assertEquals(location, response['Location'])
 
     def test_response_headers_are_not_in_hop_by_hop_headers(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-            diazo_rules = None
-
         path = "/"
         request = self.factory.get(path)
         get_proxy_response = response_like_factory(request, {}, 200)
@@ -99,10 +94,6 @@ class ResponseTest(TestCase):
                 self.assertTrue(header not in HOP_BY_HOP_HEADERS)
 
     def test_response_code_remains_the_same(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-            diazo_rules = None
-
         path = "/"
         request = self.factory.get(path)
         retcode = 300
@@ -124,10 +115,6 @@ class ResponseTest(TestCase):
             self.assertEquals(response_code, retcode)
 
     def test_response_content_remains_the_same(self):
-        class CustomProxyView(ProxyView):
-            upstream = "http://www.example.com"
-            diazo_rules = None
-
         path = "/"
         request = self.factory.get(path)
         retcode = 300
@@ -149,4 +136,3 @@ class ResponseTest(TestCase):
             # had to prefix it with 'b' because Python 3 treats str and byte
             # differently
             self.assertEquals(b'Fake file', response_content)
-
