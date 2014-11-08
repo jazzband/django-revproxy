@@ -33,7 +33,7 @@ class ResponseTest(TestCase):
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             charset = get_charset(response['Content-Type'])
-            self.assertNotEquals(DEFAULT_CHARSET, charset)
+            self.assertNotEqual(DEFAULT_CHARSET, charset)
 
     def test_location_replaces_request_host(self):
         headers = {'Location': 'http://www.example.com'}
@@ -49,7 +49,7 @@ class ResponseTest(TestCase):
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             location = "http://" + request.get_host()
-            self.assertEquals(location, response['Location'])
+            self.assertEqual(location, response['Location'])
 
     def test_location_replaces_secure_request_host(self):
         CustomProxyView.upstream = "https://www.example.com"
@@ -74,7 +74,7 @@ class ResponseTest(TestCase):
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             location = "https://" + request.get_host()
-            self.assertEquals(location, response['Location'])
+            self.assertEqual(location, response['Location'])
 
     def test_response_headers_are_not_in_hop_by_hop_headers(self):
         path = "/"
@@ -108,7 +108,7 @@ class ResponseTest(TestCase):
             response = CustomProxyView.as_view()(request, path)
             response_code = response.status_code
 
-            self.assertEquals(response_code, retcode)
+            self.assertEqual(response_code, retcode)
 
     def test_response_content_remains_the_same(self):
         path = "/"
@@ -127,4 +127,4 @@ class ResponseTest(TestCase):
 
             # had to prefix it with 'b' because Python 3 treats str and byte
             # differently
-            self.assertEquals(b'Fake file', response_content)
+            self.assertEqual(b'Fake file', response_content)
