@@ -29,7 +29,7 @@ class ResponseTest(TestCase):
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             charset = get_charset(response['Content-Type'])
@@ -45,7 +45,7 @@ class ResponseTest(TestCase):
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             location = "http://" + request.get_host()
@@ -58,19 +58,19 @@ class ResponseTest(TestCase):
         path = "/path"
         request = self.factory.get(
             path,
-            # using kwargs instead of the secure parameter because it works only
-            # after Django 1.7
+            # using kwargs instead of the secure parameter because it
+            #   works only after Django 1.7
             **{
-                'wsgi.url_scheme': 'https'  # tell factory to use https over http
-                }
-            )
+                'wsgi.url_scheme': 'https'  # tell factory to use
+            }                               # https over http
+        )
 
         get_proxy_response = response_like_factory(request, headers, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
             location = "https://" + request.get_host()
@@ -84,7 +84,7 @@ class ResponseTest(TestCase):
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
@@ -97,16 +97,12 @@ class ResponseTest(TestCase):
         path = "/"
         request = self.factory.get(path)
         retcode = 300
-        get_proxy_response = response_like_factory(
-            request,
-            {},
-            retcode
-            )
+        get_proxy_response = response_like_factory(request, {}, retcode)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
@@ -118,16 +114,12 @@ class ResponseTest(TestCase):
         path = "/"
         request = self.factory.get(path)
         retcode = 300
-        get_proxy_response = response_like_factory(
-            request,
-            {},
-            retcode
-            )
+        get_proxy_response = response_like_factory(request, {}, retcode)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
             new=get_proxy_response
-            )
+        )
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
