@@ -14,6 +14,7 @@ class ResponseTest(TestCase):
     def test_charset_is_not_default_charset(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
+            diazo_rules = None
 
         path = "/"
         request = self.factory.get(path)
@@ -32,6 +33,7 @@ class ResponseTest(TestCase):
     def test_location_replaces_request_host(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
+            diazo_rules = None
 
         headers = {'Location': 'http://www.example.com'}
         path = "/path"
@@ -51,6 +53,7 @@ class ResponseTest(TestCase):
     def test_location_replaces_secure_request_host(self):
         class CustomProxyView(ProxyView):
             upstream = "https://www.example.com"
+            diazo_rules = None
 
         headers = {'Location': 'https://www.example.com'}
         path = "/path"
@@ -77,6 +80,7 @@ class ResponseTest(TestCase):
     def test_response_headers_are_not_in_hop_by_hop_headers(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
+            diazo_rules = None
 
         path = "/"
         request = self.factory.get(path)
@@ -97,6 +101,7 @@ class ResponseTest(TestCase):
     def test_response_code_remains_the_same(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
+            diazo_rules = None
 
         path = "/"
         request = self.factory.get(path)
@@ -121,6 +126,7 @@ class ResponseTest(TestCase):
     def test_response_content_remains_the_same(self):
         class CustomProxyView(ProxyView):
             upstream = "http://www.example.com"
+            diazo_rules = None
 
         path = "/"
         request = self.factory.get(path)

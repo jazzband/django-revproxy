@@ -15,7 +15,7 @@ setup(
     version='0.2.9',
     long_description=read('README.rst'),
     packages=['revproxy'],
-    tests_require=['mock'],
+    tests_require=['mock', 'diazo'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
