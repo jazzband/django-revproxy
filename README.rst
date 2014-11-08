@@ -16,7 +16,7 @@ authentication Proxy.
 Features
 ---------
 
-* Proxies GET and POST requests
+* Proxies HEAD, GET, POST, PUT, DELETE and OPTIONS methods (not tested with TRACE, CONNECT and PATCH)
 * Copy all http headers sent from the client to the proxied server
 * Copy all http headers sent from the proxied server to the client (except `hop-by-hop`_)
 * Sets the http header REQUEST_USER if the user is logged in Django
