@@ -191,3 +191,61 @@ class RequestTest(TestCase):
                                     CustomProxyView.login_url)
         self.urllib2_Request.assert_called_with(request_url,
                                                 headers=request_headers)
+
+    def test_simple_rewrite(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://www.example.com'
+            add_remote_user = False
+            rewrite = (
+                (r'^/yellow/star/?$', r'/black/hole/'),
+                (r'^/foo/$', r'/bar'),
+            )
+
+        request = self.factory.get('/yellow/star')
+        response = CustomProxyView.as_view()(request, '/yellow/star')
+
+        self.assertEqual(response.url, '/black/hole/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_rewrite_with_get(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://www.example.com'
+            add_remote_user = False
+            rewrite = (
+                (r'^/yellow/star/$', r'/black/hole/'),
+                (r'^/foo/(.*)$', r'/bar\1'),
+            )
+
+        request = self.factory.get('/foo/', {'a': 1, 'b': 'c'})
+        response = CustomProxyView.as_view()(request, '/foo/')
+
+        self.assertEqual(response.url, '/bar?a=1&b=c')
+        self.assertEqual(response.status_code, 302)
+
+    def test_rewrite_to_external_location(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://www.example.com'
+            add_remote_user = False
+            rewrite = (
+                (r'^/yellow/star/?$', r'http://www.mozilla.org/'),
+            )
+
+        request = self.factory.get('/yellow/star/')
+        response = CustomProxyView.as_view()(request, '/yellow/star/')
+
+        self.assertEqual(response.url, 'http://www.mozilla.org/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_rewrite_to_view_name(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://www.example.com'
+            add_remote_user = False
+            rewrite = (
+                (r'^/yellow/star/$', r'login'),
+            )
+
+        request = self.factory.get('/yellow/star/')
+        response = CustomProxyView.as_view()(request, '/yellow/star/')
+
+        self.assertEqual(response.url, '/accounts/login/')
+        self.assertEqual(response.status_code, 302)

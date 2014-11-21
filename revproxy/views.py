@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 
 if sys.version_info >= (3, 0, 0):  # pragma: no cover
@@ -14,6 +15,7 @@ else:  # pragma: no cover
                          HTTPError, Request)
     from urlparse import urljoin, urlparse
 
+from django.shortcuts import redirect
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
 from django.contrib.auth.views import redirect_to_login
@@ -28,6 +30,7 @@ class ProxyView(View):
     diazo_theme_template = 'diazo.html'
     html5 = False
     login_url = None
+    rewrite = tuple()
 
     @property
     def upstream(self):
@@ -46,6 +49,16 @@ class ProxyView(View):
         return view
 
     def dispatch(self, request, path):
+
+        # Rewrite implementation
+        for from_pattern, to_pattern in self.rewrite:
+            # TODO: Keep compilations in cache
+            from_re = re.compile(from_pattern)
+            full_path = request.get_full_path()
+
+            if from_re.match(full_path):
+                redirect_to = from_re.sub(to_pattern, full_path)
+                return redirect(redirect_to)
 
         request_payload = request.body
         request_headers = normalize_headers(request)
