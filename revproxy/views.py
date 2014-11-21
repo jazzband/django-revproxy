@@ -32,6 +32,14 @@ class ProxyView(View):
     login_url = None
     rewrite = tuple()
 
+    def __init__(self, *args, **kwargs):
+        super(ProxyView, self).__init__(*args, **kwargs)
+
+        self._rewrite = []
+        for from_pattern, to_pattern in self.rewrite:
+            from_re = re.compile(from_pattern)
+            self._rewrite.append((from_re, to_pattern))
+
     @property
     def upstream(self):
         raise NotImplementedError('Upstream server must be set')
@@ -51,9 +59,7 @@ class ProxyView(View):
     def dispatch(self, request, path):
 
         # Rewrite implementation
-        for from_pattern, to_pattern in self.rewrite:
-            # TODO: Keep compilations in cache
-            from_re = re.compile(from_pattern)
+        for from_re, to_pattern in self._rewrite:
             full_path = request.get_full_path()
 
             if from_re.match(full_path):
