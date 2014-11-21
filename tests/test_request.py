@@ -216,11 +216,16 @@ class RequestTest(TestCase):
                 (r'^/foo/(.*)$', r'/bar\1'),
             )
 
-        request = self.factory.get('/foo/', {'a': 1, 'b': 'c'})
+        data = {'a': ['1'], 'b': ['c']}
+        request = self.factory.get('/foo/', data)
         response = CustomProxyView.as_view()(request, '/foo/')
 
-        self.assertEqual(response.url, '/bar?a=1&b=c')
+        path, querystring = response.url.split('?')
+        self.assertEqual(path, '/bar')
         self.assertEqual(response.status_code, 302)
+
+        response_data = parse_qs(querystring)
+        self.assertEqual(response_data, data)
 
     def test_rewrite_to_external_location(self):
         class CustomProxyView(ProxyView):
