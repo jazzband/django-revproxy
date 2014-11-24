@@ -62,7 +62,10 @@ class TransformerTest(TestCase):
 
     def test_unsupported_content_encoding_zip(self):
         request = self.factory.get('/')
-        headers = {'Content-Encoding': 'zip'}
+        headers = {
+            'Content-Encoding': 'zip',
+            'Content-Type': 'text/html',
+        }
         get_proxy_response = response_like_factory(request, headers, 200)
 
         patcher = patch(
@@ -75,7 +78,10 @@ class TransformerTest(TestCase):
 
     def test_unsupported_content_encoding_deflate(self):
         request = self.factory.get('/')
-        headers = {'Content-Encoding': 'deflate'}
+        headers = {
+            'Content-Encoding': 'deflate',
+            'Content-Type': 'text/html',
+        }
         get_proxy_response = response_like_factory(request, headers, 200)
 
         patcher = patch(
@@ -88,7 +94,10 @@ class TransformerTest(TestCase):
 
     def test_unsupported_content_encoding_compress(self):
         request = self.factory.get('/')
-        headers = {'Content-Encoding': 'compress'}
+        headers = {
+            'Content-Encoding': 'compress',
+            'Content-Type': 'text/html',
+        }
         get_proxy_response = response_like_factory(request, headers, 200)
 
         patcher = patch(
@@ -101,7 +110,8 @@ class TransformerTest(TestCase):
 
     def test_server_redirection_status(self):
         request = self.factory.get('/')
-        get_proxy_response = response_like_factory(request, {}, 301)
+        headers = {'Content-Type': 'text/html'}
+        get_proxy_response = response_like_factory(request, headers, 301)
 
         patcher = patch(
             'revproxy.views.urlopen',
@@ -113,7 +123,8 @@ class TransformerTest(TestCase):
 
     def test_no_content_status(self):
         request = self.factory.get('/')
-        get_proxy_response = response_like_factory(request, {}, 204)
+        headers = {'Content-Type': 'text/html'}
+        get_proxy_response = response_like_factory(request, headers, 204)
 
         patcher = patch(
             'revproxy.views.urlopen',
@@ -126,7 +137,9 @@ class TransformerTest(TestCase):
     def test_response_length_zero(self):
         request = self.factory.get('/')
         content = b''
-        get_proxy_response = response_like_factory(request, {}, 200, content)
+        headers = {'Content-Type': 'text/html'}
+        get_proxy_response = response_like_factory(request, headers,
+                                                   200, content)
 
         patcher = patch(
             'revproxy.views.urlopen',

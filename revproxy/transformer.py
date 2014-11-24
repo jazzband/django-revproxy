@@ -7,7 +7,7 @@ from django.template import loader, RequestContext
 
 try:
     from diazo.compiler import compile_theme
-except ImportError:
+except ImportError:  # pragma: no cover
     has_diazo = False
 else:
     has_diazo = True
@@ -25,7 +25,7 @@ class DiazoTransformer(object):
     def should_transform(self):
         """Determine if we should transform the response"""
 
-        if not has_diazo:
+        if not has_diazo:  # pragma: no cover
             return False
 
         if self.request.is_ajax():
