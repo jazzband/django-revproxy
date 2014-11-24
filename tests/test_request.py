@@ -136,62 +136,6 @@ class RequestTest(TestCase):
 
         self.assertEqual(self.urllib2_Request().get_method(), 'PUT')
 
-    def test_login_redirect(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            login_url = '/login/'
-            add_remote_user = True
-
-        request = self.factory.get('/login/', {'next': '/user/profile/'})
-        request.user = AnonymousUser()
-
-        response = CustomProxyView.as_view()(request, '/login/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=/user/profile/')
-
-    def test_login_redirect_return_to(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            login_url = '/login/'
-            add_remote_user = True
-
-        request = self.factory.get('/login/', {'next': '/user/'})
-        request.user = AnonymousUser()
-
-        response = CustomProxyView.as_view()(request, '/login/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=/user/')
-
-    def test_login_redirect_no_next(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            login_url = '/login/'
-            add_remote_user = True
-
-        request = self.factory.get('/login/')
-        request.user = AnonymousUser()
-
-        response = CustomProxyView.as_view()(request, '/login/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/?next=')
-
-    def test_no_login_redirect(self):
-
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            login_url = '/login/'
-            add_remote_user = False
-
-        request = self.factory.get('/login/')
-        request.user = AnonymousUser()
-
-        response = CustomProxyView.as_view()(request, '/login/')
-        request_headers = {u'Cookie': u''}
-        request_url = '{}{}'.format(CustomProxyView.upstream,
-                                    CustomProxyView.login_url)
-        self.urllib2_Request.assert_called_with(request_url,
-                                                headers=request_headers)
-
     def test_simple_rewrite(self):
         class CustomProxyView(ProxyView):
             upstream = 'http://www.example.com'
