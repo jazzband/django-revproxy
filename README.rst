@@ -1,6 +1,3 @@
-.. -*- coding: utf-8 -*-
-
-
 django-revproxy
 ===============
 
@@ -32,7 +29,5 @@ Features
 Install
 --------
 
-.. code-block::
-
-    pip install django-revproxy
+``pip install django-revproxy``
 
