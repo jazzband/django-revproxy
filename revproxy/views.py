@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import mimetypes
 
 if sys.version_info >= (3, 0, 0):  # pragma: no cover
     from urllib.parse import urljoin, urlparse, urlencode, quote
@@ -110,6 +111,12 @@ class ProxyView(View):
             location = location.replace(upstream_host_http, request_host)
             location = location.replace(upstream_host_https, request_host)
             proxy_response.headers['Location'] = location
+
+        content_type = proxy_response.headers.get('content-type')
+        if not content_type:
+            content_type = (mimetypes.guess_type(request.path)[0] or
+                            'application/octet-stream')
+            proxy_response.headers['content-type'] = content_type
 
         response = HttpProxyResponse(proxy_response)
 

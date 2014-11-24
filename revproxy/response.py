@@ -14,8 +14,7 @@ class HttpProxyResponse(HttpResponse):
         headers = proxy_response.headers
         status = proxy_response.getcode()
 
-        content_type = headers.get('content-type', 'text/plain')
-
+        content_type = headers.get('content-type')
         super(HttpProxyResponse, self).__init__(content, status=status,
                                                 content_type=content_type,
                                                 *args, **kwargs)
