@@ -1,5 +1,15 @@
+
+import sys
+
+if sys.version_info >= (3, 0, 0):
+    from urllib.error import HTTPError
+else:
+    from urllib2 import HTTPError
+
+from io import BytesIO
+
 from django.test import RequestFactory, TestCase
-from mock import patch
+from mock import patch, MagicMock
 from revproxy.response import HOP_BY_HOP_HEADERS
 from revproxy.views import ProxyView
 
@@ -18,6 +28,24 @@ class ResponseTest(TestCase):
     def tearDown(self):
         CustomProxyView.upstream = "http://www.example.com"
         CustomProxyView.diazo_rules = None
+
+    def test_broken_response(self):
+        request = self.factory.get('/')
+
+        error = HTTPError(CustomProxyView.upstream, 500, 'Internal Error',
+                          {}, BytesIO(b'Testing'))
+        urllib2_mock = MagicMock(side_effect=error)
+
+        urllib2_patch = patch(
+            'revproxy.views.urlopen',
+            new=urllib2_mock,
+        )
+
+        with urllib2_patch:
+            response = CustomProxyView.as_view()(request, '/')
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.content, b'Testing')
 
     def test_location_replaces_request_host(self):
         headers = {'Location': 'http://www.example.com'}
