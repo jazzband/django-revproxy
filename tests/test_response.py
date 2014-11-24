@@ -32,8 +32,9 @@ class ResponseTest(TestCase):
         )
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
-            location = "http://" + request.get_host()
-            self.assertEqual(location, response['Location'])
+
+        location = "http://" + request.get_host()
+        self.assertEqual(location, response['Location'])
 
     def test_location_replaces_secure_request_host(self):
         CustomProxyView.upstream = "https://www.example.com"
@@ -55,10 +56,12 @@ class ResponseTest(TestCase):
             'revproxy.views.urlopen',
             new=get_proxy_response
         )
+
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
-            location = "https://" + request.get_host()
-            self.assertEqual(location, response['Location'])
+
+        location = "https://" + request.get_host()
+        self.assertEqual(location, response['Location'])
 
     def test_response_headers_are_not_in_hop_by_hop_headers(self):
         path = "/"
@@ -72,10 +75,11 @@ class ResponseTest(TestCase):
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
-            response_headers = response._headers
 
-            for header in response_headers:
-                self.assertTrue(header not in HOP_BY_HOP_HEADERS)
+        response_headers = response._headers
+
+        for header in response_headers:
+            self.assertTrue(header not in HOP_BY_HOP_HEADERS)
 
     def test_response_code_remains_the_same(self):
         path = "/"
@@ -90,9 +94,8 @@ class ResponseTest(TestCase):
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
-            response_code = response.status_code
 
-            self.assertEqual(response_code, retcode)
+        self.assertEqual(response.status_code, retcode)
 
     def test_response_content_remains_the_same(self):
         path = "/"
@@ -107,8 +110,9 @@ class ResponseTest(TestCase):
 
         with urllib2_urlopen_patcher:
             response = CustomProxyView.as_view()(request, path)
-            response_content = response.content
 
-            # had to prefix it with 'b' because Python 3 treats str and byte
-            # differently
-            self.assertEqual(b'Fake file', response_content)
+        response_content = response.content
+
+        # had to prefix it with 'b' because Python 3 treats str and byte
+        # differently
+        self.assertEqual(b'Fake file', response_content)
