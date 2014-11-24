@@ -38,6 +38,15 @@ class TransformerTest(TestCase):
         # TODO: We actually don't support stream proxy so far
         pass
 
+    def test_no_content_type(self):
+        request = self.factory.get('/')
+        get_proxy_response = response_like_factory(request, {}, 200)
+
+        patcher = patch('revproxy.views.urlopen', new=get_proxy_response)
+        with patcher:
+            response = CustomProxyView.as_view()(request, '/')
+            self.assertEqual(response.content, b'Fake file')
+
     def test_unsupported_content_type(self):
         request = self.factory.get('/')
         headers = {'Content-Type': 'application/pdf'}

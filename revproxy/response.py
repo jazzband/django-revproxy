@@ -14,10 +14,12 @@ class HttpProxyResponse(HttpResponse):
         headers = proxy_response.headers
         status = proxy_response.getcode()
 
+        content_type = headers.get('content-type', 'text/plain')
+
         super(HttpProxyResponse, self).__init__(content, status=status,
+                                                content_type=content_type,
                                                 *args, **kwargs)
 
-        content_type = headers.get('content-type', '')
         self._charset = get_charset(content_type)
         self.unicode_content = content.decode(self._charset)
 
