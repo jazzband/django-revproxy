@@ -1,7 +1,5 @@
 .. -*- coding: utf-8 -*-
 
-.. highlight:: rest
-
 
 django-revproxy
 ===============
@@ -23,14 +21,12 @@ Features
 
 * Proxies HEAD, GET, POST, PUT, DELETE and OPTIONS methods (not tested with TRACE, CONNECT and PATCH)
 * Copy all http headers sent from the client to the proxied server
-* Copy all http headers sent from the proxied server to the client (except `hop-by-hop`_)
+* Copy all http headers sent from the proxied server to the client (except `hop-by-hop <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.5.1>`_)
 * Basic URL rewrite
 * Sets the http header REQUEST_USER if the user is logged in Django
 * Handles redirects
 * No mandatory external dependencies (uses only Python standard library)
 * Apply XSLT transformation in the response (requires Diazo)
-
-.. _hop-by-hop: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.5.1
 
 
 Install
