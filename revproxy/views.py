@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 
 if sys.version_info >= (3, 0, 0):  # pragma: no cover
@@ -14,9 +15,9 @@ else:  # pragma: no cover
                          HTTPError, Request)
     from urlparse import urljoin, urlparse
 
+from django.shortcuts import redirect
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
-from django.contrib.auth.views import redirect_to_login
 
 from .response import HttpProxyResponse
 from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
@@ -27,7 +28,15 @@ class ProxyView(View):
     add_remote_user = False
     diazo_theme_template = 'diazo.html'
     html5 = False
-    login_url = None
+    rewrite = tuple()
+
+    def __init__(self, *args, **kwargs):
+        super(ProxyView, self).__init__(*args, **kwargs)
+
+        self._rewrite = []
+        for from_pattern, to_pattern in self.rewrite:
+            from_re = re.compile(from_pattern)
+            self._rewrite.append((from_re, to_pattern))
 
     @property
     def upstream(self):
@@ -47,18 +56,19 @@ class ProxyView(View):
 
     def dispatch(self, request, path):
 
+        # Rewrite implementation
+        for from_re, to_pattern in self._rewrite:
+            full_path = request.get_full_path()
+
+            if from_re.match(full_path):
+                redirect_to = from_re.sub(to_pattern, full_path)
+                return redirect(redirect_to)
+
         request_payload = request.body
         request_headers = normalize_headers(request)
 
-        if self.add_remote_user:
-            if request.user.is_active:
-                request_headers['REMOTE_USER'] = request.user.username
-
-            if request.path_info == self.login_url:
-                next = request.GET.get('next')
-                return_to = request.GET.get('return_to')
-
-                return redirect_to_login(next or return_to or '')
+        if self.add_remote_user and request.user.is_active:
+            request_headers['REMOTE_USER'] = request.user.username
 
         request_url = urljoin(
             self.upstream,
