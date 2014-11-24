@@ -12,7 +12,7 @@ def read(*parts):
 setup(
     name='django-revproxy',
     description='Yet another Django reverse proxy application.',
-    version='0.3.0',
+    version='0.3.1',
     long_description=read('README.rst'),
     packages=['revproxy'],
     tests_require=['mock', 'diazo'],
