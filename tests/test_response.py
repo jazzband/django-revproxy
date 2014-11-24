@@ -22,9 +22,10 @@ class ResponseTest(TestCase):
 
     def test_charset_is_not_default_charset(self):
         path = "/"
+        headers = {'Content-Type': "text/html; charset=utf-8"}
         request = self.factory.get(path)
 
-        get_proxy_response = response_like_factory(request, {}, 200)
+        get_proxy_response = response_like_factory(request, headers, 200)
 
         urllib2_urlopen_patcher = patch(
             'revproxy.views.urlopen',
