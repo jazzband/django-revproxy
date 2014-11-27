@@ -171,4 +171,15 @@ class TransformerTest(TestCase):
             self.assertNotIn(content, response.content)
 
     def test_html5_transform(self):
-        pass
+        request = self.factory.get('/')
+        content = b'test'
+        headers = {'Content-Type': 'text/html'}
+        get_proxy_response = response_like_factory(request, headers, 200, content)
+
+        patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+        )
+        with patcher:
+            response = CustomProxyViewTransformed.as_view()(request, '/')
+            self.assertIn('<!DOCTYPE html>', response.content)
