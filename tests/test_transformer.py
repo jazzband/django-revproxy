@@ -12,6 +12,12 @@ class CustomProxyView(ProxyView):
     upstream = "http://www.example.com"
 
 
+class CustomProxyViewTransformed(ProxyView):
+    upstream = "http://www.example.com"
+    html5 = True
+    diazo_theme_template = 'diazo.html'
+
+
 class TransformerTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -150,7 +156,19 @@ class TransformerTest(TestCase):
             self.assertEqual(response.content, content)
 
     def test_transform(self):
-        pass
+        request = self.factory.get('/')
+        content = b'<div class="test-transform">testing</div>'
+        headers = {'Content-Type': 'text/html'}
+
+        get_proxy_response = response_like_factory(request, headers, 200, content)
+
+        patcher = patch(
+            'revproxy.views.urlopen',
+            new=get_proxy_response
+        )
+        with patcher:
+            response = CustomProxyViewTransformed.as_view()(request, '/')
+            self.assertNotIn(content, response.content)
 
     def test_html5_transform(self):
         pass
