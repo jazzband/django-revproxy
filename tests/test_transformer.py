@@ -180,4 +180,4 @@ class TransformerTest(TestCase):
         )
         with patcher:
             response = CustomProxyView.as_view(html5=True)(request, '/')
-            self.assertIn('<!DOCTYPE html>', response.content)
+            self.assertIn(b'<!DOCTYPE html>', response.content)
