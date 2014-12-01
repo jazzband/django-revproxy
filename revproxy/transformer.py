@@ -13,7 +13,7 @@ else:
     has_diazo = True
     from lxml import etree
 
-doctype_re = re.compile(r"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
+doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
 
 class DiazoTransformer(object):
@@ -87,7 +87,7 @@ class DiazoTransformer(object):
         del self.response['Content-Length']
 
     def set_html5_doctype(self):
-        doctype = u'<!DOCTYPE html>\n'
+        doctype = b'<!DOCTYPE html>\n'
         content, subs = doctype_re.subn(doctype, self.response.content, 1)
 
         if not subs:
