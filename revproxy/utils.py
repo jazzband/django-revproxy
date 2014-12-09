@@ -31,6 +31,9 @@ class NoHTTPRedirectHandler(HTTPRedirectHandler, object):
 
 
 def get_charset(content_type):
+    if not content_type:
+        return DEFAULT_CHARSET
+
     matched = _get_charset_re.search(content_type)
     if matched:
         # Extract the charset and strip its double quotes

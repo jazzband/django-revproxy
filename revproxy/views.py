@@ -112,11 +112,11 @@ class ProxyView(View):
             location = location.replace(upstream_host_https, request_host)
             proxy_response.headers['Location'] = location
 
-        content_type = proxy_response.headers.get('content-type')
+        content_type = proxy_response.headers.get('Content-Type')
         if not content_type:
             content_type = (mimetypes.guess_type(request.path)[0] or
                             'application/octet-stream')
-            proxy_response.headers['content-type'] = content_type
+            proxy_response.headers['Content-Type'] = content_type
 
         response = HttpProxyResponse(proxy_response)
 
