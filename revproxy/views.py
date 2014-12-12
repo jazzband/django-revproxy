@@ -4,16 +4,16 @@ import os
 import re
 import sys
 import mimetypes
+import logging
+
+import urllib3
 
 if sys.version_info >= (3, 0, 0):  # pragma: no cover
     from urllib.parse import urljoin, urlparse, urlencode, quote
-    from urllib.request import urlopen, build_opener, install_opener, Request
-    from urllib.error import HTTPError
 else:  # pragma: no cover
     # Fallback to Python 2.7
     from urllib import urlencode
-    from urllib2 import (quote, urlopen, build_opener, install_opener,
-                         HTTPError, Request)
+    from urllib2 import quote
     from urlparse import urljoin, urlparse
 
 from django.shortcuts import redirect
@@ -21,7 +21,7 @@ from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
 from .response import HttpProxyResponse
-from .utils import normalize_headers, NoHTTPRedirectHandler, encode_items
+from .utils import normalize_headers, encode_items
 from .transformer import DiazoTransformer
 
 
@@ -38,6 +38,9 @@ class ProxyView(View):
         for from_pattern, to_pattern in self.rewrite:
             from_re = re.compile(from_pattern)
             self._rewrite.append((from_re, to_pattern))
+
+        self.http = urllib3.PoolManager()
+        self.log = logging.getLogger('revproxy')
 
     @property
     def upstream(self):
@@ -80,21 +83,15 @@ class ProxyView(View):
             get_data = encode_items(request.GET.lists())
             request_url += '?' + urlencode(get_data)
 
-        proxy_request = Request(request_url, headers=request_headers)
-
-        if request_payload:
-            proxy_request.add_data(request_payload)
-
-        opener = build_opener(NoHTTPRedirectHandler)
-        install_opener(opener)
-
-        # Make sure we'll keep the request method
-        proxy_request.get_method = lambda: request.method
-
         try:
-            proxy_response = urlopen(proxy_request)
-        except HTTPError as e:
-            proxy_response = e
+            proxy_response = self.http.urlopen(request.method,
+                                               request_url,
+                                               request_payload,
+                                               request_headers,
+                                               redirect=False)
+        except urllib3.exceptions.HTTPError as error:
+            self.log.exception(error)
+            raise
 
         location = proxy_response.headers.get('Location')
         if location:
