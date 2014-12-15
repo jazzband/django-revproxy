@@ -25,6 +25,26 @@ class TransformerTest(TestCase):
     def test_no_diazo(self):
         pass
 
+    def test_disable_request_header(self):
+        request = self.factory.get('/', HTTP_X_DIAZO_OFF='true')
+        headers = {'Content-Type': 'text/html'}
+        urlopen_mock = get_urlopen_mock()
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        self.assertEqual(response.content, b'Mock')
+
+    def test_disable_response_header(self):
+        request = self.factory.get('/')
+        headers = {'Content-Type': 'text/html', 'X-Diazo-Off': 'true'}
+        urlopen_mock = get_urlopen_mock()
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        self.assertEqual(response.content, b'Mock')
+
     def test_ajax_request(self):
         request = self.factory.get('/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
