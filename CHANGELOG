@@ -4,3 +4,4 @@
 ===================
 
 * urllib2 replaced by urllib3 (#10)
+* No Diazo transformation if header X-Diazo-Off is set to true - either request or response (#15)
