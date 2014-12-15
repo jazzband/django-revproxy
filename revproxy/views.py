@@ -85,9 +85,9 @@ class ProxyView(View):
         try:
             proxy_response = self.http.urlopen(request.method,
                                                request_url,
-                                               request_payload,
-                                               request_headers,
-                                               redirect=False)
+                                               redirect=False,
+                                               headers=request_headers,
+                                               body=request_payload)
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
             raise

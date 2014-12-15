@@ -49,8 +49,10 @@ class RequestTest(TestCase):
 
         url = 'http://www.example.com/test'
         headers = {'REMOTE_USER': 'jacob', 'Cookie': ''}
-        self.urlopen.assert_called_with('GET', url, b'', headers,
-                                        redirect=False)
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        headers=headers,
+                                        body=b'')
 
     def test_remote_user_anonymous(self):
         class CustomProxyView(ProxyView):
@@ -64,8 +66,8 @@ class RequestTest(TestCase):
 
         url = 'http://www.example.com/test/anonymous/'
         headers = {'Cookie': ''}
-        self.urlopen.assert_called_with('GET', url, b'', headers,
-                                        redirect=False)
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        headers=headers, body=b'')
 
     def test_simple_get(self):
         class CustomProxyView(ProxyView):
@@ -116,7 +118,7 @@ class RequestTest(TestCase):
         self.assertEqual(called_get_data, get_data)
 
         # Check for POST data
-        self.assertEqual(self.urlopen.call_args[0][2], request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
 
     def test_put(self):
         class CustomProxyView(ProxyView):
@@ -130,7 +132,7 @@ class RequestTest(TestCase):
         assert self.urlopen.called
 
         # Check for request data
-        self.assertEqual(self.urlopen.call_args[0][2], request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
 
         self.assertEqual(self.urlopen.call_args[0][0], 'PUT')
 
