@@ -12,8 +12,7 @@ if sys.version_info >= (3, 0, 0):  # pragma: no cover
     from urllib.parse import urljoin, urlparse, urlencode, quote
 else:  # pragma: no cover
     # Fallback to Python 2.7
-    from urllib import urlencode
-    from urllib2 import quote
+    from urllib import urlencode, quote
     from urlparse import urljoin, urlparse
 
 from django.shortcuts import redirect
