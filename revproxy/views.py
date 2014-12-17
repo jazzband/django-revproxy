@@ -58,8 +58,8 @@ class ProxyView(View):
     def dispatch(self, request, path):
 
         # Rewrite implementation
+        full_path = request.get_full_path()
         for from_re, to_pattern in self._rewrite:
-            full_path = request.get_full_path()
 
             if from_re.match(full_path):
                 redirect_to = from_re.sub(to_pattern, full_path)
