@@ -1,7 +1,5 @@
 from django.http import HttpResponse
 
-from .utils import get_charset
-
 HOP_BY_HOP_HEADERS = (
     'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
     'te', 'trailers', 'transfer-encoding', 'upgrade')
@@ -18,9 +16,6 @@ class HttpProxyResponse(HttpResponse):
         super(HttpProxyResponse, self).__init__(content, status=status,
                                                 content_type=content_type,
                                                 *args, **kwargs)
-
-        self._charset = get_charset(content_type)
-        self.unicode_content = content.decode(self._charset)
 
         for header, value in headers.items():
             if header.lower() not in HOP_BY_HOP_HEADERS:
