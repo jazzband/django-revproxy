@@ -13,7 +13,29 @@ else:
     has_diazo = True
     from lxml import etree
 
+
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
+
+DIAZO_OFF_REQUEST_HEADER = 'HTTP_X_DIAZO_OFF'
+DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
+
+
+def asbool(value):
+    try:  # pragma: no cover
+        is_string = isinstance(value, basestring)
+    except NameError:  # Python 3
+        is_string = isinstance(value, str)
+
+    if is_string:
+        value = value.strip().lower()
+        if value in ('true', 'yes', 'on', 'y', 't', '1',):
+            return True
+        elif value in ('false', 'no', 'off', 'n', 'f', '0'):
+            return False
+        else:
+            raise ValueError("String is not true/false: %r" % value)
+    else:
+        return bool(value)
 
 
 class DiazoTransformer(object):
@@ -26,6 +48,12 @@ class DiazoTransformer(object):
         """Determine if we should transform the response"""
 
         if not has_diazo:  # pragma: no cover
+            return False
+
+        if asbool(self.request.META.get(DIAZO_OFF_REQUEST_HEADER)):
+            return False
+
+        if asbool(self.response.get(DIAZO_OFF_RESPONSE_HEADER)):
             return False
 
         if self.request.is_ajax():
