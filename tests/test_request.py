@@ -13,6 +13,8 @@ from mock import patch
 
 from revproxy.views import ProxyView
 
+from .utils import get_urlopen_mock
+
 
 class RequestTest(TestCase):
 
@@ -22,18 +24,14 @@ class RequestTest(TestCase):
         self.user = User.objects.create_user(
             username='jacob', email='jacob@example.com', password='top_secret')
 
-        self.urllib2_Request_patcher = patch('revproxy.views.Request')
-        self.urllib2_urlopen_patcher = patch('revproxy.views.urlopen')
-        self.response_patcher = patch('revproxy.views.HttpProxyResponse')
+        urlopen_mock = get_urlopen_mock()
+        self.urlopen_patcher = patch('urllib3.PoolManager.urlopen',
+                                     urlopen_mock)
 
-        self.urllib2_Request = self.urllib2_Request_patcher.start()
-        self.urllib2_urlopen = self.urllib2_urlopen_patcher.start()
-        self.responser = self.response_patcher.start()
+        self.urlopen = self.urlopen_patcher.start()
 
     def tearDown(self):
-        self.urllib2_Request_patcher.stop()
-        self.urllib2_urlopen_patcher.stop()
-        self.responser = self.response_patcher.stop()
+        self.urlopen_patcher.stop()
 
     def test_default_add_remote_user_attr(self):
         proxy_view = ProxyView()
@@ -47,12 +45,14 @@ class RequestTest(TestCase):
         request = self.factory.get('/')
         request.user = self.user
 
-        response = CustomProxyView.as_view()(request, '/test')
+        CustomProxyView.as_view()(request, '/test')
 
-        request_url = 'http://www.example.com/test'
-        request_headers = {'REMOTE_USER': 'jacob', u'Cookie': u''}
-        self.urllib2_Request.assert_called_with(request_url,
-                                                headers=request_headers)
+        url = 'http://www.example.com/test'
+        headers = {'REMOTE_USER': 'jacob', 'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        headers=headers,
+                                        body=b'')
 
     def test_remote_user_anonymous(self):
         class CustomProxyView(ProxyView):
@@ -62,12 +62,12 @@ class RequestTest(TestCase):
         request = self.factory.get('/')
         request.user = AnonymousUser()
 
-        response = CustomProxyView.as_view()(request, '/test/anonymous/')
+        CustomProxyView.as_view()(request, '/test/anonymous/')
 
-        request_url = 'http://www.example.com/test/anonymous/'
-        request_headers = {u'Cookie': u''}
-        self.urllib2_Request.assert_called_with(request_url,
-                                                headers=request_headers)
+        url = 'http://www.example.com/test/anonymous/'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        headers=headers, body=b'')
 
     def test_simple_get(self):
         class CustomProxyView(ProxyView):
@@ -75,11 +75,11 @@ class RequestTest(TestCase):
 
         get_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
         request = self.factory.get('/', get_data)
-        response = CustomProxyView.as_view()(request, '/')
+        CustomProxyView.as_view()(request, '/')
 
-        assert self.urllib2_Request.called
+        assert self.urlopen.called
 
-        called_qs = self.urllib2_Request.call_args[0][0].split('?')[-1]
+        called_qs = self.urlopen.call_args[0][1].split('?')[-1]
         called_get_data = parse_qs(called_qs)
         self.assertEqual(called_get_data, get_data)
 
@@ -92,10 +92,10 @@ class RequestTest(TestCase):
             u'foo': [u'bar'],
         }
         request = self.factory.get('/', get_data)
-        response = CustomProxyView.as_view()(request, '/')
+        CustomProxyView.as_view()(request, '/')
 
-        assert self.urllib2_Request.called
-        called_qs = self.urllib2_Request.call_args[0][0].split('?')[-1]
+        assert self.urlopen.called
+        called_qs = self.urlopen.call_args[0][1].split('?')[-1]
 
         called_get_data = parse_qs(called_qs)
         self.assertEqual(called_get_data, get_data)
@@ -108,17 +108,17 @@ class RequestTest(TestCase):
         post_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
 
         request = self.factory.post('/?x=y&x=z', post_data)
-        response = CustomProxyView.as_view()(request, '/')
+        CustomProxyView.as_view()(request, '/')
 
-        assert self.urllib2_Request.called
-        called_qs = self.urllib2_Request.call_args[0][0].split('?')[-1]
+        assert self.urlopen.called
+        called_qs = self.urlopen.call_args[0][1].split('?')[-1]
 
         # Check for GET data
         called_get_data = parse_qs(called_qs)
         self.assertEqual(called_get_data, get_data)
 
         # Check for POST data
-        self.urllib2_Request().add_data.assert_called_with(request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
 
     def test_put(self):
         class CustomProxyView(ProxyView):
@@ -127,14 +127,14 @@ class RequestTest(TestCase):
         request_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
 
         request = self.factory.put('/', request_data)
-        response = CustomProxyView.as_view()(request, '/')
+        CustomProxyView.as_view()(request, '/')
 
-        assert self.urllib2_Request.called
+        assert self.urlopen.called
 
         # Check for request data
-        self.urllib2_Request().add_data.assert_called_with(request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
 
-        self.assertEqual(self.urllib2_Request().get_method(), 'PUT')
+        self.assertEqual(self.urlopen.call_args[0][0], 'PUT')
 
     def test_simple_rewrite(self):
         class CustomProxyView(ProxyView):

@@ -1,12 +1,5 @@
 
 import re
-import sys
-
-if sys.version_info >= (3, 0, 0):  # pragma: no cover
-    from urllib.request import HTTPRedirectHandler
-else:  # pragma: no cover
-    # Fallback to Python 2.7
-    from urllib2 import HTTPRedirectHandler
 
 
 IGNORE_HEADERS = (
@@ -23,11 +16,6 @@ DEFAULT_CHARSET = 'latin-1'
 
 
 _get_charset_re = re.compile(r';\s*charset=(?P<charset>[^\s;]+)', re.I)
-
-
-class NoHTTPRedirectHandler(HTTPRedirectHandler, object):
-    def redirect_request(self, *args, **kwargs):
-        return None
 
 
 def get_charset(content_type):

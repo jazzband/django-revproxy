@@ -1,12 +1,4 @@
 
-import sys
-
-if sys.version_info >= (3, 0, 0):  # pragma: no cover
-    from urllib.request import HTTPRedirectHandler
-else:  # pragma: no cover
-    # Fallback to Python 2.7
-    from urllib2 import HTTPRedirectHandler
-
 from django.test import TestCase
 
 from revproxy import utils
@@ -27,8 +19,3 @@ class UtilsTest(TestCase):
 
     def test_ignore_accept_encoding_header(self):
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
-
-    def test_NoHTTPRedirectHandler(self):
-        assert issubclass(utils.NoHTTPRedirectHandler, HTTPRedirectHandler)
-        handler = utils.NoHTTPRedirectHandler()
-        self.assertIsNone(handler.redirect_request())

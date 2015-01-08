@@ -10,11 +10,11 @@ HOP_BY_HOP_HEADERS = (
 class HttpProxyResponse(HttpResponse):
 
     def __init__(self, proxy_response, *args, **kwargs):
-        content = proxy_response.read()
+        content = proxy_response.data or b''
         headers = proxy_response.headers
-        status = proxy_response.getcode()
+        status = proxy_response.status
 
-        content_type = headers.get('content-type')
+        content_type = headers.get('Content-Type')
         super(HttpProxyResponse, self).__init__(content, status=status,
                                                 content_type=content_type,
                                                 *args, **kwargs)

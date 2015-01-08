@@ -1,19 +1,18 @@
+#! *-* coding: utf8 *-*
 
-import sys
-
-if sys.version_info >= (3, 0, 0):
-    from urllib.error import HTTPError
-else:
-    from urllib2 import HTTPError
-
-from io import BytesIO
+import logging
 
 from django.test import RequestFactory, TestCase
-from mock import patch, MagicMock
+from mock import MagicMock, patch
+from urllib3.exceptions import HTTPError
+
 from revproxy.response import HOP_BY_HOP_HEADERS
 from revproxy.views import ProxyView
 
-from .utils import response_like_factory
+from .utils import get_urlopen_mock
+
+
+URLOPEN = 'urllib3.PoolManager.urlopen'
 
 
 class CustomProxyView(ProxyView):
@@ -24,41 +23,28 @@ class CustomProxyView(ProxyView):
 class ResponseTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.log = logging.getLogger('revproxy')
+        self.log.disabled = True
 
     def tearDown(self):
         CustomProxyView.upstream = "http://www.example.com"
         CustomProxyView.diazo_rules = None
+        self.log.disabled = False
 
     def test_broken_response(self):
         request = self.factory.get('/')
 
-        error = HTTPError(CustomProxyView.upstream, 500, 'Internal Error',
-                          {}, BytesIO(b'Testing'))
-        urllib2_mock = MagicMock(side_effect=error)
-
-        urllib2_patch = patch(
-            'revproxy.views.urlopen',
-            new=urllib2_mock,
-        )
-
-        with urllib2_patch:
-            response = CustomProxyView.as_view()(request, '/')
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.content, b'Testing')
+        urlopen_mock = MagicMock(side_effect=HTTPError())
+        with patch(URLOPEN, urlopen_mock), self.assertRaises(HTTPError):
+            CustomProxyView.as_view()(request, '/')
 
     def test_location_replaces_request_host(self):
         headers = {'Location': 'http://www.example.com'}
         path = "/path"
         request = self.factory.get(path)
 
-        get_proxy_response = response_like_factory(request, headers, 200)
-
-        urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=get_proxy_response
-        )
-        with urllib2_urlopen_patcher:
+        urlopen_mock = get_urlopen_mock(headers=headers)
+        with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 
         location = "http://" + request.get_host()
@@ -78,14 +64,8 @@ class ResponseTest(TestCase):
             }                               # https over http
         )
 
-        get_proxy_response = response_like_factory(request, headers, 200)
-
-        urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=get_proxy_response
-        )
-
-        with urllib2_urlopen_patcher:
+        urlopen_mock = get_urlopen_mock(headers=headers)
+        with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 
         location = "https://" + request.get_host()
@@ -94,14 +74,14 @@ class ResponseTest(TestCase):
     def test_response_headers_are_not_in_hop_by_hop_headers(self):
         path = "/"
         request = self.factory.get(path)
-        get_proxy_response = response_like_factory(request, {}, 200)
+        headers = {
+            'connection': '0',
+            'proxy-authorization': 'allow',
+            'content-type': 'text/html',
+        }
 
-        urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=get_proxy_response
-        )
-
-        with urllib2_urlopen_patcher:
+        urlopen_mock = get_urlopen_mock(headers=headers)
+        with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 
         response_headers = response._headers
@@ -112,35 +92,25 @@ class ResponseTest(TestCase):
     def test_response_code_remains_the_same(self):
         path = "/"
         request = self.factory.get(path)
-        retcode = 300
-        get_proxy_response = response_like_factory(request, {}, retcode)
+        status = 300
 
-        urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=get_proxy_response
-        )
-
-        with urllib2_urlopen_patcher:
+        urlopen_mock = get_urlopen_mock(status=status)
+        with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 
-        self.assertEqual(response.status_code, retcode)
+        self.assertEqual(response.status_code, status)
 
     def test_response_content_remains_the_same(self):
         path = "/"
         request = self.factory.get(path)
-        retcode = 300
-        get_proxy_response = response_like_factory(request, {}, retcode)
+        status = 300
 
-        urllib2_urlopen_patcher = patch(
-            'revproxy.views.urlopen',
-            new=get_proxy_response
-        )
-
-        with urllib2_urlopen_patcher:
+        content = u'áéíóú'.encode('utf-8')
+        urlopen_mock = get_urlopen_mock(content, status=status)
+        with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
-
-        response_content = response.content
 
         # had to prefix it with 'b' because Python 3 treats str and byte
         # differently
-        self.assertEqual(b'Fake file', response_content)
+        self.assertEqual(b'\xc3\xa1\xc3\xa9\xc3\xad\xc3\xb3\xc3\xba',
+                         response.content)

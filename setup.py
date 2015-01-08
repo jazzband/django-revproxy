@@ -15,7 +15,10 @@ setup(
     version='0.3.1',
     long_description=read('README.rst'),
     packages=['revproxy'],
-    tests_require=['mock', 'diazo'],
+    install_requires=[
+        'urllib3>=1.8',
+    ],
+    tests_require=['mock', 'diazo',],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
