@@ -13,6 +13,7 @@ else:
     has_diazo = True
     from lxml import etree
 
+from .utils import get_charset
 
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
@@ -100,8 +101,9 @@ class DiazoTransformer(object):
 
         transform = etree.XSLT(output_xslt)
 
-        content = self.response.unicode_content or self.response.content
-        content_doc = etree.fromstring(content, parser=etree.HTMLParser())
+        charset = get_charset(self.response.get('Content-Type'))
+        content_doc = etree.fromstring(self.response.content.decode(charset),
+                                       parser=etree.HTMLParser())
 
         self.response.content = transform(content_doc)
 
