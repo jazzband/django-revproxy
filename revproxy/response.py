@@ -1,3 +1,5 @@
+from .utils import cookie_from_string
+
 from django.http import HttpResponse
 
 HOP_BY_HOP_HEADERS = (
@@ -20,3 +22,7 @@ class HttpProxyResponse(HttpResponse):
         for header, value in headers.items():
             if header.lower() not in HOP_BY_HOP_HEADERS:
                 self[header.title()] = value
+
+        for cookie_string in proxy_response.headers.getlist('set-cookie'):
+            cookie_dict = cookie_from_string(cookie_string)
+            self.set_cookie(**cookie_dict)
