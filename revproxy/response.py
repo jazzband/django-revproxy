@@ -21,9 +21,15 @@ class HttpProxyResponse(HttpResponse):
 
         for header, value in headers.items():
             if header.lower() not in HOP_BY_HOP_HEADERS:
-                if header.lower() not in 'set-cookie'
+                if header.lower() not in 'set-cookie':
                     self[header.title()] = value
 
-        for cookie_string in proxy_response.headers.getlist('set-cookie'):
+        orig_response = proxy_response._original_response
+        cookies = orig_response.msg.getheaders('set-cookie')
+        for cookie_string in cookies:
+            # Ideal if pullrequest is accept:
+            # set_cookie_header = proxy_response.headers.getlist('set-cookie')
+            # for cookie_string in set_cookie_header:
             cookie_dict = cookie_from_string(cookie_string)
-            self.set_cookie(**cookie_dict)
+            if cookie_dict:  # if cookie is invalid cookie_dict will be None
+                self.set_cookie(**cookie_dict)
