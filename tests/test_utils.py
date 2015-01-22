@@ -61,8 +61,6 @@ class UtilsTest(TestCase):
         self.assertIn('',
                       utils.cookie_from_string(cookie)['value'])
 
-        cookie = "_cookie_session=;path=/"
-
     def test_invalid_cookie_from_string(self):
         cookie = "_cookie_session1234c12d4p312341243"
         self.assertIsNone(utils.cookie_from_string(cookie))
@@ -73,3 +71,23 @@ class UtilsTest(TestCase):
         cookie = "_cookie_session:123s234c1234d12"
         self.assertIsNone(utils.cookie_from_string(cookie))
 
+    def test_invalid_attr_cookie_from_string(self):
+        cookie = "_cookie=2j3d4k35f466l7fj9;path=/;None;"
+
+        self.assertNotIn('None', utils.cookie_from_string(cookie))
+
+        self.assertIn('value', utils.cookie_from_string(cookie))
+        self.assertIn('2j3d4k35f466l7fj9',
+                      utils.cookie_from_string(cookie)['value'])
+
+        self.assertIn('key', utils.cookie_from_string(cookie))
+        self.assertIn('_cookie',
+                      utils.cookie_from_string(cookie)['key'])
+
+        self.assertIn('path', utils.cookie_from_string(cookie))
+        self.assertIn('/', utils.cookie_from_string(cookie)['path'])
+
+    def test_ignore_comment_cookie_from_string(self):
+        cookie = "_cookie=k2j3l;path=/;comment=this is a new comment;secure"
+
+        self.assertNotIn('comment', utils.cookie_from_string(cookie))
