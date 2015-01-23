@@ -55,3 +55,59 @@ def encode_items(items):
         for value in values:
             encoded.append((key.encode('utf-8'), value.encode('utf-8')))
     return encoded
+
+import logging
+
+logger = logging.getLogger('revproxy.cookies')
+
+
+def cookie_from_string(cookie_string):
+    """Parser for HTTP header set-cookie
+    The return from this function will be used as parameters for
+    django's response.set_cookie method. Because set_cookie doesn't
+    have parameter comment, this cookie attribute will be ignored.
+
+    """
+
+    valid_attrs = ('path', 'domain', 'comment', 'expires',
+                   'max_age', 'httponly', 'secure')
+
+    cookie_dict = {}
+
+    cookie_parts = cookie_string.split(';')
+    try:
+        cookie_dict['key'], cookie_dict['value'] = cookie_parts[0].split('=')
+    except ValueError:
+        logger.warning('Invalid cookie: `%s`', cookie_string)
+        return None
+
+    for part in cookie_parts[1:]:
+        if '=' in part:
+            try:
+                attr, value = part.split('=')
+            except ValueError:
+                logger.warning('Invalid cookie attribute: `%s`', part)
+                continue
+
+            value = value.strip()
+        else:
+            attr = part
+            value = ''
+
+        attr = attr.strip().lower()
+        if not attr:
+            continue
+
+        if attr in valid_attrs:
+            if attr in ('httponly', 'secure'):
+                cookie_dict[attr] = True
+            elif attr in 'comment':
+                # ignoring comment attr as explained in the
+                #   function docstring
+                continue
+            else:
+                cookie_dict[attr] = value
+        else:
+            logger.warning('Unknown cookie attribute %s', attr)
+
+    return cookie_dict
