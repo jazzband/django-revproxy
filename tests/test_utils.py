@@ -11,6 +11,11 @@ class UtilsTest(TestCase):
         charset = utils.get_charset(content_type)
         self.assertEqual(charset, 'utf-8')
 
+    def test_get_default_charset(self):
+        content_type=''
+        charset= utils.get_charset(content_type)
+        self.assertEqual('latin-1',charset) 
+
     def test_required_header(self):
         self.assertTrue(utils.required_header('HTTP_REMOTE_USER'))
 
@@ -89,5 +94,8 @@ class UtilsTest(TestCase):
 
     def test_ignore_comment_cookie_from_string(self):
         cookie = "_cookie=k2j3l;path=/;comment=this is a new comment;secure"
-
         self.assertNotIn('comment', utils.cookie_from_string(cookie))
+
+    def test_value_exeption_cookie_from_string(self):
+        cookie = "_cookie=k2j3l;path=/,comment=teste;httponly"
+        self.assertIsNotNone(utils.cookie_from_string(cookie))
