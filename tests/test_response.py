@@ -114,3 +114,39 @@ class ResponseTest(TestCase):
         # differently
         self.assertEqual(b'\xc3\xa1\xc3\xa9\xc3\xad\xc3\xb3\xc3\xba',
                          response.content)
+
+    def test_cookie_is_not_in_response_headers(self):
+        path = "/"
+        request = self.factory.get(path)
+        headers = {
+            'connection': '0',
+            'proxy-authorization': 'allow',
+            'content-type': 'text/html',
+            'set-cookie':   '_cookie=9as8sd32fg48gh2j4k7o3;path=/'
+        }
+
+        urlopen_mock = get_urlopen_mock(headers=headers)
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, path)
+
+        response_headers = response._headers
+        self.assertNotIn('set-cookie', response_headers)
+
+    def test_set_cookie_is_used_by_httpproxy_response(self):
+        path = "/"
+        request = self.factory.get(path)
+        headers = {
+            'connection': '0',
+            'proxy-authorization': 'allow',
+            'content-type': 'text/html'
+        }
+        cookie = set({
+                     "_cookie1=l4hs3kdf2jsh2324",
+                     "_cookie2=l2lk5sj3df22sk3j4"})
+
+        urlopen_mock = get_urlopen_mock(headers=headers, cookie=cookie)
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, path)
+
+        self.assertIn("_cookie1", response.cookies.keys())
+        self.assertIn("_cookie2", response.cookies.keys())
