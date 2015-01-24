@@ -19,7 +19,7 @@ HTML_CONTENT_TYPES = (
     'application/xhtml+xml'
 )
 
-MIN_STREAMING_LENGTH = 128 * 1024  # 128KB
+MIN_STREAMING_LENGTH = 4 * 1024  # 4KB
 
 
 _get_charset_re = re.compile(r';\s*charset=(?P<charset>[^\s;]+)', re.I)
@@ -39,7 +39,11 @@ def should_stream(proxy_response):
     if is_html_content_type(content_type):
         return False
 
-    content_length = proxy_response.headers.get('Content-Length')
+    try:
+        content_length = int(proxy_response.headers.get('Content-Length', 0))
+    except ValueError:
+        content_length = 0
+
     if not content_length or content_length > MIN_STREAMING_LENGTH:
         return True
 
