@@ -105,8 +105,9 @@ class ResponseTest(TestCase):
         request = self.factory.get(path)
         status = 300
 
-        content = u'áéíóú'.encode('utf-8')
-        urlopen_mock = get_urlopen_mock(content, status=status)
+        content = u'áéíóú'
+        headers = {'Content-Type': 'text/html'}
+        urlopen_mock = get_urlopen_mock(content, headers, status)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 

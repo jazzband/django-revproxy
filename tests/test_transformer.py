@@ -28,7 +28,7 @@ class TransformerTest(TestCase):
     def test_disable_request_header(self):
         request = self.factory.get('/', HTTP_X_DIAZO_OFF='true')
         headers = {'Content-Type': 'text/html'}
-        urlopen_mock = get_urlopen_mock()
+        urlopen_mock = get_urlopen_mock(headers=headers)
 
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
@@ -61,25 +61,34 @@ class TransformerTest(TestCase):
         urlopen_mock = get_urlopen_mock(headers=headers)
 
         with patch(URLOPEN, urlopen_mock), self.assertRaises(ValueError):
-            response = CustomProxyView.as_view()(request, '/')
+            CustomProxyView.as_view()(request, '/')
 
     def test_ajax_request(self):
         request = self.factory.get('/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        headers = {'Content-Type': 'text/html'}
 
-        urlopen_mock = get_urlopen_mock()
+        urlopen_mock = get_urlopen_mock(headers=headers)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
         self.assertEqual(response.content, b'Mock')
 
     def test_response_streaming(self):
-        # TODO: We actually don't support stream proxy so far
-        pass
+        request = self.factory.get('/')
+        urlopen_mock = get_urlopen_mock()
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        content = b''.join(response.streaming_content)
+        self.assertEqual(content, b'Mock')
+
 
     def test_no_content_type(self):
         request = self.factory.get('/')
+        headers = {'Content-Length': '1'}
 
-        urlopen_mock = get_urlopen_mock()
+        urlopen_mock = get_urlopen_mock(headers=headers)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
@@ -87,7 +96,8 @@ class TransformerTest(TestCase):
 
     def test_unsupported_content_type(self):
         request = self.factory.get('/')
-        headers = {'Content-Type': 'application/pdf'}
+        headers = {'Content-Type': 'application/pdf',
+                   'Content-Length': '1'}
 
         urlopen_mock = get_urlopen_mock(headers=headers)
         with patch(URLOPEN, urlopen_mock):
@@ -99,19 +109,6 @@ class TransformerTest(TestCase):
         request = self.factory.get('/')
         headers = {
             'Content-Encoding': 'zip',
-            'Content-Type': 'text/html',
-        }
-
-        urlopen_mock = get_urlopen_mock(headers=headers)
-        with patch(URLOPEN, urlopen_mock):
-            response = CustomProxyView.as_view()(request, '/')
-
-        self.assertEqual(response.content, b'Mock')
-
-    def test_unsupported_content_encoding_deflate(self):
-        request = self.factory.get('/')
-        headers = {
-            'Content-Encoding': 'deflate',
             'Content-Type': 'text/html',
         }
 
@@ -158,7 +155,7 @@ class TransformerTest(TestCase):
         request = self.factory.get('/')
         headers = {'Content-Type': 'text/html'}
 
-        urlopen_mock = get_urlopen_mock(b'', headers, 200)
+        urlopen_mock = get_urlopen_mock(u'', headers, 200)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
@@ -166,7 +163,7 @@ class TransformerTest(TestCase):
 
     def test_transform(self):
         request = self.factory.get('/')
-        content = b'<div class="test-transform">testing</div>'
+        content = u'<div class="test-transform">testing</div>'
         headers = {'Content-Type': 'text/html'}
 
         urlopen_mock = get_urlopen_mock(content, headers)
@@ -179,7 +176,7 @@ class TransformerTest(TestCase):
 
     def test_html5_transform(self):
         request = self.factory.get('/')
-        content = b'test'
+        content = u'test'
         headers = {'Content-Type': 'text/html'}
 
         urlopen_mock = get_urlopen_mock(content, headers)
