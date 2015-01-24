@@ -69,7 +69,7 @@ class DiazoTransformer(object):
             return False
 
         content_encoding = self.response.get('Content-Encoding')
-        if content_encoding in ('zip', 'deflate', 'compress',):
+        if content_encoding in ('zip', 'compress'):
             return False
 
         status_code = str(self.response.status_code)
