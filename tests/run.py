@@ -16,11 +16,7 @@ from django.core.management import call_command
 def runtests():
     if django.VERSION >= (1, 7, 0):
         django.setup()
-        call_command('migrate', interactive=False)
-    else:
-        call_command('syncdb', interactive=False)
 
-    call_command('flush', interactive=False)
     test_runner = get_runner(settings)
     failures = test_runner(interactive=False, failfast=False).run_tests([])
     sys.exit(failures)
