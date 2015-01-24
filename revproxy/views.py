@@ -88,6 +88,7 @@ class ProxyView(View):
                                                redirect=False,
                                                headers=request_headers,
                                                body=request_payload,
+                                               decode_content=False,
                                                preload_content=False)
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
