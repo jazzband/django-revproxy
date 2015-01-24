@@ -14,8 +14,29 @@ IGNORE_HEADERS = (
 #   See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7.1
 DEFAULT_CHARSET = 'latin-1'
 
+NO_STREAMING_CONTENT_TYPES = (
+    'text/html',
+    'application/xhtml+xml'
+)
+
+MIN_STREAMING_LENGTH = 128 * 1024  # 128KB
+
 
 _get_charset_re = re.compile(r';\s*charset=(?P<charset>[^\s;]+)', re.I)
+
+
+def should_stream(proxy_response):
+    content_type = proxy_response.headers.get('Content-Type')
+
+    for no_streaming_content_type in NO_STREAMING_CONTENT_TYPES:
+        if content_type.startswith(no_streaming_content_type):
+            return False
+
+    content_length = proxy_response.headers.get('Content-Length')
+    if not content_length or content_length > MIN_STREAMING_LENGTH:
+        return True
+
+    return False
 
 
 def get_charset(content_type):

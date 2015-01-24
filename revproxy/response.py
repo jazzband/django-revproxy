@@ -1,6 +1,6 @@
-from .utils import cookie_from_string
+from .utils import cookie_from_string, should_stream
 
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 
 HOP_BY_HOP_HEADERS = (
     'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
@@ -9,36 +9,41 @@ HOP_BY_HOP_HEADERS = (
 IGNORE_HEADERS = HOP_BY_HOP_HEADERS + ('set-cookie', )
 
 
-class HttpProxyResponse(HttpResponse):
+def get_django_response(proxy_response):
+    status = proxy_response.status
+    headers = proxy_response.headers
 
-    def __init__(self, proxy_response, *args, **kwargs):
+    content_type = headers.get('Content-Type')
+
+    if should_stream(proxy_response):
+        response = StreamingHttpResponse(proxy_response.stream(),
+                                         status=status,
+                                         content_type=content_type)
+    else:
         content = proxy_response.data or b''
-        headers = proxy_response.headers
-        status = proxy_response.status
+        response = HttpResponse(content, status=status,
+                                content_type=content_type)
 
-        content_type = headers.get('Content-Type')
-        super(HttpProxyResponse, self).__init__(content, status=status,
-                                                content_type=content_type,
-                                                *args, **kwargs)
+    for header, value in headers.items():
+        if header.lower() not in IGNORE_HEADERS:
+            response[header.title()] = value
 
-        for header, value in headers.items():
-            if header.lower() not in IGNORE_HEADERS:
-                self[header.title()] = value
+    orig_response = proxy_response._original_response
+    if orig_response:
+        # Ideally we should use:
 
-        orig_response = proxy_response._original_response
-        if orig_response:
-            # Ideally we should use:
+        # orig_headers = proxy_response.headers
+        # set_cookie_header = orig_headers.getlist('set-cookie')
+        # for cookie_string in set_cookie_header:
 
-            # orig_headers = proxy_response.headers
-            # set_cookie_header = orig_headers.getlist('set-cookie')
-            # for cookie_string in set_cookie_header:
+        # the code above depends on that PR:
+        #   https://github.com/shazow/urllib3/pull/534
 
-            # the code above depends on that PR:
-            #   https://github.com/shazow/urllib3/pull/534
+        cookies = orig_response.msg.getheaders('set-cookie')
+        for cookie_string in cookies:
+            cookie_dict = cookie_from_string(cookie_string)
+            # if cookie is invalid cookie_dict will be None
+            if cookie_dict:
+                response.set_cookie(**cookie_dict)
 
-            cookies = orig_response.msg.getheaders('set-cookie')
-            for cookie_string in cookies:
-                cookie_dict = cookie_from_string(cookie_string)
-                # if cookie is invalid cookie_dict will be None
-                if cookie_dict:
-                    self.set_cookie(**cookie_dict)
+    return response

@@ -64,13 +64,6 @@ class DiazoTransformer(object):
         if self.response.streaming:
             return False
 
-        content_type = self.response.get('Content-Type')
-        if not content_type or not (
-            content_type.lower().startswith('text/html') or
-            content_type.lower().startswith('application/xhtml+xml')
-        ):
-            return False
-
         content_encoding = self.response.get('Content-Encoding')
         if content_encoding in ('zip', 'deflate', 'compress',):
             return False
