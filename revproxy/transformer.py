@@ -13,7 +13,7 @@ else:
     has_diazo = True
     from lxml import etree
 
-from .utils import get_charset
+from .utils import get_charset, is_html_content_type
 
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
@@ -62,6 +62,10 @@ class DiazoTransformer(object):
 
         # We actually don't support stream proxy so far
         if self.response.streaming:
+            return False
+
+        content_type = self.response.get('Content-Type')
+        if not is_html_content_type(content_type):
             return False
 
         content_encoding = self.response.get('Content-Encoding')
