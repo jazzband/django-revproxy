@@ -29,7 +29,10 @@ lib64
 # Installer logs
 pip-log.txt
 
-# Unit test / coverage reports
+# Tests / coverage reports
+tests/test.db
+test.db
+test.log
 .coverage
 .tox
 nosetests.xml
