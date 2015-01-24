@@ -35,3 +35,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
+
+LOGGING = {
+    'version': 1,
+
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+    },
+
+    'loggers': {
+        'revproxy': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+    },
+}
