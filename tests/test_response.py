@@ -9,7 +9,7 @@ from urllib3.exceptions import HTTPError
 from revproxy.response import HOP_BY_HOP_HEADERS
 from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock
+from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
 
 
 URLOPEN = 'urllib3.PoolManager.urlopen'
@@ -105,16 +105,14 @@ class ResponseTest(TestCase):
         request = self.factory.get(path)
         status = 300
 
-        content = u'áéíóú'
         headers = {'Content-Type': 'text/html'}
-        urlopen_mock = get_urlopen_mock(content, headers, status)
+        urlopen_mock = get_urlopen_mock(DEFAULT_BODY_CONTENT, headers, status)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 
         # had to prefix it with 'b' because Python 3 treats str and byte
         # differently
-        self.assertEqual(b'\xc3\xa1\xc3\xa9\xc3\xad\xc3\xb3\xc3\xba',
-                         response.content)
+        self.assertEqual(DEFAULT_BODY_CONTENT, response.content)
 
     def test_cookie_is_not_in_response_headers(self):
         path = "/"

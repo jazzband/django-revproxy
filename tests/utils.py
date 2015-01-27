@@ -1,16 +1,20 @@
+# -*- coding: utf-8 -*-
 
 import urllib3
 
-from io import StringIO
+from io import BytesIO
 
 from mock import MagicMock, Mock
 
+DEFAULT_BODY_CONTENT = u'áéíóú'.encode('utf-8')
 
-def get_urlopen_mock(body=u'Mock', headers=dict(), status=200, cookie=set()):
+
+def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
+                     status=200, cookie=set()):
     mockHttpResponse = Mock(name='httplib.HTTPResponse')
     mockHttpResponse.msg.getheaders.return_value = cookie
 
-    urllib3_response = urllib3.HTTPResponse(StringIO(body),
+    urllib3_response = urllib3.HTTPResponse(BytesIO(body),
                                             headers,
                                             status,
                                             preload_content=False,

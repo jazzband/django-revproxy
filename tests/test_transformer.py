@@ -5,7 +5,7 @@ from django.test import RequestFactory, TestCase
 
 from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock
+from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
 
 
 URLOPEN = 'urllib3.PoolManager.urlopen'
@@ -33,7 +33,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_disable_response_header(self):
         request = self.factory.get('/')
@@ -43,7 +43,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_x_diazo_off_false_on_response(self):
         request = self.factory.get('/')
@@ -53,7 +53,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertNotIn(response.content, b'Mock')
+        self.assertNotIn(response.content, DEFAULT_BODY_CONTENT)
 
     def test_x_diazo_off_invalid(self):
         request = self.factory.get('/')
@@ -71,7 +71,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_response_streaming(self):
         request = self.factory.get('/')
@@ -81,7 +81,7 @@ class TransformerTest(TestCase):
             response = CustomProxyView.as_view()(request, '/')
 
         content = b''.join(response.streaming_content)
-        self.assertEqual(content, b'Mock')
+        self.assertEqual(content, DEFAULT_BODY_CONTENT)
 
 
     def test_no_content_type(self):
@@ -92,7 +92,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_unsupported_content_type(self):
         request = self.factory.get('/')
@@ -103,7 +103,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_unsupported_content_encoding_zip(self):
         request = self.factory.get('/')
@@ -116,7 +116,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_unsupported_content_encoding_compress(self):
         request = self.factory.get('/')
@@ -129,7 +129,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_server_redirection_status(self):
         request = self.factory.get('/')
@@ -139,7 +139,7 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_no_content_status(self):
         request = self.factory.get('/')
@@ -149,13 +149,13 @@ class TransformerTest(TestCase):
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
-        self.assertEqual(response.content, b'Mock')
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_response_length_zero(self):
         request = self.factory.get('/')
         headers = {'Content-Type': 'text/html'}
 
-        urlopen_mock = get_urlopen_mock(u'', headers, 200)
+        urlopen_mock = get_urlopen_mock(u''.encode('utf-8'), headers, 200)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
@@ -163,7 +163,7 @@ class TransformerTest(TestCase):
 
     def test_transform(self):
         request = self.factory.get('/')
-        content = u'<div class="test-transform">testing</div>'
+        content = u'<div class="test-transform">testing</div>'.encode('utf-8')
         headers = {'Content-Type': 'text/html'}
 
         urlopen_mock = get_urlopen_mock(content, headers)
@@ -176,7 +176,7 @@ class TransformerTest(TestCase):
 
     def test_html5_transform(self):
         request = self.factory.get('/')
-        content = u'test'
+        content = u'test'.encode('utf-8')
         headers = {'Content-Type': 'text/html'}
 
         urlopen_mock = get_urlopen_mock(content, headers)
