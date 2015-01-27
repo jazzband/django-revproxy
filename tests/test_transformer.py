@@ -1,4 +1,6 @@
 
+import codecs
+
 from mock import patch
 
 from django.test import RequestFactory, TestCase
@@ -83,6 +85,22 @@ class TransformerTest(TestCase):
         content = b''.join(response.streaming_content)
         self.assertEqual(content, DEFAULT_BODY_CONTENT)
 
+    def test_response_reading_of_file_stream(self):
+        request = self.factory.get('/')
+        file_stream = codecs.open("./tests/test_files/file_1",encoding='utf-8')
+        original_content = file_stream.read().encode('utf-8')
+
+        file_stream.seek(0) # returns pointer to begin of file
+        urlopen_mock = get_urlopen_mock(file_stream)
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        content = b''.join(response.streaming_content)
+
+        self.assertEqual(original_content, content)
+
+        file_stream.close()
 
     def test_no_content_type(self):
         request = self.factory.get('/')

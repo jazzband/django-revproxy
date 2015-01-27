@@ -14,7 +14,10 @@ def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
     mockHttpResponse = Mock(name='httplib.HTTPResponse')
     mockHttpResponse.msg.getheaders.return_value = cookie
 
-    urllib3_response = urllib3.HTTPResponse(BytesIO(body),
+    if not hasattr(body,'read'): 
+        body = BytesIO(body)
+
+    urllib3_response = urllib3.HTTPResponse(body,
                                             headers,
                                             status,
                                             preload_content=False,

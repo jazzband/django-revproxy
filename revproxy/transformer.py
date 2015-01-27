@@ -60,7 +60,6 @@ class DiazoTransformer(object):
         if self.request.is_ajax():
             return False
 
-        # We actually don't support stream proxy so far
         if self.response.streaming:
             return False
 
