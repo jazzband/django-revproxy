@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 
 import codecs
 
-from mock import patch
+from mock import mock_open, patch
 
 from django.test import RequestFactory, TestCase
 
@@ -11,6 +12,10 @@ from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
 
 
 URLOPEN = 'urllib3.PoolManager.urlopen'
+FILE_CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
+˜!@#$%ˆ&*()_+QWTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?
+`¡™£¢∞§¶•ªº–≠œ∑´®†\“‘«åß∂ƒ©˙∆˚¬…æΩ≈ç√∫˜µ≤≥÷
+áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜãõÃÕçÇ"""
 
 
 class CustomProxyView(ProxyView):
@@ -87,10 +92,11 @@ class TransformerTest(TestCase):
 
     def test_response_reading_of_file_stream(self):
         request = self.factory.get('/')
-        file_stream = codecs.open("./tests/test_files/file_1",encoding='utf-8')
+        file_stream = codecs.open("./tests/test_files/file_1",
+                                  encoding='utf-8')
         original_content = file_stream.read().encode('utf-8')
 
-        file_stream.seek(0) # returns pointer to begin of file
+        file_stream.seek(0)  # returns pointer to begin of file
         urlopen_mock = get_urlopen_mock(file_stream)
 
         with patch(URLOPEN, urlopen_mock):
@@ -101,6 +107,26 @@ class TransformerTest(TestCase):
         self.assertEqual(original_content, content)
 
         file_stream.close()
+
+    def test_response_reading_file_size(self):
+        request = self.factory.get('/')
+
+        real_file = codecs.open('./tests/test_files/file_1', encoding='utf-8')
+
+        with patch('codecs.open', mock_open(read_data=FILE_CONTENT)) as m:
+            with codecs.open('test_file', encoding='utf-8') as h:
+                file_content = h.read()
+            
+        urlopen_mock = get_urlopen_mock(real_file)
+        print
+        print 'MOCK'
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        content = b''.join(response.streaming_content)
+        print content
+        print 'MOCK'
 
     def test_no_content_type(self):
         request = self.factory.get('/')
