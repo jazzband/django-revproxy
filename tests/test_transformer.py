@@ -117,15 +117,14 @@ class TransformerTest(TestCase):
             with codecs.open('test_file', encoding='utf-8') as h:
                 file_content = h.read()
             
-        urlopen_mock = get_urlopen_mock(real_file)
         print
         print 'MOCK'
+        urlopen_mock = get_urlopen_mock(h)
 
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
         content = b''.join(response.streaming_content)
-        print content
         print 'MOCK'
 
     def test_no_content_type(self):
