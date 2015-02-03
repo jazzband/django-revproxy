@@ -12,9 +12,9 @@ class UtilsTest(TestCase):
         self.assertEqual(charset, 'utf-8')
 
     def test_get_default_charset(self):
-        content_type=''
-        charset= utils.get_charset(content_type)
-        self.assertEqual('latin-1',charset) 
+        content_type = ''
+        charset = utils.get_charset(content_type)
+        self.assertEqual('latin-1', charset)
 
     def test_required_header(self):
         self.assertTrue(utils.required_header('HTTP_REMOTE_USER'))
@@ -24,6 +24,16 @@ class UtilsTest(TestCase):
 
     def test_ignore_accept_encoding_header(self):
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
+
+    def test_is_html_content_type(self):
+        self.assertEqual(True, utils.is_html_content_type("text/html"))
+        self.assertEqual(True,
+                         utils.is_html_content_type('application/xhtml+xml'))
+
+    def test_is_not_html_content_type(self):
+        self.assertEqual(False, utils.is_html_content_type("html/text"))
+        self.assertEqual(False,
+                         utils.is_html_content_type('xhtml+xml/application'))
 
     def test_get_dict_in_cookie_from_string(self):
         cookie = "_cookie_session = 1266bb13c139cfba3ed1c9c68110bae9;" \
