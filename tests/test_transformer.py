@@ -10,10 +10,8 @@ from django.test import RequestFactory, TestCase
 
 from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT, MockFile
+from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT, MockFile, URLOPEN
 
-
-URLOPEN = 'urllib3.PoolManager.urlopen'
 
 CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
 ˜!@#$%ˆ&*()_+QWTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?

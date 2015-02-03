@@ -6,7 +6,15 @@ from io import BytesIO
 
 from mock import MagicMock, Mock
 
+from revproxy.views import ProxyView
+
 DEFAULT_BODY_CONTENT = u'áéíóú'.encode('utf-8')
+URLOPEN = 'urllib3.PoolManager.urlopen'
+
+
+class CustomProxyView(ProxyView):
+    upstream = "http://www.example.com"
+    diazo_rules = None
 
 
 def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),

@@ -7,17 +7,9 @@ from mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
 
 from revproxy.response import HOP_BY_HOP_HEADERS
-from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
-
-
-URLOPEN = 'urllib3.PoolManager.urlopen'
-
-
-class CustomProxyView(ProxyView):
-    upstream = "http://www.example.com"
-    diazo_rules = None
+from .utils import (get_urlopen_mock, DEFAULT_BODY_CONTENT,
+                    CustomProxyView, URLOPEN)
 
 
 class ResponseTest(TestCase):
