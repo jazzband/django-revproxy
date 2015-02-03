@@ -14,15 +14,10 @@ def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
     mockHttpResponse = Mock(name='httplib.HTTPResponse')
     mockHttpResponse.msg.getheaders.return_value = cookie
 
-    print body
-
-    if not hasattr(body,'read'): 
-        print 'IF'
+    if not hasattr(body, 'read'):
         body = BytesIO(body)
 
     else:
-        print 'ELSE'
-        print body.read()
         body.seek(0)
 
     urllib3_response = urllib3.HTTPResponse(body,
@@ -32,3 +27,23 @@ def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
                                             original_response=mockHttpResponse)
 
     return MagicMock(return_value=urllib3_response)
+
+
+class MockFile():
+
+    def __init__(self, content):
+        self.content = content
+        self.mock_file = BytesIO(content)
+        self.mock_read_size = 4
+
+    def closed(self):
+        return self.mock_file.closed
+
+    def close(self):
+        self.mock_file.close()
+
+    def read(self, size=-1):
+        return self.mock_file.read(self.mock_read_size)
+
+    def seek(self, size):
+        return self.mock_file.seek(size)

@@ -8,7 +8,7 @@ HOP_BY_HOP_HEADERS = (
 
 IGNORE_HEADERS = HOP_BY_HOP_HEADERS + ('set-cookie', )
 
-DEFAULT_AMT = 2 ** 16
+DEFAULT_AMT = 2 ** 16  # 65536 bytes
 
 
 def get_django_response(proxy_response):

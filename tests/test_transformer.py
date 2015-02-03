@@ -1,21 +1,29 @@
 # -*- coding: utf-8 -*-
 
+from sys import version_info
+
 import codecs
 
-from mock import mock_open, patch
+from mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
 
 from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
+from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT, MockFile
 
 
 URLOPEN = 'urllib3.PoolManager.urlopen'
-FILE_CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
+
+CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
 ˜!@#$%ˆ&*()_+QWTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?
 `¡™£¢∞§¶•ªº–≠œ∑´®†\“‘«åß∂ƒ©˙∆˚¬…æΩ≈ç√∫˜µ≤≥÷
 áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜãõÃÕçÇ"""
+
+if version_info >= (3, 0, 0):
+    FILE_CONTENT = bytes(CONTENT, 'utf-8')
+else:
+    FILE_CONTENT = CONTENT
 
 
 class CustomProxyView(ProxyView):
@@ -96,7 +104,6 @@ class TransformerTest(TestCase):
                                   encoding='utf-8')
         original_content = file_stream.read().encode('utf-8')
 
-        file_stream.seek(0)  # returns pointer to begin of file
         urlopen_mock = get_urlopen_mock(file_stream)
 
         with patch(URLOPEN, urlopen_mock):
@@ -108,24 +115,32 @@ class TransformerTest(TestCase):
 
         file_stream.close()
 
-    def test_response_reading_file_size(self):
+    def test_num_reads_by_stream_on_a_file(self):
         request = self.factory.get('/')
 
-        real_file = codecs.open('./tests/test_files/file_1', encoding='utf-8')
+        # number of reads done by the stream.
+        # it must be said that the stream reads the file one last time before
+        # closing the file.For further information look at the file named
+        # response.py on library urlib3, method read.
+        NUM_READS = 69
 
-        with patch('codecs.open', mock_open(read_data=FILE_CONTENT)) as m:
-            with codecs.open('test_file', encoding='utf-8') as h:
-                file_content = h.read()
-            
-        print
-        print 'MOCK'
-        urlopen_mock = get_urlopen_mock(h)
+        test_file = MockFile(FILE_CONTENT)
+
+        mock_file = MagicMock()
+        type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
+        mock_file.read.side_effect = test_file.read
+        mock_file.close.side_effect = test_file.close
+        mock_file.seek.side_effect = test_file.seek
+
+        urlopen_mock = get_urlopen_mock(mock_file)
 
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
         content = b''.join(response.streaming_content)
-        print 'MOCK'
+        self.assertEqual(mock_file.read.call_count, NUM_READS)
+        self.assertEqual(FILE_CONTENT, content)
 
     def test_no_content_type(self):
         request = self.factory.get('/')
