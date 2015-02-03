@@ -10,6 +10,8 @@ from django.test import RequestFactory, TestCase
 
 from revproxy.views import ProxyView
 
+from revproxy.transformer import asbool
+
 from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT, MockFile, URLOPEN
 
 
@@ -240,3 +242,17 @@ class TransformerTest(TestCase):
             response = CustomProxyView.as_view(html5=True)(request, '/')
 
         self.assertIn(b'<!DOCTYPE html>', response.content)
+
+    def test_asbool(self):
+        test_true = ['true', 'yes', 'on', 'y', 't', '1']
+        for element in test_true:
+            self.assertEqual(True, asbool(element))
+
+        test_false = ['false', 'no', 'off', 'n', 'f', '0']
+        for element in test_false:
+            self.assertEqual(False, asbool(element))
+
+        self.assertEqual(True, asbool(1))
+        self.assertEqual(False, asbool(0))
+        with self.assertRaises(ValueError):
+            asbool('test')
