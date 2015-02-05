@@ -1,20 +1,25 @@
 
 from django.test import TestCase
 
+from mock import PropertyMock
+
 from revproxy import utils
+
+from .utils import get_urlopen_mock, CustomProxyView
+
+from django.test import RequestFactory
 
 
 class UtilsTest(TestCase):
-
     def test_get_charset(self):
         content_type = 'text/html; charset=utf-8'
         charset = utils.get_charset(content_type)
         self.assertEqual(charset, 'utf-8')
 
     def test_get_default_charset(self):
-        content_type=''
-        charset= utils.get_charset(content_type)
-        self.assertEqual('latin-1',charset) 
+        content_type = ''
+        charset = utils.get_charset(content_type)
+        self.assertEqual('latin-1', charset)
 
     def test_required_header(self):
         self.assertTrue(utils.required_header('HTTP_REMOTE_USER'))
@@ -24,6 +29,44 @@ class UtilsTest(TestCase):
 
     def test_ignore_accept_encoding_header(self):
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
+
+    def test_is_html_content_type(self):
+        self.assertEqual(True, utils.is_html_content_type("text/html"))
+        self.assertEqual(True,
+                         utils.is_html_content_type('application/xhtml+xml'))
+
+    def test_is_not_html_content_type(self):
+        self.assertEqual(False, utils.is_html_content_type("html/text"))
+        self.assertEqual(False,
+                         utils.is_html_content_type('application/pdf'))
+
+    def test_not_should_stream(self):
+        SMALLER_THAN_MIN_STREAMING_LENGTH = '5'
+        headers = {'Content-Type': 'text/html',
+                   'Content-Length': SMALLER_THAN_MIN_STREAMING_LENGTH}
+
+        urlopen_mock = get_urlopen_mock(headers=headers)
+
+        type(urlopen_mock).headers = PropertyMock(return_value=headers)
+        self.assertEqual(False, utils.should_stream(urlopen_mock))
+
+        headers['Content-Type'] = 'application/pdf'
+        type(urlopen_mock).headers = PropertyMock(return_value=headers)
+        self.assertEqual(False, utils.should_stream(urlopen_mock))
+
+    def test_should_be_stream(self):
+        BIGGER_THAN_MIN_STREAMING_LENGTH = '5120'
+        headers = {'Content-Type': 'application/pdf',
+                   'Content-Length': 'asad'}
+
+        urlopen_mock = get_urlopen_mock(headers=headers)
+
+        type(urlopen_mock).headers = PropertyMock(return_value=headers)
+        self.assertEqual(True, utils.should_stream(urlopen_mock))
+
+        headers['Content-Length'] = BIGGER_THAN_MIN_STREAMING_LENGTH
+        type(urlopen_mock).headers = PropertyMock(return_value=headers)
+        self.assertEqual(True, utils.should_stream(urlopen_mock))
 
     def test_get_dict_in_cookie_from_string(self):
         cookie = "_cookie_session = 1266bb13c139cfba3ed1c9c68110bae9;" \

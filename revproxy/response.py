@@ -8,6 +8,8 @@ HOP_BY_HOP_HEADERS = (
 
 IGNORE_HEADERS = HOP_BY_HOP_HEADERS + ('set-cookie', )
 
+DEFAULT_AMT = 2 ** 16  # 65536 bytes
+
 
 def get_django_response(proxy_response):
     status = proxy_response.status
@@ -16,7 +18,7 @@ def get_django_response(proxy_response):
     content_type = headers.get('Content-Type')
 
     if should_stream(proxy_response):
-        response = StreamingHttpResponse(proxy_response.stream(),
+        response = StreamingHttpResponse(proxy_response.stream(DEFAULT_AMT),
                                          status=status,
                                          content_type=content_type)
     else:

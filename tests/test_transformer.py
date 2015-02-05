@@ -1,14 +1,29 @@
+# -*- coding: utf-8 -*-
 
-from mock import patch
+from sys import version_info
+
+import codecs
+
+from mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
 
 from revproxy.views import ProxyView
 
-from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT
+from revproxy.transformer import asbool
+
+from .utils import get_urlopen_mock, DEFAULT_BODY_CONTENT, MockFile, URLOPEN
 
 
-URLOPEN = 'urllib3.PoolManager.urlopen'
+CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
+˜!@#$%ˆ&*()_+QWTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?
+`¡™£¢∞§¶•ªº–≠œ∑´®†\“‘«åß∂ƒ©˙∆˚¬…æΩ≈ç√∫˜µ≤≥÷
+áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜãõÃÕçÇ"""
+
+if version_info >= (3, 0, 0):
+    FILE_CONTENT = bytes(CONTENT, 'utf-8')
+else:
+    FILE_CONTENT = CONTENT
 
 
 class CustomProxyView(ProxyView):
@@ -83,6 +98,52 @@ class TransformerTest(TestCase):
         content = b''.join(response.streaming_content)
         self.assertEqual(content, DEFAULT_BODY_CONTENT)
 
+    def test_response_reading_of_file_stream(self):
+        request = self.factory.get('/')
+
+        test_file = MockFile(FILE_CONTENT)
+        mock_file = MagicMock()
+        type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
+        mock_file.read.side_effect = test_file.read
+        mock_file.close.side_effect = test_file.close
+        mock_file.seek.side_effect = test_file.seek
+
+        urlopen_mock = get_urlopen_mock(mock_file)
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        content = b''.join(response.streaming_content)
+
+        self.assertEqual(FILE_CONTENT, content)
+
+    def test_num_reads_by_stream_on_a_file(self):
+        request = self.factory.get('/')
+
+        # number of reads done by the stream.
+        # it must be said that the stream reads the file one last time before
+        # closing the file.For further information look at the file named
+        # response.py on library urlib3, method read.
+        NUM_READS = 69
+
+        test_file = MockFile(FILE_CONTENT)
+
+        mock_file = MagicMock()
+        type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
+        mock_file.read.side_effect = test_file.read
+        mock_file.close.side_effect = test_file.close
+        mock_file.seek.side_effect = test_file.seek
+
+        urlopen_mock = get_urlopen_mock(mock_file)
+
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, '/')
+
+        content = b''.join(response.streaming_content)
+        self.assertEqual(mock_file.read.call_count, NUM_READS)
+        self.assertEqual(FILE_CONTENT, content)
 
     def test_no_content_type(self):
         request = self.factory.get('/')
@@ -184,3 +245,17 @@ class TransformerTest(TestCase):
             response = CustomProxyView.as_view(html5=True)(request, '/')
 
         self.assertIn(b'<!DOCTYPE html>', response.content)
+
+    def test_asbool(self):
+        test_true = ['true', 'yes', 'on', 'y', 't', '1']
+        for element in test_true:
+            self.assertEqual(True, asbool(element))
+
+        test_false = ['false', 'no', 'off', 'n', 'f', '0']
+        for element in test_false:
+            self.assertEqual(False, asbool(element))
+
+        self.assertEqual(True, asbool(1))
+        self.assertEqual(False, asbool(0))
+        with self.assertRaises(ValueError):
+            asbool('test')

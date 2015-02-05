@@ -24,7 +24,7 @@ DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
 def asbool(value):
     try:  # pragma: no cover
         is_string = isinstance(value, basestring)
-    except NameError:  # Python 3
+    except NameError:  # pragma: no cover -  Python 3
         is_string = isinstance(value, str)
 
     if is_string:
@@ -60,7 +60,6 @@ class DiazoTransformer(object):
         if self.request.is_ajax():
             return False
 
-        # We actually don't support stream proxy so far
         if self.response.streaming:
             return False
 
@@ -116,8 +115,5 @@ class DiazoTransformer(object):
     def set_html5_doctype(self):
         doctype = b'<!DOCTYPE html>\n'
         content, subs = doctype_re.subn(doctype, self.response.content, 1)
-
-        if not subs:
-            self.response.content = doctype + self.response.content
 
         self.response.content = content
