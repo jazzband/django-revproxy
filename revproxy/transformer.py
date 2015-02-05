@@ -3,6 +3,7 @@ import re
 
 from io import BytesIO
 
+from six import string_types
 from django.template import loader, RequestContext
 
 try:
@@ -22,10 +23,7 @@ DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
 
 
 def asbool(value):
-    try:  # Python 2
-        is_string = isinstance(value, basestring)
-    except NameError:  # Python 3
-        is_string = isinstance(value, str)
+    is_string = isinstance(value, string_types)
 
     if is_string:
         value = value.strip().lower()

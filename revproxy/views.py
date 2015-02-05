@@ -8,11 +8,7 @@ import logging
 
 import urllib3
 
-if sys.version_info >= (3, 0, 0):  # Python 3
-    from urllib.parse import urljoin, urlparse, urlencode, quote
-else:  # Python 2
-    from urllib import urlencode, quote
-    from urlparse import urljoin, urlparse
+from six.moves.urllib.parse import urljoin, urlparse, urlencode, quote
 
 from django.shortcuts import redirect
 from django.views.generic import View
