@@ -1,6 +1,6 @@
 
 
-0.4.0 (unreleased)
+0.9.0 (unreleased)
 ===================
 
 * urllib2 replaced by urllib3 (#10)
