@@ -1,0 +1,6 @@
+
+[report]
+exclude_lines =
+    .*:.* # Python \d.*
+    .* # pragma: no cover.*
+    except ImportError:

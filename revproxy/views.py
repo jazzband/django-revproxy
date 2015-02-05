@@ -8,10 +8,9 @@ import logging
 
 import urllib3
 
-if sys.version_info >= (3, 0, 0):  # pragma: no cover
+if sys.version_info >= (3, 0, 0):  # Python 3
     from urllib.parse import urljoin, urlparse, urlencode, quote
-else:  # pragma: no cover
-    # Fallback to Python 2.7
+else:  # Python 2
     from urllib import urlencode, quote
     from urlparse import urljoin, urlparse
 
