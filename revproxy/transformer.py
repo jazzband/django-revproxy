@@ -24,7 +24,7 @@ DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
 def asbool(value):
     try:  # pragma: no cover
         is_string = isinstance(value, basestring)
-    except NameError:  # Python 3
+    except NameError: #pragma: no cover -  Python 3
         is_string = isinstance(value, str)
 
     if is_string:
