@@ -100,20 +100,23 @@ class TransformerTest(TestCase):
 
     def test_response_reading_of_file_stream(self):
         request = self.factory.get('/')
-        file_stream = codecs.open("./tests/test_files/file_1",
-                                  encoding='utf-8')
-        original_content = file_stream.read().encode('utf-8')
 
-        urlopen_mock = get_urlopen_mock(file_stream)
+        test_file = MockFile(FILE_CONTENT)
+        mock_file = MagicMock()
+        type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
+        mock_file.read.side_effect = test_file.read
+        mock_file.close.side_effect = test_file.close
+        mock_file.seek.side_effect = test_file.seek
+
+        urlopen_mock = get_urlopen_mock(mock_file)
 
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, '/')
 
         content = b''.join(response.streaming_content)
 
-        self.assertEqual(original_content, content)
-
-        file_stream.close()
+        self.assertEqual(FILE_CONTENT, content)
 
     def test_num_reads_by_stream_on_a_file(self):
         request = self.factory.get('/')
