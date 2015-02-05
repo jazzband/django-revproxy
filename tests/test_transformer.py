@@ -38,7 +38,15 @@ class TransformerTest(TestCase):
         CustomProxyView.upstream = "http://www.example.com"
 
     def test_no_diazo(self):
-        pass
+        request = self.factory.get('/')
+        headers = {'Content-Type': 'text/html'}
+        urlopen_mock = get_urlopen_mock(headers=headers)
+
+        with patch(URLOPEN, urlopen_mock):
+            with patch('revproxy.transformer.HAS_DIAZO', False):
+                response = CustomProxyView.as_view()(request, '/')
+
+        self.assertEqual(response.content, DEFAULT_BODY_CONTENT)
 
     def test_disable_request_header(self):
         request = self.factory.get('/', HTTP_X_DIAZO_OFF='true')

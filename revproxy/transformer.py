@@ -7,10 +7,10 @@ from django.template import loader, RequestContext
 
 try:
     from diazo.compiler import compile_theme
-except ImportError:  # pragma: no cover
-    has_diazo = False
+except ImportError:
+    HAS_DIAZO = False
 else:
-    has_diazo = True
+    HAS_DIAZO = True
     from lxml import etree
 
 from .utils import get_charset, is_html_content_type
@@ -48,7 +48,7 @@ class DiazoTransformer(object):
     def should_transform(self):
         """Determine if we should transform the response"""
 
-        if not has_diazo:  # pragma: no cover
+        if not HAS_DIAZO:
             return False
 
         if asbool(self.request.META.get(DIAZO_OFF_REQUEST_HEADER)):
