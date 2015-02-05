@@ -51,6 +51,8 @@ class RequestTest(TestCase):
         headers = {'REMOTE_USER': 'jacob', 'Cookie': ''}
         self.urlopen.assert_called_with('GET', url,
                                         redirect=False,
+                                        preload_content=False,
+                                        decode_content=False,
                                         headers=headers,
                                         body=b'')
 
@@ -67,6 +69,8 @@ class RequestTest(TestCase):
         url = 'http://www.example.com/test/anonymous/'
         headers = {'Cookie': ''}
         self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        preload_content=False,
+                                        decode_content=False,
                                         headers=headers, body=b'')
 
     def test_simple_get(self):

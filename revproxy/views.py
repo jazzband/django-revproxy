@@ -19,7 +19,7 @@ from django.shortcuts import redirect
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
-from .response import HttpProxyResponse
+from .response import get_django_response
 from .utils import normalize_headers, encode_items
 from .transformer import DiazoTransformer
 
@@ -87,7 +87,9 @@ class ProxyView(View):
                                                request_url,
                                                redirect=False,
                                                headers=request_headers,
-                                               body=request_payload)
+                                               body=request_payload,
+                                               decode_content=False,
+                                               preload_content=False)
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
             raise
@@ -114,7 +116,7 @@ class ProxyView(View):
                             'application/octet-stream')
             proxy_response.headers['Content-Type'] = content_type
 
-        response = HttpProxyResponse(proxy_response)
+        response = get_django_response(proxy_response)
 
         if self.diazo_rules and self.diazo_theme_template:
             diazo = DiazoTransformer(request, response)

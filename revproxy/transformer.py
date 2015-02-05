@@ -13,7 +13,7 @@ else:
     has_diazo = True
     from lxml import etree
 
-from .utils import get_charset
+from .utils import get_charset, is_html_content_type
 
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
 
@@ -24,7 +24,7 @@ DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
 def asbool(value):
     try:  # pragma: no cover
         is_string = isinstance(value, basestring)
-    except NameError:  # Python 3
+    except NameError:  # pragma: no cover -  Python 3
         is_string = isinstance(value, str)
 
     if is_string:
@@ -60,19 +60,15 @@ class DiazoTransformer(object):
         if self.request.is_ajax():
             return False
 
-        # We actually don't support stream proxy so far
         if self.response.streaming:
             return False
 
         content_type = self.response.get('Content-Type')
-        if not content_type or not (
-            content_type.lower().startswith('text/html') or
-            content_type.lower().startswith('application/xhtml+xml')
-        ):
+        if not is_html_content_type(content_type):
             return False
 
         content_encoding = self.response.get('Content-Encoding')
-        if content_encoding in ('zip', 'deflate', 'compress',):
+        if content_encoding in ('zip', 'compress'):
             return False
 
         status_code = str(self.response.status_code)
@@ -119,8 +115,5 @@ class DiazoTransformer(object):
     def set_html5_doctype(self):
         doctype = b'<!DOCTYPE html>\n'
         content, subs = doctype_re.subn(doctype, self.response.content, 1)
-
-        if not subs:
-            self.response.content = doctype + self.response.content
 
         self.response.content = content
