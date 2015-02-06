@@ -4,8 +4,7 @@ django-revproxy
 .. image:: https://travis-ci.org/TracyWebTech/django-revproxy.svg
        :target: https://travis-ci.org/TracyWebTech/django-revproxy
 
-.. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.png?branch=master
-       :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
+.. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.svg?branch=master :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
 
 .. image:: https://landscape.io/github/TracyWebTech/django-revproxy/master/landscape.svg?style=flat
       :target: https://landscape.io/github/TracyWebTech/django-revproxy/master
