@@ -2,6 +2,10 @@ language: python
 
 sudo: false
 
+cache:
+  directories:
+  - .eggs
+
 python:
   - "2.7"
   - "3.3"
