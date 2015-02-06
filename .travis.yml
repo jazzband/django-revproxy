@@ -18,4 +18,6 @@ script:
   - coverage run --source=revproxy setup.py test
   - flake8 revproxy
   - coverage report --fail-under=100 --show-missing
+
+after_script:
   - coveralls
