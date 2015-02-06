@@ -7,6 +7,10 @@ django-revproxy
 .. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.png?branch=master
        :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
 
+.. image:: https://landscape.io/github/TracyWebTech/django-revproxy/master/landscape.svg?style=flat
+      :target: https://landscape.io/github/TracyWebTech/django-revproxy/master
+   :alt: Code Health
+
 
 A simple reverse proxy using Django. It allows to use Django as a
 reverse Proxy to HTTP requets. It also allows to use Django as an
