@@ -13,11 +13,8 @@ install:
   - pip install coveralls flake8
   - pip install django==${DJANGO_VERSION}
 
-before_script:
-  flake8 revproxy
-
 script:
-  coverage run --source=revproxy setup.py test
-
-after_success:
-  coveralls
+  - coverage run --source=revproxy setup.py test
+  - flake8 revproxy
+  - coverage report --fail-under=100 --show-missing
+  - coveralls
