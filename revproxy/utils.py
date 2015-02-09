@@ -1,6 +1,8 @@
 
 import re
 
+import logging
+
 
 IGNORE_HEADERS = (
     'HTTP_ACCEPT_ENCODING',  # We want content to be uncompressed so
@@ -88,7 +90,6 @@ def encode_items(items):
             encoded.append((key.encode('utf-8'), value.encode('utf-8')))
     return encoded
 
-import logging
 
 logger = logging.getLogger('revproxy.cookies')
 
