@@ -6,6 +6,8 @@ from io import BytesIO
 
 from mock import MagicMock, Mock
 
+from six import PY3
+
 from revproxy.views import ProxyView
 
 DEFAULT_BODY_CONTENT = u'áéíóú'.encode('utf-8')
@@ -20,7 +22,11 @@ class CustomProxyView(ProxyView):
 def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
                      status=200, cookie=set()):
     mockHttpResponse = Mock(name='httplib.HTTPResponse')
-    mockHttpResponse.msg.getheaders.return_value = cookie
+
+    if PY3:  # Python 3:
+        mockHttpResponse.msg.get_all.return_value = cookie
+    else:  # Python 2:
+        mockHttpResponse.msg.getheaders.return_value = cookie
 
     if not hasattr(body, 'read'):
         body = BytesIO(body)
@@ -39,10 +45,10 @@ def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
 
 class MockFile():
 
-    def __init__(self, content):
+    def __init__(self, content,read_size=4):
         self.content = content
         self.mock_file = BytesIO(content)
-        self.mock_read_size = 4
+        self.mock_read_size = read_size 
 
     def closed(self):
         return self.mock_file.closed

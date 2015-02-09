@@ -109,7 +109,7 @@ class TransformerTest(TestCase):
     def test_response_reading_of_file_stream(self):
         request = self.factory.get('/')
 
-        test_file = MockFile(FILE_CONTENT)
+        test_file = MockFile(FILE_CONTENT,4)
         mock_file = MagicMock()
         type(mock_file).encoding = PropertyMock(return_value='utf-8')
         type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
