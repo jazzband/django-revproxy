@@ -26,7 +26,7 @@ Features
 * Basic URL rewrite
 * Sets the http header REQUEST_USER if the user is logged in Django
 * Handles redirects
-* Few external dependencies (uses only Python standard library)
+* Few external dependencies
 * Apply XSLT transformation in the response (requires Diazo)
 
 
