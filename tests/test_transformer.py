@@ -2,8 +2,6 @@
 
 from sys import version_info
 
-import codecs
-
 from mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
@@ -109,7 +107,7 @@ class TransformerTest(TestCase):
     def test_response_reading_of_file_stream(self):
         request = self.factory.get('/')
 
-        test_file = MockFile(FILE_CONTENT,4)
+        test_file = MockFile(FILE_CONTENT, 4)
         mock_file = MagicMock()
         type(mock_file).encoding = PropertyMock(return_value='utf-8')
         type(mock_file).closed = PropertyMock(side_effect=test_file.closed)

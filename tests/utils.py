@@ -6,8 +6,6 @@ from io import BytesIO
 
 from mock import MagicMock, Mock
 
-from six import PY3
-
 from revproxy.views import ProxyView
 
 DEFAULT_BODY_CONTENT = u'áéíóú'.encode('utf-8')
@@ -41,10 +39,10 @@ def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=None, status=200):
 
 class MockFile():
 
-    def __init__(self, content,read_size=4):
+    def __init__(self, content, read_size=4):
         self.content = content
         self.mock_file = BytesIO(content)
-        self.mock_read_size = read_size 
+        self.mock_read_size = read_size
 
     def closed(self):
         return self.mock_file.closed

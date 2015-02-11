@@ -4,13 +4,11 @@ import os
 import sys
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
-os.environ['REUSE_DB'] = '0'
 
 import django
 
 from django.test.utils import get_runner
 from django.conf import settings
-from django.core.management import call_command
 
 
 def runtests():
