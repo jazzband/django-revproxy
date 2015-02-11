@@ -2,6 +2,8 @@
 
 import logging
 
+import urllib3
+
 from django.test import RequestFactory, TestCase
 from mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
@@ -126,16 +128,15 @@ class ResponseTest(TestCase):
     def test_set_cookie_is_used_by_httpproxy_response(self):
         path = "/"
         request = self.factory.get(path)
-        headers = {
+        headers = urllib3.response.HTTPHeaderDict({
             'connection': '0',
             'proxy-authorization': 'allow',
             'content-type': 'text/html'
-        }
-        cookie = set({
-                     "_cookie1=l4hs3kdf2jsh2324",
-                     "_cookie2=l2lk5sj3df22sk3j4"})
+        })
+        headers.add('set-cookie', '_cookie1=l4hs3kdf2jsh2324')
+        headers.add('set-cookie', '_cookie2=l2lk5sj3df22sk3j4')
 
-        urlopen_mock = get_urlopen_mock(headers=headers, cookie=cookie)
+        urlopen_mock = get_urlopen_mock(headers=headers)
         with patch(URLOPEN, urlopen_mock):
             response = CustomProxyView.as_view()(request, path)
 

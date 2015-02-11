@@ -17,7 +17,7 @@ setup(
     packages=['revproxy'],
     install_requires=[
         'django>=1.6',
-        'urllib3>=1.8',
+        'urllib3>=1.10.1',
         'six',
     ],
     tests_require=['mock', 'diazo',],

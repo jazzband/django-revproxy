@@ -19,14 +19,10 @@ class CustomProxyView(ProxyView):
     diazo_rules = None
 
 
-def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=dict(),
-                     status=200, cookie=set()):
+def get_urlopen_mock(body=DEFAULT_BODY_CONTENT, headers=None, status=200):
     mockHttpResponse = Mock(name='httplib.HTTPResponse')
 
-    if PY3:  # Python 3:
-        mockHttpResponse.msg.get_all.return_value = cookie
-    else:  # Python 2:
-        mockHttpResponse.msg.getheaders.return_value = cookie
+    headers = urllib3.response.HTTPHeaderDict(headers)
 
     if not hasattr(body, 'read'):
         body = BytesIO(body)
