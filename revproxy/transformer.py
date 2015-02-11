@@ -112,6 +112,5 @@ class DiazoTransformer(object):
 
     def set_html5_doctype(self):
         doctype = b'<!DOCTYPE html>\n'
-        content, subs = doctype_re.subn(doctype, self.response.content, 1)
-
+        content = doctype_re.subn(doctype, self.response.content, 1)[0]
         self.response.content = content
