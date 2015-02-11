@@ -1,7 +1,5 @@
 from .utils import cookie_from_string, should_stream
 
-from six import PY3
-
 from django.http import HttpResponse, StreamingHttpResponse
 
 HOP_BY_HOP_HEADERS = (
@@ -32,26 +30,11 @@ def get_django_response(proxy_response):
         if header.lower() not in IGNORE_HEADERS:
             response[header.title()] = value
 
-    orig_response = proxy_response._original_response
-    if orig_response:
-        # Ideally we should use:
-
-        # orig_headers = proxy_response.headers
-        # set_cookie_header = orig_headers.getlist('set-cookie')
-        # for cookie_string in set_cookie_header:
-
-        # the code above depends on that PR:
-        #   https://github.com/shazow/urllib3/pull/534
-
-        if PY3:  # Python 3:
-            cookies = orig_response.msg.get_all('set-cookie') or set()
-        else:  # Python 2:
-            cookies = orig_response.msg.getheaders('set-cookie')
-
-        for cookie_string in cookies:
-            cookie_dict = cookie_from_string(cookie_string)
-            # if cookie is invalid cookie_dict will be None
-            if cookie_dict:
-                response.set_cookie(**cookie_dict)
+    cookies = proxy_response.headers.getlist('set-cookie')
+    for cookie_string in cookies:
+        cookie_dict = cookie_from_string(cookie_string)
+        # if cookie is invalid cookie_dict will be None
+        if cookie_dict:
+            response.set_cookie(**cookie_dict)
 
     return response
