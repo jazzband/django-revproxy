@@ -15,7 +15,7 @@ from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
 from .response import get_django_response
-from .utils import normalize_headers, encode_items
+from .utils import normalize_headers, encode_items, setup_logger
 from .transformer import DiazoTransformer
 
 
@@ -23,18 +23,18 @@ class ProxyView(View):
     add_remote_user = False
     diazo_theme_template = 'diazo.html'
     html5 = False
-    rewrite = tuple()
+    rewrite = tuple() # It will be overrided by a tuple inside tuple.
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
 
         self._rewrite = []
+        # Take all elements inside tuple, and insert into _rewrite
         for from_pattern, to_pattern in self.rewrite:
             from_re = re.compile(from_pattern)
             self._rewrite.append((from_re, to_pattern))
-
         self.http = urllib3.PoolManager()
-        self.log = logging.getLogger('revproxy')
+        self.log = logging.getLogger('revproxy.view')
 
     @property
     def upstream(self):
@@ -44,12 +44,15 @@ class ProxyView(View):
     def diazo_rules(self):
         child_class_file = sys.modules[self.__module__].__file__
         app_path = os.path.abspath(os.path.dirname(child_class_file))
+        self.log.debug("diazo_rules: {}".format(app_path))
+
         return os.path.join(app_path, 'diazo.xml')
 
     @classonlymethod
     def as_view(cls, **initkwargs):
         view = super(ProxyView, cls).as_view(**initkwargs)
         view.csrf_exempt = True
+        self.log.info("Exempted view the protection ensured by the middleware.")
         return view
 
     def dispatch(self, request, path):
@@ -57,9 +60,9 @@ class ProxyView(View):
         # Rewrite implementation
         full_path = request.get_full_path()
         for from_re, to_pattern in self._rewrite:
-
             if from_re.match(full_path):
                 redirect_to = from_re.sub(to_pattern, full_path)
+                self.debug_log.debug("Redirect to: {}".format(redirect_to))
                 return redirect(redirect_to)
 
         request_payload = request.body
@@ -85,6 +88,8 @@ class ProxyView(View):
                                                body=request_payload,
                                                decode_content=False,
                                                preload_content=False)
+            self.debug_log.debug("Proxy response header: {}".format(
+                            proxy_response.getheaders()))
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
             raise

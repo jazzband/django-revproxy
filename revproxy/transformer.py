@@ -44,7 +44,9 @@ class DiazoTransformer(object):
         self.response = response
 
     def should_transform(self):
-        """Determine if we should transform the response"""
+        """
+        Determine if we should transform the response
+        """
 
         if not HAS_DIAZO:
             return False
