@@ -3,6 +3,8 @@ import re
 
 from io import BytesIO
 
+import logging
+
 from six import string_types
 from django.template import loader, RequestContext
 
@@ -42,6 +44,8 @@ class DiazoTransformer(object):
     def __init__(self, request, response):
         self.request = request
         self.response = response
+        self.log = logging.getLogger('revproxy.transformer')
+        self.log.info("DiazoTransformer created")
 
     def should_transform(self):
         """
@@ -49,42 +53,53 @@ class DiazoTransformer(object):
         """
 
         if not HAS_DIAZO:
+            self.log.info("HAS_DIAZO: false")
             return False
 
         if asbool(self.request.META.get(DIAZO_OFF_REQUEST_HEADER)):
+            self.log.info("DIAZO_OFF_REQUEST_HEADER in request.META: off")
             return False
 
         if asbool(self.response.get(DIAZO_OFF_RESPONSE_HEADER)):
+            self.log.info("DIAZO_OFF_RESPONSE_HEADER in response.get: off")
             return False
 
         if self.request.is_ajax():
+            self.log.info("Request is AJAX")
             return False
 
         if self.response.streaming:
+            self.log.info("Response has streaming")
             return False
 
         content_type = self.response.get('Content-Type')
         if not is_html_content_type(content_type):
+            self.log.info("Content-type: false")
             return False
 
         content_encoding = self.response.get('Content-Encoding')
         if content_encoding in ('zip', 'compress'):
+            self.log.info("Content encode is zip or compress")
             return False
 
         status_code = str(self.response.status_code)
         if status_code.startswith('3') or \
                 status_code == '204' or \
                 status_code == '401':
+            self.log.info("Status code: start with 3, 204 or 401")
             return False
 
         if len(self.response.content) == 0:
+            self.log.info("Response content is equal zero")
             return False
 
+        self.log.info("Transform")
         return True
 
     def transform(self, rules, theme_template, is_html5):
 
         if not self.should_transform():
+            self.log.info("Don't need to be transformed")
             return self.response
 
         context_instance = RequestContext(self.request)
@@ -96,6 +111,7 @@ class DiazoTransformer(object):
         )
 
         transform = etree.XSLT(output_xslt)
+        self.log.debug("Transform: {}".format(transform))
 
         charset = get_charset(self.response.get('Content-Type'))
         content_doc = etree.fromstring(self.response.content.decode(charset),
@@ -107,9 +123,12 @@ class DiazoTransformer(object):
             self.set_html5_doctype()
 
         self.reset_headers()
+
+        self.log.debug("Response transformer: {}".format(self.response))
         return self.response
 
     def reset_headers(self):
+        self.log.info("Reset header")
         del self.response['Content-Length']
 
     def set_html5_doctype(self):
