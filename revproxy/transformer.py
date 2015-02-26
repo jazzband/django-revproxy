@@ -11,6 +11,7 @@ from django.template import loader, RequestContext
 try:
     from diazo.compiler import compile_theme
 except ImportError:
+    #: Variable used to identify if diazo is available
     HAS_DIAZO = False
 else:
     HAS_DIAZO = True
@@ -18,13 +19,23 @@ else:
 
 from .utils import get_charset, is_html_content_type
 
+#: Regex used to find the doctype-header in a html content
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
-
+#: String used to verify if request has a 'HTTP_X_DIAZO_OFF' header
 DIAZO_OFF_REQUEST_HEADER = 'HTTP_X_DIAZO_OFF'
+#: String used to verify if request has a 'X-Diazo-Off' header
 DIAZO_OFF_RESPONSE_HEADER = 'X-Diazo-Off'
 
 
 def asbool(value):
+    """Function used to convert certain string values into an appropriated
+    boolean value.If value is not a string the built-in python
+    bool function will be used to convert the passed parameter
+
+    :param      value: an object to be converted to a boolean value
+    :returns:   A boolean value
+    """
+
     is_string = isinstance(value, string_types)
 
     if is_string:
@@ -40,6 +51,7 @@ def asbool(value):
 
 
 class DiazoTransformer(object):
+    """Class used to make a diazo transformation on a request or a response"""
 
     def __init__(self, request, response):
         self.request = request
@@ -48,8 +60,9 @@ class DiazoTransformer(object):
         self.log.info("DiazoTransformer created")
 
     def should_transform(self):
-        """
-        Determine if we should transform the response
+        """Determine if we should transform the response
+
+        :returns:  A boolean value
         """
 
         if not HAS_DIAZO:
@@ -97,6 +110,18 @@ class DiazoTransformer(object):
         return True
 
     def transform(self, rules, theme_template, is_html5):
+        """Method used to make a transformation on the content of
+        the http response based on the rules and theme_templates
+        passed as paremters
+
+        :param  rules: A file with a set of diazo rules to make a
+                       transformation over the original response content
+        :param  theme_template: A file containing the template used to format
+                                the the original response content
+        :param    is_html5: A boolean parameter to identify a html5 doctype
+        :returns: A response with a content transformed based on the rules and
+                  theme_template
+        """
 
         if not self.should_transform():
             self.log.info("Don't need to be transformed")
@@ -128,10 +153,15 @@ class DiazoTransformer(object):
         return self.response
 
     def reset_headers(self):
+        """This method remove the header Content-Length entry
+        from the response
+        """
         self.log.info("Reset header")
         del self.response['Content-Length']
 
     def set_html5_doctype(self):
+        """Method used to transform a doctype in to a properly html5 doctype
+        """
         doctype = b'<!DOCTYPE html>\n'
         content = doctype_re.subn(doctype, self.response.content, 1)[0]
         self.response.content = content
