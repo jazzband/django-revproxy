@@ -23,7 +23,7 @@ class ProxyView(View):
     add_remote_user = False
     diazo_theme_template = 'diazo.html'
     html5 = False
-    rewrite = tuple() # It will be overrided by a tuple inside tuple.
+    rewrite = tuple()  # It will be overrided by a tuple inside tuple.
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -84,7 +84,7 @@ class ProxyView(View):
         if request.GET:
             get_data = encode_items(request.GET.lists())
             request_url += '?' + urlencode(get_data)
-            self.log.debug("Request URL: {}".format(request_url)) 
+            self.log.debug("Request URL: {}".format(request_url))
 
         try:
             proxy_response = self.http.urlopen(request.method,
@@ -95,7 +95,7 @@ class ProxyView(View):
                                                decode_content=False,
                                                preload_content=False)
             self.log.debug("Proxy response header: {}".format(
-                            proxy_response.getheaders()))
+                           proxy_response.getheaders()))
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
             raise
@@ -117,7 +117,7 @@ class ProxyView(View):
             proxy_response.headers['Location'] = location
 
             self.log.debug("Proxy response LOCATION: {}".format(
-                                        proxy_response.headers['Location']))
+                           proxy_response.headers['Location']))
 
         content_type = proxy_response.headers.get('Content-Type')
         if not content_type:
@@ -125,7 +125,7 @@ class ProxyView(View):
                             'application/octet-stream')
             proxy_response.headers['Content-Type'] = content_type
             self.log.debug("Proxy response CONTENT-TYPE: {}").format(
-                                    proxy_response.headers['Content-Type'])
+                proxy_response.headers['Content-Type'])
 
         response = get_django_response(proxy_response)
 

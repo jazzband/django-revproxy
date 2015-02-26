@@ -26,7 +26,7 @@ def get_django_response(proxy_response):
     logger.debug('Content-Type: {}'.format(content_type))
 
     if should_stream(proxy_response):
-    	logger.info('Content-Length is bigger than {}'.format(DEFAULT_AMT))
+        logger.info('Content-Length is bigger than {}'.format(DEFAULT_AMT))
         response = StreamingHttpResponse(proxy_response.stream(DEFAULT_AMT),
                                          status=status,
                                          content_type=content_type)
