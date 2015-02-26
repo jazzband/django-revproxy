@@ -56,17 +56,18 @@ class ProxyView(View):
         view.csrf_exempt = True
         return view
 
-    def dispatch(self, request, path):
-
-        # Rewrite implementation
+    def __format_path_to_redirect(self, request):
+        redirect_to = ""
         full_path = request.get_full_path()
         self.log.debug("Dispatch full path: {}".format(full_path))
         for from_re, to_pattern in self._rewrite:
             if from_re.match(full_path):
                 redirect_to = from_re.sub(to_pattern, full_path)
                 self.log.debug("Redirect to: {}".format(redirect_to))
-                return redirect(redirect_to)
+                return redirect_to
 
+    def __created_proxy_response(self, request, path):
+        proxy_response = None
         request_payload = request.body
         request_headers = normalize_headers(request)
         self.log.debug("Request headers: {}".format(request_headers))
@@ -100,6 +101,9 @@ class ProxyView(View):
             self.log.exception(error)
             raise
 
+        return proxy_response
+
+    def __set_location_from_original_request(self, request, proxy_response):
         location = proxy_response.headers.get('Location')
         if location:
             if request.is_secure():
@@ -115,10 +119,11 @@ class ProxyView(View):
             location = location.replace(upstream_host_http, request_host)
             location = location.replace(upstream_host_https, request_host)
             proxy_response.headers['Location'] = location
-
             self.log.debug("Proxy response LOCATION: {}".format(
                            proxy_response.headers['Location']))
 
+    def __set_content_type_from_original_request(self, request,
+                                                 proxy_response):
         content_type = proxy_response.headers.get('Content-Type')
         if not content_type:
             content_type = (mimetypes.guess_type(request.path)[0] or
@@ -126,6 +131,20 @@ class ProxyView(View):
             proxy_response.headers['Content-Type'] = content_type
             self.log.debug("Proxy response CONTENT-TYPE: {}".format(
                 proxy_response.headers['Content-Type']))
+
+    def dispatch(self, request, path):
+        redirect_to = self.__format_path_to_redirect(request)
+        if(redirect_to):
+            return redirect(redirect_to)
+
+        try:
+            proxy_response = self.__created_proxy_response(request, path)
+        except urllib3.exceptions.HTTPError:
+            raise
+
+        self.__set_location_from_original_request(request, proxy_response)
+
+        self.__set_content_type_from_original_request(request, proxy_response)
 
         response = get_django_response(proxy_response)
 
