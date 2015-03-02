@@ -124,8 +124,8 @@ class ProxyView(View):
             content_type = (mimetypes.guess_type(request.path)[0] or
                             'application/octet-stream')
             proxy_response.headers['Content-Type'] = content_type
-            self.log.debug("Proxy response CONTENT-TYPE: {}").format(
-                proxy_response.headers['Content-Type'])
+            self.log.debug("Proxy response CONTENT-TYPE: {}".format(
+                proxy_response.headers['Content-Type']))
 
         response = get_django_response(proxy_response)
 

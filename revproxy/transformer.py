@@ -79,18 +79,18 @@ class DiazoTransformer(object):
 
         content_encoding = self.response.get('Content-Encoding')
         if content_encoding in ('zip', 'compress'):
-            self.log.info("Content encode is zip or compress")
+            self.log.info("Content encode is {}".format(content_encoding))
             return False
 
         status_code = str(self.response.status_code)
         if status_code.startswith('3') or \
                 status_code == '204' or \
                 status_code == '401':
-            self.log.info("Status code: start with 3, 204 or 401")
+            self.log.info("Status code: {}".format(status_code))
             return False
 
         if len(self.response.content) == 0:
-            self.log.info("Response content is equal zero")
+            self.log.info("Response Content is EMPTY")
             return False
 
         self.log.info("Transform")
