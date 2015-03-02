@@ -1,10 +1,7 @@
 revproxy package
 ================
 
-Submodules
-----------
-
-revproxy.response module
+revproxy.response
 ------------------------
 
 .. automodule:: revproxy.response
@@ -12,7 +9,7 @@ revproxy.response module
     :undoc-members:
     :show-inheritance:
 
-revproxy.transformer module
+revproxy.transformer
 ---------------------------
 
 .. automodule:: revproxy.transformer
@@ -20,7 +17,7 @@ revproxy.transformer module
     :undoc-members:
     :show-inheritance:
 
-revproxy.utils module
+revproxy.utils
 ---------------------
 
 .. automodule:: revproxy.utils
@@ -28,19 +25,10 @@ revproxy.utils module
     :undoc-members:
     :show-inheritance:
 
-revproxy.views module
+revproxy.views
 ---------------------
 
 .. automodule:: revproxy.views
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: revproxy
     :members:
     :undoc-members:
     :show-inheritance:
