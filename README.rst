@@ -9,7 +9,6 @@ django-revproxy
 
 .. image:: https://landscape.io/github/TracyWebTech/django-revproxy/master/landscape.svg?style=flat
       :target: https://landscape.io/github/TracyWebTech/django-revproxy/master
-   :alt: Code Health
 
 
 A simple reverse proxy using Django. It allows to use Django as a

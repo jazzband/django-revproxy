@@ -14,6 +14,7 @@
 
 import sys
 import os
+import sphinx_rtd_theme
 from sphinx.ext.autodoc import ModuleLevelDocumenter, DataDocumenter
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -102,7 +103,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -111,6 +112,7 @@ html_theme = 'default'
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -230,7 +232,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'revproxy', u'revproxy Documentation',
+    ('index', 'revproxy','info',u'revproxy Documentation',
      [u'Sergio'], 1)
 ]
 
