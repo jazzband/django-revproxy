@@ -19,14 +19,14 @@ def get_django_response(proxy_response):
     status = proxy_response.status
     headers = proxy_response.headers
 
-    logger.debug('Proxy response headers: {}'.format(headers))
+    logger.debug('Proxy response headers: %s', headers)
 
     content_type = headers.get('Content-Type')
 
-    logger.debug('Content-Type: {}'.format(content_type))
+    logger.debug('Content-Type: %s', content_type)
 
     if should_stream(proxy_response):
-        logger.info('Content-Length is bigger than {}'.format(DEFAULT_AMT))
+        logger.info('Content-Length is bigger than %s', DEFAULT_AMT)
         response = StreamingHttpResponse(proxy_response.stream(DEFAULT_AMT),
                                          status=status,
                                          content_type=content_type)
@@ -40,7 +40,7 @@ def get_django_response(proxy_response):
         if header.lower() not in IGNORE_HEADERS:
             response[header.title()] = value
 
-    logger.debug('Response headers: {}'.format(getattr(response, '_headers')))
+    logger.debug('Response headers: %s', getattr(response, '_headers'))
 
     cookies = proxy_response.headers.getlist('set-cookie')
     logger.info('Checking for invalid cookies')
@@ -50,6 +50,6 @@ def get_django_response(proxy_response):
         if cookie_dict:
             response.set_cookie(**cookie_dict)
 
-    logger.debug('Response cookies: {}'.format(response.cookies))
+    logger.debug('Response cookies: %s', response.cookies)
 
     return response

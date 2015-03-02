@@ -79,14 +79,14 @@ class DiazoTransformer(object):
 
         content_encoding = self.response.get('Content-Encoding')
         if content_encoding in ('zip', 'compress'):
-            self.log.info("Content encode is {}".format(content_encoding))
+            self.log.info("Content encode is %s", content_encoding)
             return False
 
         status_code = str(self.response.status_code)
         if status_code.startswith('3') or \
                 status_code == '204' or \
                 status_code == '401':
-            self.log.info("Status code: {}".format(status_code))
+            self.log.info("Status code: %s", status_code)
             return False
 
         if len(self.response.content) == 0:
@@ -111,7 +111,7 @@ class DiazoTransformer(object):
         )
 
         transform = etree.XSLT(output_xslt)
-        self.log.debug("Transform: {}".format(transform))
+        self.log.debug("Transform: %s", transform)
 
         charset = get_charset(self.response.get('Content-Type'))
         content_doc = etree.fromstring(self.response.content.decode(charset),
@@ -124,7 +124,7 @@ class DiazoTransformer(object):
 
         self.reset_headers()
 
-        self.log.debug("Response transformer: {}".format(self.response))
+        self.log.debug("Response transformer: %s", self.response)
         return self.response
 
     def reset_headers(self):
