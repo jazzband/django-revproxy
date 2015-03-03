@@ -24,6 +24,7 @@ class ProxyView(View):
     default_content_type = 'application/octet-stream'
     diazo_theme_template = 'diazo.html'
     html5 = False
+    retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
 
     def __init__(self, *args, **kwargs):
@@ -90,6 +91,7 @@ class ProxyView(View):
             proxy_response = self.http.urlopen(request.method,
                                                request_url,
                                                redirect=False,
+                                               retries=self.retries,
                                                headers=request_headers,
                                                body=request_payload,
                                                decode_content=False,
