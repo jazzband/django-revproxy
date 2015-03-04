@@ -14,7 +14,7 @@ Contents:
 
    introduction
    quickstart
-   revproxy
+   modules
    changelog
 
 
