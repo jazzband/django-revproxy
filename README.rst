@@ -1,5 +1,6 @@
-django-revproxy
-===============
+
+Welcome to django-revproxy
+==========================
 
 .. image:: https://travis-ci.org/TracyWebTech/django-revproxy.svg
        :target: https://travis-ci.org/TracyWebTech/django-revproxy
@@ -33,7 +34,7 @@ Dependencies
 ------------
 
 * django >= 1.6
-* urllib3 >= 1.10.1
+* urllib3 == 1.10.1
 * six >= 1.9.0
 * diazo >= 1.0.1 (optional)
 
