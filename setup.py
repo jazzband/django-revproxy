@@ -29,7 +29,6 @@ setup(
     install_requires=[
         'django>=1.6',
         'urllib3==1.10.1',
-        'six>=1.9.0',
     ],
     tests_require=['mock', 'diazo', ],
     test_suite="tests.run.runtests",

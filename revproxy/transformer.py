@@ -5,7 +5,7 @@ from io import BytesIO
 
 import logging
 
-from six import string_types
+from django.utils.six import string_types
 from django.template import loader, RequestContext
 
 try:

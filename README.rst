@@ -35,7 +35,6 @@ Dependencies
 
 * django >= 1.6
 * urllib3 == 1.10.1
-* six >= 1.9.0
 * diazo >= 1.0.1 (optional)
 
 

@@ -8,7 +8,8 @@ import logging
 
 import urllib3
 
-from six.moves.urllib.parse import urljoin, urlparse, urlencode, quote
+from django.utils.six.moves.urllib.parse import (urljoin, urlparse,
+                                                 urlencode, quote)
 
 from django.shortcuts import redirect
 from django.views.generic import View
