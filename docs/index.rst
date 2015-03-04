@@ -15,6 +15,7 @@ Contents:
    introduction
    quickstart
    revproxy
+   changelog
 
 
 Indices and tables
