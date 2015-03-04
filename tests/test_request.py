@@ -11,6 +11,8 @@ from django.test import TestCase, RequestFactory
 
 from mock import patch
 
+from urllib3 import Retry
+
 from revproxy.views import ProxyView
 
 from .utils import get_urlopen_mock
@@ -51,6 +53,7 @@ class RequestTest(TestCase):
         headers = {'REMOTE_USER': 'jacob', 'Cookie': ''}
         self.urlopen.assert_called_with('GET', url,
                                         redirect=False,
+                                        retries=None,
                                         preload_content=False,
                                         decode_content=False,
                                         headers=headers,
@@ -69,6 +72,26 @@ class RequestTest(TestCase):
         url = 'http://www.example.com/test/anonymous/'
         headers = {'Cookie': ''}
         self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers, body=b'')
+
+    def test_custom_retries(self):
+        RETRIES = Retry(20, backoff_factor=0.1)
+
+        class CustomProxyView(ProxyView):
+            retries = RETRIES
+            upstream = 'http://www.example.com/'
+
+        request = self.factory.get('/')
+
+        CustomProxyView.as_view()(request, '/test/')
+
+        url = 'http://www.example.com/test/'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=RETRIES,
                                         preload_content=False,
                                         decode_content=False,
                                         headers=headers, body=b'')
