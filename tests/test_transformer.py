@@ -6,7 +6,7 @@ from mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
 
-from revproxy.views import ProxyView
+from revproxy.views import DiazoProxyView
 
 from revproxy.transformer import asbool
 
@@ -24,7 +24,7 @@ else:
     FILE_CONTENT = CONTENT
 
 
-class CustomProxyView(ProxyView):
+class CustomProxyView(DiazoProxyView):
     upstream = "http://www.example.com"
 
 

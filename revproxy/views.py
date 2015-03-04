@@ -22,8 +22,6 @@ from .transformer import DiazoTransformer
 class ProxyView(View):
     add_remote_user = False
     default_content_type = 'application/octet-stream'
-    diazo_theme_template = 'diazo.html'
-    html5 = False
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
 
@@ -42,15 +40,6 @@ class ProxyView(View):
     @property
     def upstream(self):
         raise NotImplementedError('Upstream server must be set')
-
-    @property
-    def diazo_rules(self):
-        child_class_file = sys.modules[self.__module__].__file__
-        app_path = os.path.abspath(os.path.dirname(child_class_file))
-        diazo_path = os.path.join(app_path, 'diazo.xml')
-
-        self.log.debug("diazo_rules: %s", diazo_path)
-        return diazo_path
 
     @classonlymethod
     def as_view(cls, **initkwargs):
@@ -144,11 +133,31 @@ class ProxyView(View):
 
         response = get_django_response(proxy_response)
 
+        self.log.debug("RESPONSE RETURNED: %s", response)
+        return response
+
+
+class DiazoProxyView(ProxyView):
+
+    diazo_theme_template = 'diazo.html'
+    html5 = False
+
+    @property
+    def diazo_rules(self):
+        child_class_file = sys.modules[self.__module__].__file__
+        app_path = os.path.abspath(os.path.dirname(child_class_file))
+        diazo_path = os.path.join(app_path, 'diazo.xml')
+
+        self.log.debug("diazo_rules: %s", diazo_path)
+        return diazo_path
+
+    def dispatch(self, request, path):
+        response = super(DiazoProxyView, self).dispatch(request, path)
+
         if self.diazo_rules and self.diazo_theme_template:
             diazo = DiazoTransformer(request, response)
             response = diazo.transform(self.diazo_rules,
                                        self.diazo_theme_template,
                                        self.html5)
 
-        self.log.debug("RESPONSE RETURNED: %s", response)
         return response

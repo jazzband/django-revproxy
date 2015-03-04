@@ -2,14 +2,11 @@
 Usage
 =====
 
-==========
-Proxy View
-==========
+============
+Proxy Views
+============
 
-.. module:: revproxy.views.ProxyView
-      :synopsis: View used for Proxy requests
-
-This document covers the ``revproxy.views.ProxyView`` and all it's public attributes
+This document covers the views provided by ``revproxy.views`` and all it's public attributes
 
 .. class:: revproxy.views.ProxyView
 
@@ -72,6 +69,65 @@ This document covers the ``revproxy.views.ProxyView`` and all it's public attrib
                    (r'^/foo/(.*)$', r'/bar\1'),
                 )
 
+
+.. class:: revproxy.views.DiazoProxyView
+
+    In addition to ProxyView behavior this view also performs Diazo
+    transformations on the response before sending it back to the
+    original client.
+
+    .. seealso::
+
+        Diazo is an awesome tool developed by Plone Community to
+        perform XSLT transformations in a simpler way. In order to
+        use all Diazo power please refer to: http://diazo.org/
+
+
+    **Example urls.py**::
+
+        from revproxy.views import DiazoProxyView
+
+        proxy_view = DiazoProxyView.as_view(
+            upstream='http://example.com/',
+            html5=True,
+            diazo_theme_template='base.html',
+        )
+
+        urlpatterns = patterns('',
+            url(r'^(?P<path>.*)$', proxy_view),
+        )
+
+
+    **Example base.html**
+
+    .. code-block:: html
+
+        <html>
+            <head>...</head>
+            <body>
+                ...
+                <div id="content"></div>
+                ...
+            </body>
+        </html>
+
+
+    **Example diazo.xml**
+
+    .. code-block:: xml
+
+        <rules
+            xmlns="http://namespaces.plone.org/diazo"
+            xmlns:css="http://namespaces.plone.org/diazo/css"
+            xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+            <!-- Adds 'body' content from example.com into theme #content -->
+            <before css:theme-children="#content" css:content-children="body" />
+        </rules>
+
+
+    **Attributes**
+
     .. attribute:: diazo_theme_template
 
         The Django template to be used as Diazo theme. If set to
@@ -80,9 +136,10 @@ This document covers the ``revproxy.views.ProxyView`` and all it's public attrib
 
     .. attribute:: diazo_rules
 
-        The diazo rules file to be used. By default it will look for
-        the file ``diazo.xml`` on the Django application directory.
-        If set to ``None`` Diazo will be disabled.
+        The absolute path for the diazo rules file. By default it
+        will look for the file ``diazo.xml`` on the Django
+        application directory. If set to ``None`` Diazo will be
+        disabled.
 
     .. attribute:: html5
 
