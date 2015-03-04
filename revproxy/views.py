@@ -21,6 +21,7 @@ from .transformer import DiazoTransformer
 
 class ProxyView(View):
     add_remote_user = False
+    default_content_type = 'application/octet-stream'
     diazo_theme_template = 'diazo.html'
     html5 = False
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
@@ -124,7 +125,7 @@ class ProxyView(View):
         content_type = proxy_response.headers.get('Content-Type')
         if not content_type:
             content_type = (mimetypes.guess_type(request.path)[0] or
-                            'application/octet-stream')
+                            self.default_content_type)
             proxy_response.headers['Content-Type'] = content_type
             self.log.debug("Proxy response CONTENT-TYPE: %s",
                            proxy_response.headers['Content-Type'])
