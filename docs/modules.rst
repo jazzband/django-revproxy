@@ -1,5 +1,5 @@
-Modules
-================
+API
+===
 
 revproxy.response
 ------------------------
@@ -9,6 +9,7 @@ revproxy.response
     :undoc-members:
     :show-inheritance:
 
+
 revproxy.transformer
 ---------------------------
 
@@ -17,6 +18,7 @@ revproxy.transformer
     :undoc-members:
     :show-inheritance:
 
+
 revproxy.utils
 ---------------------
 
@@ -24,6 +26,7 @@ revproxy.utils
     :members:
     :undoc-members:
     :show-inheritance:
+
 
 revproxy.views
 ---------------------

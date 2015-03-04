@@ -1,6 +1,7 @@
 
 import codecs
 import os
+import re
 
 from setuptools import setup
 
@@ -9,10 +10,20 @@ def read(*parts):
     return codecs.open(os.path.join(os.path.dirname(__file__), *parts),
                        encoding='utf8').read()
 
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
+
 setup(
     name='django-revproxy',
     description='Yet another Django reverse proxy application.',
-    version='0.9dev',
+    version=find_version('revproxy/__init__.py'),
     long_description=read('README.rst'),
     packages=['revproxy'],
     install_requires=[
