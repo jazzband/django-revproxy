@@ -4,7 +4,7 @@ Introduction
 How does it work?
 -----------------
 
-.. image:: revproxy.jpg
+.. image:: _static/revproxy.jpg
    :width: 600 px
    :align: center
 
