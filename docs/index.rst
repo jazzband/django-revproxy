@@ -14,6 +14,7 @@ Contents:
 
    introduction
    quickstart
+   proxyview
    modules
    changelog
 
