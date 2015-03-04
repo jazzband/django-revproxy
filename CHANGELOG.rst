@@ -8,4 +8,8 @@
 * Removed double memory usage when reading response body (#16)
 * Fixed bug caused by many set-cookies coming from upstream (#23) - by @thiagovsk and @macartur
 * Added stream support for serving big files with an acceptable memory footprint (#17 and #24). Thanks to @lucasmoura, @macartur, @carloshfoliveira and @thiagovsk.
-* Moved Diazo functionalities to DiazoProxyView
+* Moved Diazo functionalities to DiazoProxyView.
+* Logging improved (#21).
+* Added options for default_content_type and retries [@gldnspud].
+* Sphinx docs (#25).
+* 100% test coverage.
