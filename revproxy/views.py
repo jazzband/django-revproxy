@@ -60,11 +60,12 @@ class ProxyView(View):
     def _created_proxy_response(self, request, path):
         request_payload = request.body
         request_headers = normalize_headers(request)
-        self.log.debug("Request headers: %s", request_headers)
 
         if self.add_remote_user and request.user.is_active:
             request_headers['REMOTE_USER'] = request.user.username
             self.log.info("REMOTE_USER set")
+
+        self.log.debug("Request headers: %s", request_headers)
 
         request_url = urljoin(
             self.upstream,
