@@ -62,14 +62,30 @@ class ProxyView(View):
                 self.log.debug("Redirect to: %s", redirect_to)
                 return redirect_to
 
-    def _created_proxy_response(self, request, path):
-        request_payload = request.body
+    def get_proxy_request_headers(self, request):
+        """Get normalized headers for the upstream
+
+        Gets all headers from the original request and normalizes them.
+        Normalization occurs by replacing 'HTTP\_' to '' and '_' to '-'
+
+        The header REMOTE_USER is set to the current user
+        if this view's add_remote_user property is True
+
+        :param request:  The original HttpRequest
+        :returns:  Normalized headers for the upstream
+        """
         request_headers = normalize_headers(request)
 
         if self.add_remote_user and request.user.is_active:
             request_headers['REMOTE_USER'] = request.user.username
             self.log.info("REMOTE_USER set")
 
+        return request_headers
+
+    def _created_proxy_response(self, request, path):
+        request_payload = request.body
+
+        request_headers = self.get_proxy_request_headers(request)
         self.log.debug("Request headers: %s", request_headers)
 
         request_url = urljoin(
