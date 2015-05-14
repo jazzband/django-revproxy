@@ -25,6 +25,8 @@ class ProxyView(View):
     default_content_type = 'application/octet-stream'
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
+    # It follows this RFC http://tools.ietf.org/html/rfc2396#section-2.3
+    unreserved = "-_.!~*'()/"
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -69,7 +71,7 @@ class ProxyView(View):
 
         request_url = urljoin(
             self.upstream,
-            quote(path.encode('utf8'))
+            quote(path.encode('utf8'), self.unreserved)
         )
         self.log.debug("Request URL: %s", request_url)
 
