@@ -19,14 +19,15 @@ from .response import get_django_response
 from .utils import normalize_headers, encode_items
 from .transformer import DiazoTransformer
 
+# It follows this RFC http://tools.ietf.org/html/rfc2396#section-2.3
+QUOTE_SAFE = '<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
+
 
 class ProxyView(View):
     add_remote_user = False
     default_content_type = 'application/octet-stream'
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
-    # It follows this RFC http://tools.ietf.org/html/rfc2396#section-2.3
-    unreserved = "-_.!~*'()/"
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -71,7 +72,7 @@ class ProxyView(View):
 
         request_url = urljoin(
             self.upstream,
-            quote(path.encode('utf8'), self.unreserved)
+            quote(path.encode('utf8'), QUOTE_SAFE)
         )
         self.log.debug("Request URL: %s", request_url)
 
