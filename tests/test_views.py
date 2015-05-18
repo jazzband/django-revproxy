@@ -93,3 +93,29 @@ class ViewTest(TestCase):
                                         preload_content=False,
                                         decode_content=False,
                                         headers=headers)
+
+    def test_extending_headers(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com'
+
+            def get_proxy_request_headers(self, request):
+                headers = super(CustomProxyView, self).\
+                                get_proxy_request_headers(request)
+                headers['DNT'] = 1
+                return headers
+
+        path = '/'
+        request = self.factory.get(path)
+        CustomProxyView.as_view()(request, path)
+
+        url = 'http://example.com/'
+        headers = {u'Cookie': u''}
+        custom_headers = {'DNT': 1}
+        custom_headers.update(headers)
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=custom_headers)
