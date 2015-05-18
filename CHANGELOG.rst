@@ -3,6 +3,7 @@
 ==================
 
 * More permissive URL scheme (#41).
+* Refactored code to allow setting custom headers by extending method (#40) [@marciomazza]
 
 
 0.9.0 (2015-03-04)
