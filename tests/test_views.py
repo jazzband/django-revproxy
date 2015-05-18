@@ -80,10 +80,11 @@ class ViewTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
 
-        request = self.factory.get('/ test')
-        CustomProxyView.as_view()(request, '/ test')
+        path = '/ test test'
+        request = self.factory.get(path)
+        CustomProxyView.as_view()(request, path)
 
-        url = 'http://example.com/%20test'
+        url = 'http://example.com/+test+test'
         headers = {u'Cookie': u''}
         self.urlopen.assert_called_with('GET', url,
                                         body=b'',

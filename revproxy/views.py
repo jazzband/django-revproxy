@@ -9,7 +9,7 @@ import logging
 import urllib3
 
 from django.utils.six.moves.urllib.parse import (urljoin, urlparse,
-                                                 urlencode, quote)
+                                                 urlencode, quote_plus)
 
 from django.shortcuts import redirect
 from django.views.generic import View
@@ -19,7 +19,9 @@ from .response import get_django_response
 from .utils import normalize_headers, encode_items
 from .transformer import DiazoTransformer
 
-# It follows this RFC http://tools.ietf.org/html/rfc2396#section-2.3
+# Chars that don't need to be quoted. We use same than nginx:
+#   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
+#   (Lines 1433-1449)
 QUOTE_SAFE = '<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
 
 
@@ -72,7 +74,7 @@ class ProxyView(View):
 
         request_url = urljoin(
             self.upstream,
-            quote(path.encode('utf8'), QUOTE_SAFE)
+            quote_plus(path.encode('utf8'), QUOTE_SAFE)
         )
         self.log.debug("Request URL: %s", request_url)
 
