@@ -1,13 +1,23 @@
 
+from mock import patch
 
 import os
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from revproxy.views import ProxyView, DiazoProxyView
 
+from .utils import get_urlopen_mock
+
 
 class ViewTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        urlopen_mock = get_urlopen_mock()
+        self.urlopen_patcher = patch('urllib3.PoolManager.urlopen',
+                                     urlopen_mock)
+        self.urlopen = self.urlopen_patcher.start()
 
     def test_upstream_not_implemented(self):
         proxy_view = ProxyView()
@@ -48,3 +58,37 @@ class ViewTest(TestCase):
     def test_default_add_remote_user_attr(self):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.add_remote_user)
+
+    def test_tilde_is_not_escaped(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com'
+
+        request = self.factory.get('/~')
+        CustomProxyView.as_view()(request, '/~')
+
+        url = 'http://example.com/~'
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
+
+    def test_space_is_escaped(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com'
+
+        request = self.factory.get('/ test')
+        CustomProxyView.as_view()(request, '/ test')
+
+        url = 'http://example.com/%20test'
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
