@@ -26,6 +26,11 @@ QUOTE_SAFE = '<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
 
 
 class ProxyView(View):
+    """View responsable by excute proxy requests, process and return
+    their responses.
+
+    """
+
     add_remote_user = False
     default_content_type = 'application/octet-stream'
     retries = None
