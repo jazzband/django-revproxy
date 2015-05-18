@@ -76,7 +76,9 @@ class ProxyView(View):
         The header REMOTE_USER is set to the current user
         if this view's add_remote_user property is True
 
-        :param request:  The original HttpRequest
+        .. versionadded:: 0.9.1
+
+        :param request:  The original HTTPRequest instance
         :returns:  Normalized headers for the upstream
         """
         request_headers = normalize_headers(request)
