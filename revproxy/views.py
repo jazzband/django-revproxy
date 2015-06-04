@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
 
+from .exceptions import InvalidUpstream
 from .response import get_django_response
 from .utils import normalize_headers, encode_items
 from .transformer import DiazoTransformer
@@ -23,6 +24,12 @@ from .transformer import DiazoTransformer
 #   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
 #   (Lines 1433-1449)
 QUOTE_SAFE = '<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
+
+
+ERRORS_MESSAGES = {
+    'upstream-no-scheme': ("Upstream URL scheme must be either "
+                           "'http' or 'https' (%s).")
+}
 
 
 class ProxyView(View):
@@ -51,6 +58,18 @@ class ProxyView(View):
     @property
     def upstream(self):
         raise NotImplementedError('Upstream server must be set')
+
+    def get_upstream(self):
+        upstream = self.upstream
+
+        if not getattr(self, '_parsed_url', None):
+            self._parsed_url = urlparse(upstream)
+
+        if self._parsed_url.scheme not in ('http', 'https'):
+            raise InvalidUpstream(ERRORS_MESSAGES['upstream-no-scheme'] %
+                                  upstream)
+
+        return upstream
 
     @classonlymethod
     def as_view(cls, **initkwargs):
@@ -96,7 +115,7 @@ class ProxyView(View):
         self.log.debug("Request headers: %s", request_headers)
 
         request_url = urljoin(
-            self.upstream,
+            self.get_upstream(),
             quote_plus(path.encode('utf8'), QUOTE_SAFE)
         )
         self.log.debug("Request URL: %s", request_url)
@@ -132,9 +151,8 @@ class ProxyView(View):
                 scheme = 'http://'
             request_host = scheme + request.get_host()
 
-            url = urlparse(self.upstream)
-            upstream_host_http = 'http://' + url.netloc
-            upstream_host_https = 'https://' + url.netloc
+            upstream_host_http = 'http://' + self._parsed_url.netloc
+            upstream_host_https = 'https://' + self._parsed_url.netloc
 
             location = location.replace(upstream_host_http, request_host)
             location = location.replace(upstream_host_https, request_host)

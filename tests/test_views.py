@@ -5,6 +5,7 @@ import os
 
 from django.test import TestCase, RequestFactory
 
+from revproxy.exceptions import InvalidUpstream
 from revproxy.views import ProxyView, DiazoProxyView
 
 from .utils import get_urlopen_mock
@@ -23,6 +24,14 @@ class ViewTest(TestCase):
         proxy_view = ProxyView()
         with self.assertRaises(NotImplementedError):
             upstream = proxy_view.upstream
+
+    def test_upstream_without_scheme(self):
+        class BrokenProxyView(ProxyView):
+            upstream = 'www.example.com'
+
+        proxy_view = BrokenProxyView()
+        with self.assertRaises(InvalidUpstream):
+            proxy_view.get_upstream()
 
     def test_upstream_overriden(self):
         class CustomProxyView(ProxyView):
