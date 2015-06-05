@@ -142,3 +142,20 @@ class ResponseTest(TestCase):
 
         self.assertIn("_cookie1", response.cookies.keys())
         self.assertIn("_cookie2", response.cookies.keys())
+
+    def test_invalid_cookie(self):
+        path = "/"
+        request = self.factory.get(path)
+        headers = {
+            'connection': '0',
+            'proxy-authorization': 'allow',
+            'content-type': 'text/html',
+            'set-cookie':   'invalid-cookie',
+        }
+
+        urlopen_mock = get_urlopen_mock(headers=headers)
+        with patch(URLOPEN, urlopen_mock):
+            response = CustomProxyView.as_view()(request, path)
+
+        response_headers = response._headers
+        self.assertFalse(response.cookies)
