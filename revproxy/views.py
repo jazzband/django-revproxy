@@ -59,7 +59,7 @@ class ProxyView(View):
     def upstream(self):
         raise NotImplementedError('Upstream server must be set')
 
-    def get_upstream(self):
+    def get_upstream(self, path):
         upstream = self.upstream
 
         if not getattr(self, '_parsed_url', None):
@@ -68,6 +68,9 @@ class ProxyView(View):
         if self._parsed_url.scheme not in ('http', 'https'):
             raise InvalidUpstream(ERRORS_MESSAGES['upstream-no-scheme'] %
                                   upstream)
+
+        if path and upstream[-1] != '/':
+            upstream += '/'
 
         return upstream
 
@@ -115,7 +118,7 @@ class ProxyView(View):
         self.log.debug("Request headers: %s", request_headers)
 
         request_url = urljoin(
-            self.get_upstream(),
+            self.get_upstream(path),
             quote_plus(path.encode('utf8'), QUOTE_SAFE)
         )
         self.log.debug("Request URL: %s", request_url)
