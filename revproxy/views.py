@@ -202,10 +202,8 @@ class DiazoProxyView(ProxyView):
     def dispatch(self, request, path):
         response = super(DiazoProxyView, self).dispatch(request, path)
 
-        if self.diazo_rules and self.diazo_theme_template:
-            diazo = DiazoTransformer(request, response)
-            response = diazo.transform(self.diazo_rules,
-                                       self.diazo_theme_template,
-                                       self.html5)
+        diazo = DiazoTransformer(request, response)
+        response = diazo.transform(self.diazo_rules, self.diazo_theme_template,
+                                   self.html5)
 
         return response
