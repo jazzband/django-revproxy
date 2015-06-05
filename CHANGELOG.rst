@@ -1,4 +1,10 @@
 
+0.9.2 (unreleased)
+==================
+
+* Validate upstream URL to make sure it has a scheme
+
+
 0.9.1 (2015-05-18)
 ==================
 
