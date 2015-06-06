@@ -35,10 +35,10 @@ class ViewTest(TestCase):
             proxy_view._parsed_url
 
         # Test for parsed URL
-        proxy_view.get_upstream()
+        proxy_view.get_upstream('')
         self.assertIsInstance(proxy_view._parsed_url, ParseResult)
         # Get parsed URL from cache
-        proxy_view.get_upstream()
+        proxy_view.get_upstream('')
         self.assertIsInstance(proxy_view._parsed_url, ParseResult)
 
     def test_upstream_without_scheme(self):
