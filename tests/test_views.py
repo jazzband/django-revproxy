@@ -4,6 +4,7 @@ from mock import patch
 import os
 
 from django.test import TestCase, RequestFactory
+from django.utils.six.moves.urllib.parse import ParseResult
 
 from revproxy.exceptions import InvalidUpstream
 from revproxy.views import ProxyView, DiazoProxyView
@@ -24,6 +25,21 @@ class ViewTest(TestCase):
         proxy_view = ProxyView()
         with self.assertRaises(NotImplementedError):
             upstream = proxy_view.upstream
+
+    def test_upstream_parsed_url_cache(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://www.example.com'
+
+        proxy_view = CustomProxyView()
+        with self.assertRaises(AttributeError):
+            proxy_view._parsed_url
+
+        # Test for parsed URL
+        proxy_view.get_upstream()
+        self.assertIsInstance(proxy_view._parsed_url, ParseResult)
+        # Get parsed URL from cache
+        proxy_view.get_upstream()
+        self.assertIsInstance(proxy_view._parsed_url, ParseResult)
 
     def test_upstream_without_scheme(self):
         class BrokenProxyView(ProxyView):

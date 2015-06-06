@@ -3,6 +3,7 @@
 ==================
 
 * Validate upstream URL to make sure it has a scheme
+* Added branch test coverage
 
 
 0.9.1 (2015-05-18)
