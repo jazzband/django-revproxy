@@ -2,6 +2,7 @@
 0.9.2 (unreleased)
 ==================
 
+* Append a backslash on upstream when needed
 * Validate upstream URL to make sure it has a scheme
 * Added branch test coverage
 

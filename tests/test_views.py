@@ -35,10 +35,10 @@ class ViewTest(TestCase):
             proxy_view._parsed_url
 
         # Test for parsed URL
-        proxy_view.get_upstream()
+        proxy_view.get_upstream('')
         self.assertIsInstance(proxy_view._parsed_url, ParseResult)
         # Get parsed URL from cache
-        proxy_view.get_upstream()
+        proxy_view.get_upstream('')
         self.assertIsInstance(proxy_view._parsed_url, ParseResult)
 
     def test_upstream_without_scheme(self):
@@ -47,7 +47,7 @@ class ViewTest(TestCase):
 
         proxy_view = BrokenProxyView()
         with self.assertRaises(InvalidUpstream):
-            proxy_view.get_upstream()
+            proxy_view.get_upstream('')
 
     def test_upstream_overriden(self):
         class CustomProxyView(ProxyView):
@@ -55,6 +55,22 @@ class ViewTest(TestCase):
 
         proxy_view = CustomProxyView()
         self.assertEqual(proxy_view.upstream, 'http://www.google.com/')
+
+    def test_upstream_without_trailing_slash(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com/area'
+
+        request = self.factory.get('login')
+        CustomProxyView.as_view()(request, 'login')
+
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', 'http://example.com/area/login',
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
 
     def test_default_diazo_rules(self):
         class CustomProxyView(DiazoProxyView):
