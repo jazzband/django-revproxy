@@ -1,6 +1,8 @@
 
-0.9.2 (unreleased)
+0.9.2 (2015-06-09)
 ==================
+
+Thanks @rafamanzo for the reports.
 
 * Append a backslash on upstream when needed
 * Validate upstream URL to make sure it has a scheme
