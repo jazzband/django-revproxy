@@ -1,7 +1,7 @@
 
 import re
 
-from io import BytesIO
+from io import StringIO
 
 import logging
 
@@ -132,7 +132,7 @@ class DiazoTransformer(object):
                                         context_instance=context_instance)
         output_xslt = compile_theme(
             rules=rules,
-            theme=BytesIO(theme.encode('latin1')),
+            theme=StringIO(theme),
         )
 
         transform = etree.XSLT(output_xslt)

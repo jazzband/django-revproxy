@@ -1,4 +1,10 @@
 
+0.9.3 (2015-06-12)
+==================
+
+* Use StringIO intead of BytesIO on theme compilation (transformation)
+
+
 0.9.2 (2015-06-09)
 ==================
 
