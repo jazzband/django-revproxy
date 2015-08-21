@@ -14,6 +14,7 @@ from django.utils.six.moves.urllib.parse import (urljoin, urlparse,
 from django.shortcuts import redirect
 from django.views.generic import View
 from django.utils.decorators import classonlymethod
+from django.views.generic.base import ContextMixin
 
 from .exceptions import InvalidUpstream
 from .response import get_django_response
@@ -188,7 +189,7 @@ class ProxyView(View):
         return response
 
 
-class DiazoProxyView(ProxyView):
+class DiazoProxyView(ProxyView, ContextMixin):
 
     diazo_theme_template = 'diazo.html'
     html5 = False
@@ -205,8 +206,9 @@ class DiazoProxyView(ProxyView):
     def dispatch(self, request, path):
         response = super(DiazoProxyView, self).dispatch(request, path)
 
+        context_data = self.get_context_data()
         diazo = DiazoTransformer(request, response)
         response = diazo.transform(self.diazo_rules, self.diazo_theme_template,
-                                   self.html5)
+                                   self.html5, context_data)
 
         return response
