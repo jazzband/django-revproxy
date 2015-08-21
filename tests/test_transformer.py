@@ -252,6 +252,21 @@ class TransformerTest(TestCase):
 
         self.assertIn(b'<!DOCTYPE html>', response.content)
 
+    def test_transform_with_context_data(self):
+        class ContextDataView(CustomProxyView):
+            context_data = 'random data'
+            diazo_theme_template = 'diazo_with_context_data.html'
+
+        request = self.factory.get('/')
+        content = u'test'.encode('utf-8')
+        headers = {'Content-Type': 'text/html'}
+
+        urlopen_mock = get_urlopen_mock(content, headers)
+        with patch(URLOPEN, urlopen_mock):
+            response = ContextDataView.as_view(html5=True)(request, '/')
+
+        self.assertIn(b'random data', response.content)
+
     def test_asbool(self):
         test_true = ['true', 'yes', 'on', 'y', 't', '1']
         for element in test_true:
