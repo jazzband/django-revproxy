@@ -100,6 +100,24 @@ class ViewTest(TestCase):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.add_remote_user)
 
+    def test_inheritance_context_mixin(self):
+        mixin_view = DiazoProxyView()
+        self.assertTrue(hasattr(mixin_view, 'get_context_data'))
+
+    def test_added_view_context(self):
+        class CustomProxyView(DiazoProxyView):
+            def get_context_data(self, **kwargs):
+                context_data = {'key': 'value'}
+                context_data.update(kwargs)
+                return super(CustomProxyView, self).get_context_data(**context_data)
+
+        class TextGetContextData(CustomProxyView):
+            def get_context_data(self, **kwargs):
+                context_data = super(CustomProxyView, self).get_context_data(**context_data)
+                self.assertEqual(context_data['key'], 'value')
+                return {}
+
+
     def test_tilde_is_not_escaped(self):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
