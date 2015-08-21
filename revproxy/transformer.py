@@ -109,7 +109,7 @@ class DiazoTransformer(object):
         self.log.info("Transform")
         return True
 
-    def transform(self, rules, theme_template, is_html5):
+    def transform(self, rules, theme_template, is_html5, context_data=None):
         """Method used to make a transformation on the content of
         the http response based on the rules and theme_templates
         passed as paremters
@@ -127,7 +127,7 @@ class DiazoTransformer(object):
             self.log.info("Don't need to be transformed")
             return self.response
 
-        context_instance = RequestContext(self.request)
+        context_instance = RequestContext(self.request, context_data)
         theme = loader.render_to_string(theme_template,
                                         context_instance=context_instance)
         output_xslt = compile_theme(
