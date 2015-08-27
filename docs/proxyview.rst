@@ -91,7 +91,8 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
     In addition to ProxyView behavior this view also performs Diazo
     transformations on the response before sending it back to the
-    original client.
+    original client. Furthermore, it's possible to pass context data
+    to the view thanks to ContextMixin behavior through ``get_context_data()`` method.
 
     .. seealso::
 
@@ -141,6 +142,44 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
             <!-- Adds 'body' content from example.com into theme #content -->
             <before css:theme-children="#content" css:content-children="body" />
         </rules>
+
+
+    **Example with context data**
+
+    .. code-block:: python
+
+        from revproxy.views import DiazoProxyView
+
+        class CustomProxyView(DiazoProxyView):
+            attribute1 = 'attribute1'
+            def get_context_data(self, **kwargs):
+                context_data = {'attribute2': 'attribute2'}
+                context_data.update(kwargs)
+                return super(CustomProxyView, self).get_context_data(**context_data)
+
+        proxy_view = CustomProxyView.as_view(
+            upstream='http://example.com/',
+            html5=True,
+            diazo_theme_template='base.html',
+        )
+
+        urlpatterns = patterns('',
+            url(r'^(?P<path>.*)$', proxy_view),
+        )
+
+    .. code-block:: html
+
+        <html>
+            <head>...</head>
+            <body>
+                ...
+                <div id="content">
+                    {{ view.attribute1 }}
+                    {{ attribute2 }}
+                </div>
+                ...
+            </body>
+        </html>
 
 
     **Attributes**
