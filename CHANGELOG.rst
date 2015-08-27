@@ -1,4 +1,10 @@
 
+0.9.4 (2015-08-27)
+==================
+
+* Alow to send context dict to transformation template. [@chaws, @macartur]
+
+
 0.9.3 (2015-06-12)
 ==================
 
