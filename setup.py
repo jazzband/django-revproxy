@@ -30,6 +30,9 @@ setup(
         'django>=1.6',
         'urllib3==1.10.1',
     ],
+    extras_require={
+        'diazo': ['diazo>=1.0.5'],
+    },
     tests_require=['mock', 'diazo', ],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
