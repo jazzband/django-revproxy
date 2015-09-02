@@ -1,4 +1,10 @@
 
+0.9.5 (2015-09-02)
+==================
+
+* Added extras_require to make easier diazo installation
+
+
 0.9.4 (2015-08-27)
 ==================
 

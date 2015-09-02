@@ -8,6 +8,12 @@ Installation
 
     $ pip install django-revproxy
 
+If you want to use DiazoProxyView you will also need to install Diazo. In that case you can use the following handy shortcurt:
+
+.. code-block:: sh
+
+    $ pip install django-revproxy[diazo]
+
 
 Configuration
 --------------
