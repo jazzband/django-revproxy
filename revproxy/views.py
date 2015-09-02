@@ -32,6 +32,8 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
+HTTP_POOLS = urllib3.PoolManager()
+
 
 class ProxyView(View):
     """View responsable by excute proxy requests, process and return
@@ -52,7 +54,7 @@ class ProxyView(View):
         for from_pattern, to_pattern in self.rewrite:
             from_re = re.compile(from_pattern)
             self._rewrite.append((from_re, to_pattern))
-        self.http = urllib3.PoolManager()
+        self.http = HTTP_POOLS
         self.log = logging.getLogger('revproxy.view')
         self.log.info("ProxyView created")
 
