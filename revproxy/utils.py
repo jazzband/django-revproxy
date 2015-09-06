@@ -10,6 +10,7 @@ IGNORE_HEADERS = (
                              # we remove the Accept-Encoding from
                              # original request
     'HTTP_HOST',
+    'HTTP_REMOTE_USER',      # We DO NOT want the remote user coming from client side
 )
 
 
