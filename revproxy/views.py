@@ -18,7 +18,7 @@ from django.views.generic.base import ContextMixin
 
 from .exceptions import InvalidUpstream
 from .response import get_django_response
-from .utils import normalize_headers, encode_items
+from .utils import normalize_request_headers, encode_items
 from .transformer import DiazoTransformer
 
 # Chars that don't need to be quoted. We use same than nginx:
@@ -96,7 +96,9 @@ class ProxyView(View):
         """Get normalized headers for the upstream
 
         Gets all headers from the original request and normalizes them.
-        Normalization occurs by replacing 'HTTP\_' to '' and '_' to '-'
+        Normalization occurs by removing the prefix ``HTTP_`` and
+        replacing and ``_`` by ``-``. Example: ``HTTP_ACCEPT_ENCODING``
+        becames ``Accept-Encoding``.
 
         The header REMOTE_USER is set to the current user
         if this view's add_remote_user property is True
@@ -106,7 +108,7 @@ class ProxyView(View):
         :param request:  The original HTTPRequest instance
         :returns:  Normalized headers for the upstream
         """
-        request_headers = normalize_headers(request)
+        request_headers = normalize_request_headers(request)
 
         if self.add_remote_user and request.user.is_active:
             request_headers['REMOTE_USER'] = request.user.username

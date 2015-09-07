@@ -4,11 +4,11 @@ import logging
 
 import urllib3
 
+from wsgiref.util import is_hop_by_hop
+
 from django.test import RequestFactory, TestCase
 from mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
-
-from revproxy.response import HOP_BY_HOP_HEADERS
 
 from .utils import (get_urlopen_mock, DEFAULT_BODY_CONTENT,
                     CustomProxyView, URLOPEN)
@@ -81,7 +81,7 @@ class ResponseTest(TestCase):
         response_headers = response._headers
 
         for header in response_headers:
-            self.assertTrue(header not in HOP_BY_HOP_HEADERS)
+            self.assertFalse(is_hop_by_hop(header))
 
     def test_response_code_remains_the_same(self):
         path = "/"
