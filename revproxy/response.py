@@ -1,16 +1,8 @@
 import logging
 
-from .utils import cookie_from_string, should_stream
+from .utils import cookie_from_string, should_stream, set_response_headers
 
 from django.http import HttpResponse, StreamingHttpResponse
-
-#: Headers used only for HOP-BY-HOP transport
-HOP_BY_HOP_HEADERS = (
-    'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
-    'te', 'trailers', 'transfer-encoding', 'upgrade')
-
-#: Headers that must be ignored
-IGNORE_HEADERS = HOP_BY_HOP_HEADERS + ('set-cookie', )
 
 #: Default number of bytes that are going to be read in a file lecture
 DEFAULT_AMT = 2 ** 16
@@ -49,10 +41,8 @@ def get_django_response(proxy_response):
         response = HttpResponse(content, status=status,
                                 content_type=content_type)
 
-    logger.info("Normalizing headers that aren't in IGNORE_HEADERS")
-    for header, value in headers.items():
-        if header.lower() not in IGNORE_HEADERS:
-            response[header.title()] = value
+    logger.info('Normalizing response headers')
+    set_response_headers(response, headers)
 
     logger.debug('Response headers: %s', getattr(response, '_headers'))
 

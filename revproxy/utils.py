@@ -3,6 +3,8 @@ import re
 
 import logging
 
+from wsgiref.util import is_hop_by_hop
+
 #: List containing string constant that are used to represent headers that can
 #: be ignored in the required_header function
 IGNORE_HEADERS = (
@@ -105,7 +107,18 @@ def required_header(header):
     return False
 
 
-def normalize_headers(request):
+def set_response_headers(response, response_headers):
+
+    for header, value in response_headers.items():
+        if is_hop_by_hop(header) or header.lower() == 'set-cookie':
+            continue
+
+        response[header.title()] = value
+
+    logger.debug('Response headers: %s', getattr(response, '_headers'))
+
+
+def normalize_request_headers(request):
     """Function used to transform header, replacing 'HTTP\_' to ''
     and replace '_' to '-'
 
