@@ -12,6 +12,7 @@ IGNORE_HEADERS = (
                              # we remove the Accept-Encoding from
                              # original request
     'HTTP_HOST',
+    'HTTP_REMOTE_USER',
 )
 
 

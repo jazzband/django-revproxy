@@ -22,10 +22,14 @@ class UtilsTest(TestCase):
         self.assertEqual('latin-1', charset)
 
     def test_required_header(self):
-        self.assertTrue(utils.required_header('HTTP_REMOTE_USER'))
+        self.assertTrue(utils.required_header('HTTP_USER_AGENT'))
+        self.assertTrue(utils.required_header('HTTP_ANY_THING_AFTER_HTTP'))
 
     def test_ignore_host_header(self):
         self.assertFalse(utils.required_header('HTTP_HOST'))
+        self.assertFalse(utils.required_header('HTTP_REMOTE_USER'))
+        self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
+        self.assertFalse(utils.required_header('WRONG_HEADER'))
 
     def test_ignore_accept_encoding_header(self):
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
