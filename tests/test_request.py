@@ -266,3 +266,35 @@ class RequestTest(TestCase):
                                         decode_content=False,
                                         headers=headers,
                                         body=b'')
+
+    def test_remote_user_injection_authenticated_add_remote_user(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'headers': request_headers,
+                   'add_remote_user': True}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': '', 'REMOTE_USER': 'jacob'}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
+
+    def test_remote_user_injection_anonymous_add_remote_user(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'headers': request_headers,
+                   'add_remote_user': True, 'anonymous': True}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
