@@ -39,16 +39,38 @@ class RequestTest(TestCase):
         proxy_view = ProxyView()
         self.assertFalse(proxy_view.add_remote_user)
 
-    def test_remote_user_authenticated(self):
+    def factory_custom_proxy_view(self, **kwargs):
         class CustomProxyView(ProxyView):
-            add_remote_user = True
-            upstream = 'http://www.example.com'
+            add_remote_user = kwargs.get('add_remote_user', False)
+            upstream = kwargs.get('upstream', 'http://www.example.com')
+            retries = kwargs.get('retries', None)
+            rewrite = kwargs.get('rewrite', tuple())
 
-        request = self.factory.get('/')
-        request.user = self.user
+        if kwargs.get('method') == 'POST':
+            request = self.factory.post(kwargs.get('path', '/'),
+                                        kwargs.get('post_data', {}))
+        elif kwargs.get('method') == 'PUT':
+            request = self.factory.put('path', kwargs.get('request_data', {}))
+        else:
+            request = self.factory.get(kwargs.get('path', '/'),
+                                       kwargs.get('get_data', {}))
 
-        CustomProxyView.as_view()(request, '/test')
+        if kwargs.get('anonymous'):
+            request.user = AnonymousUser()
+        else:
+            request.user = self.user
 
+        if kwargs.get('remote_user', False):
+            request.META['HTTP_REMOTE_USER'] = kwargs.get('remote_user')
+
+        response = CustomProxyView.as_view()(request, kwargs.get('path', '/'))
+        return {'request': request, 'response': response}
+
+    def test_remote_user_authenticated(self):
+        options = {'add_remote_user': True, 'anonymous': False,
+                   'path': '/test'}
+
+        self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test'
         headers = {'REMOTE_USER': 'jacob', 'Cookie': ''}
         self.urlopen.assert_called_with('GET', url,
@@ -60,15 +82,10 @@ class RequestTest(TestCase):
                                         body=b'')
 
     def test_remote_user_anonymous(self):
-        class CustomProxyView(ProxyView):
-            add_remote_user = True
-            upstream = 'http://www.example.com'
+        options = {'add_remote_user': True, 'anonymous': True,
+                   'path': '/test/anonymous/'}
 
-        request = self.factory.get('/')
-        request.user = AnonymousUser()
-
-        CustomProxyView.as_view()(request, '/test/anonymous/')
-
+        self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/anonymous/'
         headers = {'Cookie': ''}
         self.urlopen.assert_called_with('GET', url, redirect=False,
@@ -79,15 +96,9 @@ class RequestTest(TestCase):
 
     def test_custom_retries(self):
         RETRIES = Retry(20, backoff_factor=0.1)
+        options = {'path': '/test/', 'retries': RETRIES}
 
-        class CustomProxyView(ProxyView):
-            retries = RETRIES
-            upstream = 'http://www.example.com/'
-
-        request = self.factory.get('/')
-
-        CustomProxyView.as_view()(request, '/test/')
-
+        self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/'
         headers = {'Cookie': ''}
         self.urlopen.assert_called_with('GET', url, redirect=False,
@@ -97,29 +108,23 @@ class RequestTest(TestCase):
                                         headers=headers, body=b'')
 
     def test_simple_get(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-
         get_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
-        request = self.factory.get('/', get_data)
-        CustomProxyView.as_view()(request, '/')
+        options = {'path': '/test/', 'get_data': get_data}
+
+        self.factory_custom_proxy_view(**options)
 
         assert self.urlopen.called
-
         called_qs = self.urlopen.call_args[0][1].split('?')[-1]
         called_get_data = parse_qs(called_qs)
         self.assertEqual(called_get_data, get_data)
 
     def test_get_with_attr_list(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-
         get_data = {
             u'a': [u'a', u'b', u'c', u'd'],
             u'foo': [u'bar'],
         }
-        request = self.factory.get('/', get_data)
-        CustomProxyView.as_view()(request, '/')
+        options = {'path': '/', 'get_data': get_data}
+        self.factory_custom_proxy_view(**options)
 
         assert self.urlopen.called
         called_qs = self.urlopen.call_args[0][1].split('?')[-1]
@@ -128,14 +133,11 @@ class RequestTest(TestCase):
         self.assertEqual(called_get_data, get_data)
 
     def test_post_and_get(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-
         get_data = {'x': ['y', 'z']}
         post_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
 
-        request = self.factory.post('/?x=y&x=z', post_data)
-        CustomProxyView.as_view()(request, '/')
+        options = {'path': '/?x=y&x=z', 'post_data': post_data}
+        result = self.factory_custom_proxy_view(**options)
 
         assert self.urlopen.called
         called_qs = self.urlopen.call_args[0][1].split('?')[-1]
@@ -145,83 +147,87 @@ class RequestTest(TestCase):
         self.assertEqual(called_get_data, get_data)
 
         # Check for POST data
-        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'],
+                         result.get('request').body)
 
     def test_put(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-
         request_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
 
-        request = self.factory.put('/', request_data)
-        CustomProxyView.as_view()(request, '/')
+        options = {'path': '/', 'method': 'PUT', 'request_data': request_data}
+
+        result = self.factory_custom_proxy_view(**options)
 
         assert self.urlopen.called
 
         # Check for request data
-        self.assertEqual(self.urlopen.call_args[1]['body'], request.body)
+        self.assertEqual(self.urlopen.call_args[1]['body'],
+                         result.get('request').body)
 
         self.assertEqual(self.urlopen.call_args[0][0], 'PUT')
 
     def test_simple_rewrite(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            add_remote_user = False
-            rewrite = (
-                (r'^/yellow/star/?$', r'/black/hole/'),
-                (r'^/foo/$', r'/bar'),
-            )
+        rewrite = (
+            (r'^/yellow/star/?$', r'/black/hole/'),
+            (r'^/foo/$', r'/bar'),
+        )
+        options = {'path': '/yellow/star', 'add_remote_user': False,
+                   'rewrite': rewrite}
 
-        request = self.factory.get('/yellow/star')
-        response = CustomProxyView.as_view()(request, '/yellow/star')
-
-        self.assertEqual(response.url, '/black/hole/')
-        self.assertEqual(response.status_code, 302)
+        result = self.factory_custom_proxy_view(**options)
+        self.assertEqual(result.get('response').url, '/black/hole/')
+        self.assertEqual(result.get('response').status_code, 302)
 
     def test_rewrite_with_get(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            add_remote_user = False
-            rewrite = (
-                (r'^/yellow/star/$', r'/black/hole/'),
-                (r'^/foo/(.*)$', r'/bar\1'),
-            )
+        rewrite = (
+            (r'^/foo/(.*)$', r'/bar\1'),
+        )
+        get_data = {'a': ['1'], 'b': ['c']}
+        options = {'path': '/foo/', 'add_remote_user': False,
+                   'rewrite': rewrite, 'get_data': get_data}
 
-        data = {'a': ['1'], 'b': ['c']}
-        request = self.factory.get('/foo/', data)
-        response = CustomProxyView.as_view()(request, '/foo/')
-
-        path, querystring = response.url.split('?')
+        result = self.factory_custom_proxy_view(**options)
+        path, querystring = result.get('response').url.split('?')
         self.assertEqual(path, '/bar')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(result.get('response').status_code, 302)
 
         response_data = parse_qs(querystring)
-        self.assertEqual(response_data, data)
+        self.assertEqual(response_data, get_data)
 
     def test_rewrite_to_external_location(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            add_remote_user = False
-            rewrite = (
-                (r'^/yellow/star/?$', r'http://www.mozilla.org/'),
-            )
+        rewrite = (
+            (r'^/yellow/star/?$', r'http://www.mozilla.org/'),
+        )
+        options = {'path': '/yellow/star', 'add_remote_user': False,
+                   'rewrite': rewrite}
 
-        request = self.factory.get('/yellow/star/')
-        response = CustomProxyView.as_view()(request, '/yellow/star/')
-
-        self.assertEqual(response.url, 'http://www.mozilla.org/')
-        self.assertEqual(response.status_code, 302)
+        result = self.factory_custom_proxy_view(**options)
+        self.assertEqual(result.get('response').url, 'http://www.mozilla.org/')
+        self.assertEqual(result.get('response').status_code, 302)
 
     def test_rewrite_to_view_name(self):
-        class CustomProxyView(ProxyView):
-            upstream = 'http://www.example.com'
-            add_remote_user = False
-            rewrite = (
-                (r'^/yellow/star/$', r'login'),
-            )
+        rewrite = (
+            (r'^/yellow/star/$', r'login'),
+        )
+        options = {'path': '/yellow/star/', 'add_remote_user': False,
+                   'rewrite': rewrite}
 
-        request = self.factory.get('/yellow/star/')
-        response = CustomProxyView.as_view()(request, '/yellow/star/')
+        result = self.factory_custom_proxy_view(**options)
+        self.assertEqual(result.get('response').url, '/accounts/login/')
+        self.assertEqual(result.get('response').status_code, 302)
 
-        self.assertEqual(response.url, '/accounts/login/')
-        self.assertEqual(response.status_code, 302)
+    def test_no_rewrite(self):
+        rewrite = (
+            (r'^/yellow/star/$', r'login'),
+            (r'^/foo/(.*)$', r'/bar\1'),
+        )
+
+        options = {'path': '/test/', 'rewrite': rewrite}
+
+        result = self.factory_custom_proxy_view(**options)
+        url = 'http://www.example.com/test/'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers, body=b'')
