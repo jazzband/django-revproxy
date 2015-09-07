@@ -4,6 +4,7 @@
 
 * Fixed connections pools
 * Use wsgiref to check for hop-by-hop headers [#50]
+* Refactored tests
 
 
 0.9.5 (2015-09-02)
