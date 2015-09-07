@@ -21,6 +21,11 @@ class ViewTest(TestCase):
                                      urlopen_mock)
         self.urlopen = self.urlopen_patcher.start()
 
+    def test_connection_pool_singleton(self):
+        view1 = ProxyView()
+        view2 = ProxyView()
+        self.assertIs(view1.http, view2.http)
+
     def test_upstream_not_implemented(self):
         proxy_view = ProxyView()
         with self.assertRaises(NotImplementedError):
