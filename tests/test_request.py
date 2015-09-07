@@ -168,6 +168,7 @@ class RequestTest(TestCase):
     def test_simple_rewrite(self):
         rewrite = (
             (r'^/yellow/star/?$', r'/black/hole/'),
+            (r'^/foo/$', r'/bar'),
         )
         options = {'path': '/yellow/star', 'add_remote_user': False,
                    'rewrite': rewrite}
@@ -213,3 +214,20 @@ class RequestTest(TestCase):
         result = self.factory_custom_proxy_view(**options)
         self.assertEqual(result.get('response').url, '/accounts/login/')
         self.assertEqual(result.get('response').status_code, 302)
+
+    def test_no_rewrite(self):
+        rewrite = (
+            (r'^/yellow/star/$', r'login'),
+            (r'^/foo/(.*)$', r'/bar\1'),
+        )
+
+        options = {'path': '/test/', 'rewrite': rewrite}
+
+        result = self.factory_custom_proxy_view(**options)
+        url = 'http://www.example.com/test/'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers, body=b'')
