@@ -60,9 +60,6 @@ class RequestTest(TestCase):
         else:
             request.user = self.user
 
-        if kwargs.get('remote_user', False):
-            request.META['HTTP_REMOTE_USER'] = kwargs.get('remote_user')
-
         if kwargs.get('headers'):
             for key, value in kwargs.get('headers').items():
                 request.META[key] = value
