@@ -1,5 +1,5 @@
 
-0.9.6 (not released)
+0.9.6 (2015-09-09)
 ==================
 
 * Fixed connections pools
