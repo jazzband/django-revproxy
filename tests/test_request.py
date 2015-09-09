@@ -60,8 +60,9 @@ class RequestTest(TestCase):
         else:
             request.user = self.user
 
-        if kwargs.get('remote_user', False):
-            request.META['HTTP_REMOTE_USER'] = kwargs.get('remote_user')
+        if kwargs.get('headers'):
+            for key, value in kwargs.get('headers').items():
+                request.META[key] = value
 
         response = CustomProxyView.as_view()(request, kwargs.get('path', '/'))
         return {'request': request, 'response': response}
@@ -231,3 +232,66 @@ class RequestTest(TestCase):
                                         preload_content=False,
                                         decode_content=False,
                                         headers=headers, body=b'')
+
+    def test_remote_user_injection_anonymous(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'anonymous': True,
+                   'headers': request_headers}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
+
+    def test_remote_user_injection_authenticated(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'headers': request_headers}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
+
+    def test_remote_user_injection_authenticated_add_remote_user(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'headers': request_headers,
+                   'add_remote_user': True}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': '', 'REMOTE_USER': 'jacob'}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
+
+    def test_remote_user_injection_anonymous_add_remote_user(self):
+        request_headers = {'HTTP_REMOTE_USER': 'foo'}
+        options = {'path': '/test', 'headers': request_headers,
+                   'add_remote_user': True, 'anonymous': True}
+        result = self.factory_custom_proxy_view(**options)
+
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
