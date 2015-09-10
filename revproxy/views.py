@@ -45,6 +45,7 @@ class ProxyView(View):
     default_content_type = 'application/octet-stream'
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
+    upstream = None
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -57,10 +58,6 @@ class ProxyView(View):
         self.http = HTTP_POOLS
         self.log = logging.getLogger('revproxy.view')
         self.log.info("ProxyView created")
-
-    @property
-    def upstream(self):
-        raise NotImplementedError('Upstream server must be set')
 
     def get_upstream(self, path):
         upstream = self.upstream
