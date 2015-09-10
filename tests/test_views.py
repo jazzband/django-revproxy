@@ -26,11 +26,6 @@ class ViewTest(TestCase):
         view2 = ProxyView()
         self.assertIs(view1.http, view2.http)
 
-    def test_upstream_not_implemented(self):
-        proxy_view = ProxyView()
-        with self.assertRaises(NotImplementedError):
-            upstream = proxy_view.upstream
-
     def test_upstream_parsed_url_cache(self):
         class CustomProxyView(ProxyView):
             upstream = 'http://www.example.com'
