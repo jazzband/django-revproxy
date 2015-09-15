@@ -40,6 +40,7 @@ class ProxyView(View):
     their responses.
 
     """
+    _upstream = None
 
     add_remote_user = False
     default_content_type = 'application/octet-stream'
@@ -60,7 +61,13 @@ class ProxyView(View):
 
     @property
     def upstream(self):
-        raise NotImplementedError('Upstream server must be set')
+        if not self._upstream:
+            raise NotImplementedError('Upstream server must be set')
+        return self._upstream
+
+    @upstream.setter
+    def upstream(self, value):
+        self._upstream = value
 
     def get_upstream(self, path):
         upstream = self.upstream
@@ -194,18 +201,24 @@ class ProxyView(View):
 
 
 class DiazoProxyView(ProxyView, ContextMixin):
-
+    _diazo_rules = None
     diazo_theme_template = 'diazo.html'
     html5 = False
 
     @property
     def diazo_rules(self):
-        child_class_file = sys.modules[self.__module__].__file__
-        app_path = os.path.abspath(os.path.dirname(child_class_file))
-        diazo_path = os.path.join(app_path, 'diazo.xml')
+        if not self._diazo_rules:
+            child_class_file = sys.modules[self.__module__].__file__
+            app_path = os.path.abspath(os.path.dirname(child_class_file))
+            diazo_path = os.path.join(app_path, 'diazo.xml')
 
-        self.log.debug("diazo_rules: %s", diazo_path)
-        return diazo_path
+            self.log.debug("diazo_rules: %s", diazo_path)
+            self._diazo_rules = diazo_path
+        return self._diazo_rules
+
+    @diazo_rules.setter
+    def diazo_rules(self, value):
+        self._diazo_rules = value
 
     def dispatch(self, request, path):
         response = super(DiazoProxyView, self).dispatch(request, path)
