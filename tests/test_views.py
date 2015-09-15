@@ -26,6 +26,22 @@ class ViewTest(TestCase):
         view2 = ProxyView()
         self.assertIs(view1.http, view2.http)
 
+    def test_set_upstream_as_argument(self):
+        url = 'http://example.com/'
+        view = ProxyView.as_view(upstream=url)
+
+        request = self.factory.get('/')
+        response = view(request, '/')
+
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
+
     def test_upstream_not_implemented(self):
         proxy_view = ProxyView()
         with self.assertRaises(NotImplementedError):
