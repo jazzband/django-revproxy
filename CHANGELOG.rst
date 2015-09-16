@@ -1,4 +1,10 @@
 
+0.9.7 (unreleased)
+==================
+
+* Bug fixed: property preventing to set upstream and diazo_rules (#53, #54) [@vdemin]
+
+
 0.9.6 (2015-09-09)
 ==================
 

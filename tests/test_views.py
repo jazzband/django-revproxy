@@ -26,6 +26,37 @@ class ViewTest(TestCase):
         view2 = ProxyView()
         self.assertIs(view1.http, view2.http)
 
+    @patch('revproxy.transformer.DiazoTransformer.transform')
+    def test_set_diazo_as_argument(self, transform):
+        url = 'http://example.com/'
+        rules = '/tmp/diazo.xml'
+        path = '/'
+
+        class CustomProxyView(DiazoProxyView):
+            upstream = url
+
+        view = CustomProxyView.as_view(diazo_rules='/tmp/diazo.xml')
+        request = self.factory.get(path)
+        view(request, path)
+
+        self.assertEqual(transform.call_args[0][0], rules)
+
+    def test_set_upstream_as_argument(self):
+        url = 'http://example.com/'
+        view = ProxyView.as_view(upstream=url)
+
+        request = self.factory.get('/')
+        response = view(request, '/')
+
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
+
     def test_upstream_not_implemented(self):
         proxy_view = ProxyView()
         with self.assertRaises(NotImplementedError):
