@@ -26,6 +26,24 @@ class ViewTest(TestCase):
         view2 = ProxyView()
         self.assertIs(view1.http, view2.http)
 
+    def test_url_injection(self):
+        path = 'http://example.org'
+        request = self.factory.get(path)
+
+        view = ProxyView.as_view(upstream='http://example.com/')
+        view(request, path)
+
+        headers = {u'Cookie': u''}
+        url = 'http://example.com/http://example.org'
+
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
+
     @patch('revproxy.transformer.DiazoTransformer.transform')
     def test_set_diazo_as_argument(self, transform):
         url = 'http://example.com/'
