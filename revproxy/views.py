@@ -8,8 +8,7 @@ import logging
 
 import urllib3
 
-from django.utils.six.moves.urllib.parse import (urljoin, urlparse,
-                                                 urlencode, quote_plus)
+from django.utils.six.moves.urllib.parse import urlparse, urlencode, quote_plus
 
 from django.shortcuts import redirect
 from django.views.generic import View
@@ -129,10 +128,9 @@ class ProxyView(View):
         request_headers = self.get_proxy_request_headers(request)
         self.log.debug("Request headers: %s", request_headers)
 
-        request_url = urljoin(
-            self.get_upstream(path),
-            quote_plus(path.encode('utf8'), QUOTE_SAFE)
-        )
+        path = quote_plus(path.encode('utf8'), QUOTE_SAFE)
+
+        request_url = self.get_upstream(path) + path
         self.log.debug("Request URL: %s", request_url)
 
         if request.GET:

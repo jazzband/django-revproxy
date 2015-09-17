@@ -47,12 +47,12 @@ class RequestTest(TestCase):
             rewrite = kwargs.get('rewrite', tuple())
 
         if kwargs.get('method') == 'POST':
-            request = self.factory.post(kwargs.get('path', '/'),
+            request = self.factory.post(kwargs.get('path', ''),
                                         kwargs.get('post_data', {}))
         elif kwargs.get('method') == 'PUT':
             request = self.factory.put('path', kwargs.get('request_data', {}))
         else:
-            request = self.factory.get(kwargs.get('path', '/'),
+            request = self.factory.get(kwargs.get('path', ''),
                                        kwargs.get('get_data', {}))
 
         if kwargs.get('anonymous'):
@@ -64,12 +64,12 @@ class RequestTest(TestCase):
             for key, value in kwargs.get('headers').items():
                 request.META[key] = value
 
-        response = CustomProxyView.as_view()(request, kwargs.get('path', '/'))
+        response = CustomProxyView.as_view()(request, kwargs.get('path', ''))
         return {'request': request, 'response': response}
 
     def test_remote_user_authenticated(self):
         options = {'add_remote_user': True, 'anonymous': False,
-                   'path': '/test'}
+                   'path': 'test'}
 
         self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test'
@@ -84,7 +84,7 @@ class RequestTest(TestCase):
 
     def test_remote_user_anonymous(self):
         options = {'add_remote_user': True, 'anonymous': True,
-                   'path': '/test/anonymous/'}
+                   'path': 'test/anonymous/'}
 
         self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/anonymous/'
@@ -97,7 +97,7 @@ class RequestTest(TestCase):
 
     def test_custom_retries(self):
         RETRIES = Retry(20, backoff_factor=0.1)
-        options = {'path': '/test/', 'retries': RETRIES}
+        options = {'path': 'test/', 'retries': RETRIES}
 
         self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/'
@@ -110,7 +110,7 @@ class RequestTest(TestCase):
 
     def test_simple_get(self):
         get_data = {'a': ['b'], 'c': ['d'], 'e': ['f']}
-        options = {'path': '/test/', 'get_data': get_data}
+        options = {'path': 'test/', 'get_data': get_data}
 
         self.factory_custom_proxy_view(**options)
 
@@ -222,7 +222,7 @@ class RequestTest(TestCase):
             (r'^/foo/(.*)$', r'/bar\1'),
         )
 
-        options = {'path': '/test/', 'rewrite': rewrite}
+        options = {'path': 'test/', 'rewrite': rewrite}
 
         result = self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/'
@@ -235,7 +235,7 @@ class RequestTest(TestCase):
 
     def test_remote_user_injection_anonymous(self):
         request_headers = {'HTTP_REMOTE_USER': 'foo'}
-        options = {'path': '/test', 'anonymous': True,
+        options = {'path': 'test', 'anonymous': True,
                    'headers': request_headers}
         result = self.factory_custom_proxy_view(**options)
 
@@ -251,7 +251,7 @@ class RequestTest(TestCase):
 
     def test_remote_user_injection_authenticated(self):
         request_headers = {'HTTP_REMOTE_USER': 'foo'}
-        options = {'path': '/test', 'headers': request_headers}
+        options = {'path': 'test', 'headers': request_headers}
         result = self.factory_custom_proxy_view(**options)
 
         url = 'http://www.example.com/test'
@@ -266,7 +266,7 @@ class RequestTest(TestCase):
 
     def test_remote_user_injection_authenticated_add_remote_user(self):
         request_headers = {'HTTP_REMOTE_USER': 'foo'}
-        options = {'path': '/test', 'headers': request_headers,
+        options = {'path': 'test', 'headers': request_headers,
                    'add_remote_user': True}
         result = self.factory_custom_proxy_view(**options)
 
@@ -282,7 +282,7 @@ class RequestTest(TestCase):
 
     def test_remote_user_injection_anonymous_add_remote_user(self):
         request_headers = {'HTTP_REMOTE_USER': 'foo'}
-        options = {'path': '/test', 'headers': request_headers,
+        options = {'path': 'test', 'headers': request_headers,
                    'add_remote_user': True, 'anonymous': True}
         result = self.factory_custom_proxy_view(**options)
 
