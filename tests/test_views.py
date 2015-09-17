@@ -63,8 +63,8 @@ class ViewTest(TestCase):
         url = 'http://example.com/'
         view = ProxyView.as_view(upstream=url)
 
-        request = self.factory.get('/')
-        response = view(request, '/')
+        request = self.factory.get('')
+        response = view(request, '')
 
         headers = {u'Cookie': u''}
         self.urlopen.assert_called_with('GET', url,
@@ -176,8 +176,8 @@ class ViewTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
 
-        request = self.factory.get('/~')
-        CustomProxyView.as_view()(request, '/~')
+        request = self.factory.get('~')
+        CustomProxyView.as_view()(request, '~')
 
         url = 'http://example.com/~'
         headers = {u'Cookie': u''}
@@ -193,7 +193,7 @@ class ViewTest(TestCase):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
 
-        path = '/ test test'
+        path = ' test test'
         request = self.factory.get(path)
         CustomProxyView.as_view()(request, path)
 
@@ -217,11 +217,11 @@ class ViewTest(TestCase):
                 headers['DNT'] = 1
                 return headers
 
-        path = '/'
+        path = ''
         request = self.factory.get(path)
         CustomProxyView.as_view()(request, path)
 
-        url = 'http://example.com/'
+        url = 'http://example.com'
         headers = {u'Cookie': u''}
         custom_headers = {'DNT': 1}
         custom_headers.update(headers)
