@@ -3,6 +3,7 @@
 ==================
 
 * Bug fixed: property preventing to set upstream and diazo_rules (#53, #54) [@vdemin]
+* Security issue fixed: when colon is present at URL path urljoin ignores the upstream and the request is redirected to the path itself allowing content injection
 
 
 0.9.6 (2015-09-09)
