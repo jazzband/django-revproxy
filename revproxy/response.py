@@ -26,10 +26,7 @@ def get_django_response(proxy_response):
     """
     status = proxy_response.status
     headers = proxy_response.headers
-    if isinstance(headers, HTTPHeaderDict):
-        headers = headers
-    else:
-        headers = HTTPHeaderDict(headers)
+    headers = HTTPHeaderDict(headers)
 
     logger.debug('Proxy response headers: %s', headers)
 
