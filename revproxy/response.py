@@ -1,7 +1,7 @@
 import logging
 
-from requests.packages.urllib3._collections import HTTPHeaderDict
 
+from requests.packages.urllib3._collections import HTTPHeaderDict
 from .utils import cookie_from_string, should_stream, set_response_headers
 
 from django.http import HttpResponse, StreamingHttpResponse
@@ -10,6 +10,8 @@ from django.http import HttpResponse, StreamingHttpResponse
 DEFAULT_AMT = 2 ** 16
 
 logger = logging.getLogger('revproxy.response')
+
+
 
 
 def get_django_response(proxy_response):
@@ -26,7 +28,6 @@ def get_django_response(proxy_response):
     """
     status = proxy_response.status
     headers = proxy_response.headers
-    headers = HTTPHeaderDict(headers)
 
     logger.debug('Proxy response headers: %s', headers)
 
@@ -49,7 +50,7 @@ def get_django_response(proxy_response):
 
     logger.debug('Response headers: %s', getattr(response, '_headers'))
 
-    cookies = headers.getlist('set-cookie')
+    cookies = HTTPHeaderDict(headers).getlist('set-cookie')
     logger.info('Checking for invalid cookies')
     for cookie_string in cookies:
         cookie_dict = cookie_from_string(cookie_string)
