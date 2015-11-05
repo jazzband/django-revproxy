@@ -50,7 +50,7 @@ def get_django_response(proxy_response):
 
     logger.debug('Response headers: %s', getattr(response, '_headers'))
 
-    cookies = HTTPHeaderDict(headers).getlist('set-cookie')
+    cookies = HTTPHeaderDict(proxy_response.headers).getlist('set-cookie')
     logger.info('Checking for invalid cookies')
     for cookie_string in cookies:
         cookie_dict = cookie_from_string(cookie_string)
