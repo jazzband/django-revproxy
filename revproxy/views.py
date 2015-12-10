@@ -122,11 +122,13 @@ class ProxyView(View):
 
         return request_headers
 
+    def get_request_headers(self):
+        return self.get_proxy_request_headers(self.request)
+
     def _created_proxy_response(self, request, path):
         request_payload = request.body
 
-        request_headers = self.get_proxy_request_headers(request)
-        self.log.debug("Request headers: %s", request_headers)
+        self.log.debug("Request headers: %s", self.request_headers)
 
         path = quote_plus(path.encode('utf8'), QUOTE_SAFE)
 
@@ -143,7 +145,7 @@ class ProxyView(View):
                                                request_url,
                                                redirect=False,
                                                retries=self.retries,
-                                               headers=request_headers,
+                                               headers=self.request_headers,
                                                body=request_payload,
                                                decode_content=False,
                                                preload_content=False)
@@ -183,6 +185,8 @@ class ProxyView(View):
                            proxy_response.headers['Content-Type'])
 
     def dispatch(self, request, path):
+        self.request_headers = self.get_request_headers()
+
         redirect_to = self._format_path_to_redirect(request)
         if redirect_to:
             return redirect(redirect_to)

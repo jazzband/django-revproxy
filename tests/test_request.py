@@ -295,3 +295,32 @@ class RequestTest(TestCase):
                                         decode_content=False,
                                         headers=headers,
                                         body=b'')
+
+    def test_set_custom_headers(self):
+        request_headers = {'HTTP_DNT': 1}
+        url = 'http://www.example.com'
+
+        request = self.factory.get('')
+        for key, value in request_headers.items():
+            request.META[key] = value
+
+        class CustomProxyView(ProxyView):
+            upstream = url
+
+            def get_request_headers(self):
+                request_headers = super(CustomProxyView,
+                                        self).get_request_headers()
+                request_headers['Host'] = 'foo.bar'
+                return request_headers
+
+        CustomProxyView.as_view()(request, '')
+
+        headers = {'Dnt': 1, 'Cookie': '', 'Host': 'foo.bar'}
+
+        self.urlopen.assert_called_with('GET', url,
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers,
+                                        body=b'')
