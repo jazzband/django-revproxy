@@ -106,24 +106,29 @@ class ProxyView(View):
         replacing and ``_`` by ``-``. Example: ``HTTP_ACCEPT_ENCODING``
         becames ``Accept-Encoding``.
 
-        The header REMOTE_USER is set to the current user
-        if this view's add_remote_user property is True
-
         .. versionadded:: 0.9.1
 
         :param request:  The original HTTPRequest instance
         :returns:  Normalized headers for the upstream
         """
-        request_headers = normalize_request_headers(request)
+        return normalize_request_headers(request)
 
-        if self.add_remote_user and request.user.is_active:
-            request_headers['REMOTE_USER'] = request.user.username
+    def get_request_headers(self):
+        """Return request headers that will be sent to upstream.
+
+        The header REMOTE_USER is set to the current user
+        if the view's add_remote_user property is True
+
+        .. versionadded:: 0.9.8
+
+        """
+        request_headers = self.get_proxy_request_headers(self.request)
+
+        if self.add_remote_user and self.request.user.is_active:
+            request_headers['REMOTE_USER'] = self.request.user.username
             self.log.info("REMOTE_USER set")
 
         return request_headers
-
-    def get_request_headers(self):
-        return self.get_proxy_request_headers(self.request)
 
     def _created_proxy_response(self, request, path):
         request_payload = request.body
