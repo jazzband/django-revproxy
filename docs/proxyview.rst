@@ -71,18 +71,17 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
     **Methods**
 
-    .. automethod:: revproxy.views.ProxyView.get_proxy_request_headers
-
+    .. automethod:: revproxy.views.ProxyView.get_request_headers
 
        Extend this method can be particularly useful to add or
-       remove headers from you proxy request. See the example bellow::
+       remove headers from your proxy request. See the example bellow::
 
           class CustomProxyView(ProxyView):
               upstream = 'http://www.example.com'
 
-              def get_proxy_request_headers(self, request):
+              def get_request_headers(self):
                   # Call super to get default headers
-                  headers = super(CustomProxyView, self).get_proxy_request_headers(request)
+                  headers = super(CustomProxyView, self).get_request_headers()
                   # Add new header
                   headers['DNT'] = 1
                   return headers
