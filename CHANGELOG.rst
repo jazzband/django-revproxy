@@ -1,4 +1,11 @@
 
+0.9.8 (2015-12-10)
+==================
+
+* Added support to Django 1.9 (dropped support to Django 1.6)
+* Added `get_request_headers` to make easier to set and override request headers
+
+
 0.9.7 (2015-09-17)
 ==================
 
