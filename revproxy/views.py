@@ -16,9 +16,10 @@ from django.utils.decorators import classonlymethod
 from django.views.generic.base import ContextMixin
 
 from .exceptions import InvalidUpstream
+from .pool import PoolManager
 from .response import get_django_response
-from .utils import normalize_request_headers, encode_items
 from .transformer import DiazoTransformer
+from .utils import normalize_request_headers, encode_items
 
 # Chars that don't need to be quoted. We use same than nginx:
 #   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
@@ -31,7 +32,7 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
-HTTP_POOLS = urllib3.PoolManager()
+HTTP_POOLS = PoolManager()
 
 
 class ProxyView(View):
