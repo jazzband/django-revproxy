@@ -1,6 +1,12 @@
 
+0.9.10 (2016-02-03)
+==================
+
+* Fixed Python 3 compatibility issue (see #59 and #61). Thanks @stefanklug and @macro1!
+
+
 0.9.9 (2015-12-15)
-=================
+==================
 
 * Reorder header prior to httplib request. `Host` should be always the first
 request header.
