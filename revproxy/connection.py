@@ -6,7 +6,7 @@ from urllib3.connectionpool import HTTPConnectionPool, HTTPSConnectionPool
 def _output(self, s):
     """Host header should always be first"""
 
-    if s.lower().startswith('host: '):
+    if s.lower().startswith(b'host: '):
         self._buffer.insert(1, s)
     else:
         self._buffer.append(s)
