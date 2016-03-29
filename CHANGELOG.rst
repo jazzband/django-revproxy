@@ -1,6 +1,12 @@
 
+0.9.11 (2016-03-29)
+===================
+
+* Updated urllib3 to 1.12 (at least)
+
+
 0.9.10 (2016-02-03)
-==================
+===================
 
 * Fixed Python 3 compatibility issue (see #59 and #61). Thanks @stefanklug and @macro1!
 
