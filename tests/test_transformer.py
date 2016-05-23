@@ -278,7 +278,7 @@ class TransformerTest(TestCase):
             response = view(request, '/')
 
         self.assertIn(b'test', response.content)
-        self.assertNotIn(b'á', response.content)
+        self.assertNotIn(b'\xc3\xa1', response.content)
 
     def test_asbool(self):
         test_true = ['true', 'yes', 'on', 'y', 't', '1']
