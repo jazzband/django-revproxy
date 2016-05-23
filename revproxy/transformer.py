@@ -139,7 +139,16 @@ class DiazoTransformer(object):
         self.log.debug("Transform: %s", transform)
 
         charset = get_charset(self.response.get('Content-Type'))
-        content_doc = etree.fromstring(self.response.content.decode(charset),
+
+        try:
+            decoded_response = self.response.content.decode(charset)
+        except UnicodeDecodeError:
+            decoded_response = self.response.content.decode(charset, 'ignore')
+            self.log.warning("Charset is {} and type of encode used in file is\
+                              different. Some unknown characteres might be\
+                              ignored.".format(charset))
+
+        content_doc = etree.fromstring(decoded_response,
                                        parser=etree.HTMLParser())
 
         self.response.content = transform(content_doc)
