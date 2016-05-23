@@ -1,4 +1,10 @@
 
+0.9.12 (2016-05-23)
+===================
+
+* Fixed error 500 caused by content with wrong encoding [@lucaskanashiro, @macartur]
+
+
 0.9.11 (2016-03-29)
 ===================
 
