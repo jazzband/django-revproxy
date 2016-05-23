@@ -267,6 +267,19 @@ class TransformerTest(TestCase):
 
         self.assertIn(b'random data', response.content)
 
+    def test_transform_with_wrong_charset(self):
+        request = self.factory.get('/')
+        content = u'<html><body>átest</body><html>'.encode('utf-8')
+        headers = {'Content-Type': 'text/html; charset=ascii'}
+
+        urlopen_mock = get_urlopen_mock(content, headers)
+        with patch(URLOPEN, urlopen_mock):
+            view = CustomProxyView.as_view(diazo_rules='tests/custom_diazo.xml')
+            response = view(request, '/')
+
+        self.assertIn(b'test', response.content)
+        self.assertNotIn(b'\xc3\xa1', response.content)
+
     def test_asbool(self):
         test_true = ['true', 'yes', 'on', 'y', 't', '1']
         for element in test_true:
