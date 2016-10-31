@@ -8,6 +8,8 @@ import logging
 
 import urllib3
 
+from itertools import cycle
+
 from django.utils.six.moves.urllib.parse import urlparse, urlencode, quote_plus
 
 from django.shortcuts import redirect
@@ -33,6 +35,8 @@ ERRORS_MESSAGES = {
 }
 
 HTTP_POOLS = PoolManager()
+
+UPSTREAM_CYCLES = {}
 
 
 class ProxyView(View):
@@ -70,7 +74,15 @@ class ProxyView(View):
         self._upstream = value
 
     def get_upstream(self, path):
-        upstream = self.upstream
+        if isinstance(self.upstream, (list, tuple)):
+            key = tuple(self.upstream)
+            upstream_rr = UPSTREAM_CYCLES.get(key)
+            if not upstream_rr:
+                upstream_rr = cycle(self.upstream)
+                UPSTREAM_CYCLES[key] = upstream_rr
+            upstream = next(upstream_rr)
+        else:
+            upstream = self.upstream
 
         if not getattr(self, '_parsed_url', None):
             self._parsed_url = urlparse(upstream)
