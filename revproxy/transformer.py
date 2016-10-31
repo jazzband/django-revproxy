@@ -6,7 +6,7 @@ from io import StringIO
 import logging
 
 from django.utils.six import string_types
-from django.template import loader, RequestContext
+from django.template import loader
 
 try:
     from diazo.compiler import compile_theme
@@ -127,9 +127,8 @@ class DiazoTransformer(object):
             self.log.info("Don't need to be transformed")
             return self.response
 
-        context_instance = RequestContext(self.request, context_data)
-        theme = loader.render_to_string(theme_template,
-                                        context_instance=context_instance)
+        theme = loader.render_to_string(theme_template, context=context_data,
+                                        request=self.request)
         output_xslt = compile_theme(
             rules=rules,
             theme=StringIO(theme),
