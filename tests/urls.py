@@ -1,5 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from django.contrib.auth.views import login
 
-urlpatterns = patterns('',  # noqa
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
-)
+urlpatterns = [
+    url(r'^accounts/login/$', login, name='login'),
+]

@@ -35,7 +35,7 @@ Features
 Dependencies
 ------------
 
-* django >= 1.7
+* django >= 1.8
 * urllib3 >= 1.12
 * diazo >= 1.0.5 (optional)
 * lxml >= 3.4, < 3.5 (optional, but diazo dependency)
