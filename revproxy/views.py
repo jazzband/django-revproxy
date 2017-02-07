@@ -46,6 +46,7 @@ class ProxyView(View):
     default_content_type = 'application/octet-stream'
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
+    strict_cookies = False
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -206,7 +207,8 @@ class ProxyView(View):
         self._replace_host_on_redirect_location(request, proxy_response)
         self._set_content_type(request, proxy_response)
 
-        response = get_django_response(proxy_response)
+        response = get_django_response(proxy_response,
+                                       strict_cookies=self.strict_cookies)
 
         self.log.debug("RESPONSE RETURNED: %s", response)
         return response

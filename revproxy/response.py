@@ -10,7 +10,7 @@ DEFAULT_AMT = 2 ** 16
 logger = logging.getLogger('revproxy.response')
 
 
-def get_django_response(proxy_response):
+def get_django_response(proxy_response, strict_cookies=False):
     """This method is used to create an appropriate response based on the
     Content-Length of the proxy_response. If the content is bigger than
     MIN_STREAMING_LENGTH, which is found on utils.py,
@@ -19,6 +19,7 @@ def get_django_response(proxy_response):
 
     :param proxy_response: An Instance of urllib3.response.HTTPResponse that
                            will create an appropriate response
+    :param strict_cookies: Whether to only accept RFC-compliant cookies
     :returns: Returns an appropriate response based on the proxy_response
               content-length
     """
@@ -49,7 +50,8 @@ def get_django_response(proxy_response):
     cookies = proxy_response.headers.getlist('set-cookie')
     logger.info('Checking for invalid cookies')
     for cookie_string in cookies:
-        cookie_dict = cookie_from_string(cookie_string)
+        cookie_dict = cookie_from_string(cookie_string,
+                                         strict_cookies=strict_cookies)
         # if cookie is invalid cookie_dict will be None
         if cookie_dict:
             response.set_cookie(**cookie_dict)
