@@ -13,7 +13,7 @@ Welcome to django-revproxy
 
 
 A simple reverse proxy using Django. It allows to use Django as a
-reverse Proxy to HTTP requets. It also allows to use Django as an
+reverse Proxy to HTTP requests. It also allows to use Django as an
 authentication Proxy.
 
 Documentation available at http://django-revproxy.readthedocs.org/
