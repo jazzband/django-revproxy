@@ -11,6 +11,7 @@ def _output(self, s):
     else:
         self._buffer.append(s)
 
+
 HTTPConnectionPool.ConnectionCls = type(
     'RevProxyHTTPConnection',
     (HTTPConnection,),
