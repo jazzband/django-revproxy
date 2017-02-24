@@ -1,4 +1,11 @@
 
+0.9.14 (not released)
+===================
+
+* Move construction of proxied path to method [@dimrozakis]
+* User.get_username() rather than User.name to support custom User models [@acordiner]
+
+
 0.9.13 (2016-10-31)
 ===================
 
