@@ -131,12 +131,16 @@ class ProxyView(View):
 
         return request_headers
 
+    def get_quoted_path(self, path):
+        """Return quoted path to be used in proxied request"""
+        return quote_plus(path.encode('utf8'), QUOTE_SAFE)
+
     def _created_proxy_response(self, request, path):
         request_payload = request.body
 
         self.log.debug("Request headers: %s", self.request_headers)
 
-        path = quote_plus(path.encode('utf8'), QUOTE_SAFE)
+        path = self.get_quoted_path(path)
 
         request_url = self.get_upstream(path) + path
         self.log.debug("Request URL: %s", request_url)
