@@ -5,6 +5,14 @@ import logging
 
 from wsgiref.util import is_hop_by_hop
 
+try:
+    from http.cookies import SimpleCookie
+    COOKIE_PREFIX = ''
+except ImportError:
+    from Cookie import SimpleCookie
+    COOKIE_PREFIX = 'Set-Cookie: '
+
+
 #: List containing string constant that are used to represent headers that can
 #: be ignored in the required_header function
 IGNORE_HEADERS = (
@@ -152,55 +160,70 @@ def encode_items(items):
 logger = logging.getLogger('revproxy.cookies')
 
 
-def cookie_from_string(cookie_string):
+def cookie_from_string(cookie_string, strict_cookies=False):
     """Parser for HTTP header set-cookie
     The return from this function will be used as parameters for
     django's response.set_cookie method. Because set_cookie doesn't
     have parameter comment, this cookie attribute will be ignored.
 
     :param  cookie_string: A string representing a valid cookie
+    :param  strict_cookies: Whether to only accept RFC-compliant cookies
     :returns: A dictionary containing the cookie_string attributes
     """
 
-    valid_attrs = ('path', 'domain', 'comment', 'expires',
-                   'max_age', 'httponly', 'secure')
+    if strict_cookies:
 
-    cookie_dict = {}
+        cookies = SimpleCookie(COOKIE_PREFIX + cookie_string)
+        if not cookies.keys():
+            return None
+        cookie_name, = cookies.keys()
+        cookie_dict = {k: v for k, v in cookies[cookie_name].items()
+                       if v and k != 'comment'}
+        cookie_dict['key'] = cookie_name
+        cookie_dict['value'] = cookies[cookie_name].value
+        return cookie_dict
 
-    cookie_parts = cookie_string.split(';')
-    try:
-        cookie_dict['key'], cookie_dict['value'] = cookie_parts[0].split('=')
-    except ValueError:
-        logger.warning('Invalid cookie: `%s`', cookie_string)
-        return None
+    else:
+        valid_attrs = ('path', 'domain', 'comment', 'expires',
+                       'max_age', 'httponly', 'secure')
 
-    for part in cookie_parts[1:]:
-        if '=' in part:
-            try:
-                attr, value = part.split('=')
-            except ValueError:
-                logger.warning('Invalid cookie attribute: `%s`', part)
-                continue
+        cookie_dict = {}
 
-            value = value.strip()
-        else:
-            attr = part
-            value = ''
+        cookie_parts = cookie_string.split(';')
+        try:
+            cookie_dict['key'], cookie_dict['value'] = \
+                cookie_parts[0].split('=')
+        except ValueError:
+            logger.warning('Invalid cookie: `%s`', cookie_string)
+            return None
 
-        attr = attr.strip().lower()
-        if not attr:
-            continue
+        for part in cookie_parts[1:]:
+            if '=' in part:
+                try:
+                    attr, value = part.split('=')
+                except ValueError:
+                    logger.warning('Invalid cookie attribute: `%s`', part)
+                    continue
 
-        if attr in valid_attrs:
-            if attr in ('httponly', 'secure'):
-                cookie_dict[attr] = True
-            elif attr in 'comment':
-                # ignoring comment attr as explained in the
-                # function docstring
-                continue
+                value = value.strip()
             else:
-                cookie_dict[attr] = value
-        else:
-            logger.warning('Unknown cookie attribute %s', attr)
+                attr = part
+                value = ''
 
-    return cookie_dict
+            attr = attr.strip().lower()
+            if not attr:
+                continue
+
+            if attr in valid_attrs:
+                if attr in ('httponly', 'secure'):
+                    cookie_dict[attr] = True
+                elif attr in 'comment':
+                    # ignoring comment attr as explained in the
+                    # function docstring
+                    continue
+                else:
+                    cookie_dict[attr] = value
+            else:
+                logger.warning('Unknown cookie attribute %s', attr)
+
+        return cookie_dict

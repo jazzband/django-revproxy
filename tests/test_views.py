@@ -30,7 +30,8 @@ class ViewTest(TestCase):
         path = 'http://example.org'
         request = self.factory.get(path)
 
-        view = ProxyView.as_view(upstream='http://example.com/')
+        view = ProxyView.as_view(upstream='http://example.com/',
+                                 strict_cookies=True)
         view(request, path)
 
         headers = {u'Cookie': u''}
