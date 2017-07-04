@@ -69,6 +69,12 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
                    (r'^/foo/(.*)$', r'/bar\1'),
                 )
 
+    .. attribute:: strict_cookies
+
+        Whether to only accept RFC-compliant cookies. If set to ``True``,
+        any cookies received from the upstream server that do not conform to
+        the RFC will be dropped.
+
     **Methods**
 
     .. automethod:: revproxy.views.ProxyView.get_request_headers
