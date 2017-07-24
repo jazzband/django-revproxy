@@ -18,9 +18,7 @@ env:
   - DJANGO_VERSION=1.10
 
 install:
-  # django-revproxy doesn't support versions of urllib3 past 1.17, so we need to
-  # ensure that we don't upgrade it when we install coveralls
-  - pip install coveralls flake8 "urllib3<1.17"
+  - pip install coveralls flake8 urllib3
   - pip install django==${DJANGO_VERSION}
 
 script:
