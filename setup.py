@@ -28,7 +28,7 @@ setup(
     packages=['revproxy'],
     install_requires=[
         'django>=1.7',
-        'urllib3>=1.12,<1.17',
+        'urllib3>=1.12',
     ],
     # lxml 3.5 doesn't work with pypy
     extras_require={
