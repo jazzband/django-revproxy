@@ -16,7 +16,6 @@ from django.utils.decorators import classonlymethod
 from django.views.generic.base import ContextMixin
 
 from .exceptions import InvalidUpstream
-from .pool import PoolManager
 from .response import get_django_response
 from .transformer import DiazoTransformer
 from .utils import normalize_request_headers, encode_items
@@ -32,7 +31,7 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
-HTTP_POOLS = PoolManager()
+HTTP_POOLS = urllib3.PoolManager()
 
 
 class ProxyView(View):
