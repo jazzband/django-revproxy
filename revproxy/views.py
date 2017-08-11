@@ -6,6 +6,7 @@ import sys
 import mimetypes
 import logging
 
+import certifi
 import urllib3
 
 from django.utils.six.moves.urllib.parse import urlparse, urlencode, quote_plus
@@ -16,7 +17,6 @@ from django.utils.decorators import classonlymethod
 from django.views.generic.base import ContextMixin
 
 from .exceptions import InvalidUpstream
-from .pool import PoolManager
 from .response import get_django_response
 from .transformer import DiazoTransformer
 from .utils import normalize_request_headers, encode_items
@@ -32,7 +32,10 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
-HTTP_POOLS = PoolManager()
+HTTP_POOLS = urllib3.PoolManager()
+HTTP_POOLS_FORCE_SSL = urllib3.PoolManager(
+     cert_reqs='CERT_REQUIRED',
+     ca_certs=certifi.where())
 
 
 class ProxyView(View):
@@ -45,6 +48,7 @@ class ProxyView(View):
     add_remote_user = False
     default_content_type = 'application/octet-stream'
     retries = None
+    force_check_ssl = False  # urllib3 might be already checking ssl by default
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
 
     def __init__(self, *args, **kwargs):
@@ -55,7 +59,11 @@ class ProxyView(View):
         for from_pattern, to_pattern in self.rewrite:
             from_re = re.compile(from_pattern)
             self._rewrite.append((from_re, to_pattern))
-        self.http = HTTP_POOLS
+        if self.force_check_ssl:
+            self.http = HTTP_POOLS_FORCE_SSL
+        else:
+            self.http = HTTP_POOLS
+        
         self.log = logging.getLogger('revproxy.view')
         self.log.info("ProxyView created")
 
