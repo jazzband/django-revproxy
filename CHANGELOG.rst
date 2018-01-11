@@ -1,5 +1,5 @@
 
-0.9.14 (not released)
+0.9.14 (2018-01-11)
 ===================
 
 * Move construction of proxied path to method [@dimrozakis]
