@@ -10,7 +10,7 @@ pool_classes_by_scheme = {
 
 
 class PoolManager(PoolManager_):
-    def _new_pool(self, scheme, host, port):
+    def _new_pool(self, scheme, host, port, request_context=None):
         """
         Create a new :class:`ConnectionPool` based on host, port and scheme.
         This method is used to actually create the connection pools handed out
