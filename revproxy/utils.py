@@ -191,8 +191,10 @@ def cookie_from_string(cookie_string, strict_cookies=False):
 
         cookie_parts = cookie_string.split(';')
         try:
-            cookie_dict['key'], cookie_dict['value'] = \
-                cookie_parts[0].split('=')
+            index_of_equals_symbol = cookie_parts[0].find('=')
+            cookie_dict['key'] = cookie_parts[0][:index_of_equals_symbol]
+            cookie_dict['value'] = cookie_parts[0][index_of_equals_symbol+1:]
+
         except ValueError:
             logger.warning('Invalid cookie: `%s`', cookie_string)
             return None
