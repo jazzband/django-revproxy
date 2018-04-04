@@ -192,7 +192,8 @@ def cookie_from_string(cookie_string, strict_cookies=False):
         cookie_parts = cookie_string.split(';')
         index_of_equals_symbol = cookie_parts[0].find('=')
 
-        if index_of_equals_symbol != -1:
+        if index_of_equals_symbol != -1 and not cookie_parts[0][index_of_equals_symbol+1:].startswith('='):
+            # equals symbol should be present in cookie_parts[0] and cookie value should not start with =
             cookie_dict['key'] = cookie_parts[0][:index_of_equals_symbol]
             cookie_dict['value'] = cookie_parts[0][index_of_equals_symbol+1:]
 
