@@ -3,6 +3,8 @@
 
 * Fix issues with latest urllib3. Fixes #75.
 * Fix issues with parsing cookies. Fixes #84.
+* Drop Python 3.3, 3.4, and PyPy support.
+* Add Python 3.6 support.
 
 
 0.9.14 (2018-01-11)
