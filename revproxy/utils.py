@@ -192,19 +192,18 @@ def cookie_from_string(cookie_string, strict_cookies=False):
         cookie_parts = cookie_string.split(';')
         try:
             cookie_dict['key'], cookie_dict['value'] = \
-                cookie_parts[0].split('=')
+                cookie_parts[0].split('=', 1)
         except ValueError:
+            logger.warning('Invalid cookie: `%s`', cookie_string)
+            return None
+
+        if cookie_dict['value'].startswith('='):
             logger.warning('Invalid cookie: `%s`', cookie_string)
             return None
 
         for part in cookie_parts[1:]:
             if '=' in part:
-                try:
-                    attr, value = part.split('=')
-                except ValueError:
-                    logger.warning('Invalid cookie attribute: `%s`', part)
-                    continue
-
+                attr, value = part.split('=', 1)
                 value = value.strip()
             else:
                 attr = part
