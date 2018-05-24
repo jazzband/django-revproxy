@@ -110,6 +110,7 @@ class TransformerTest(TestCase):
         test_file = MockFile(FILE_CONTENT, 4)
         mock_file = MagicMock()
         type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).isclosed = MagicMock(side_effect=test_file.closed)
         type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
         mock_file.read.side_effect = test_file.read
         mock_file.close.side_effect = test_file.close
@@ -137,6 +138,7 @@ class TransformerTest(TestCase):
 
         mock_file = MagicMock()
         type(mock_file).encoding = PropertyMock(return_value='utf-8')
+        type(mock_file).isclosed = MagicMock(side_effect=test_file.closed)
         type(mock_file).closed = PropertyMock(side_effect=test_file.closed)
         mock_file.read.side_effect = test_file.read
         mock_file.close.side_effect = test_file.close
