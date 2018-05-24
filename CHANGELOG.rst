@@ -2,6 +2,7 @@
 ===================
 
 * Fix issues with latest urllib3. Fixes #75.
+* Fix issues with parsing cookies. Fixes #84.
 
 
 0.9.14 (2018-01-11)
