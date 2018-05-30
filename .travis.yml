@@ -8,9 +8,8 @@ cache:
 
 python:
   - "2.7"
-  - "3.4"
-  #- "3.5" # Not supported yet
-  - "pypy"
+  - "3.5"
+  - "3.6"
 
 env:
   - DJANGO_VERSION=1.8
