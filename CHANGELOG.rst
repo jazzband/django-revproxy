@@ -1,4 +1,4 @@
-0.9.15 (UNRELEASED)
+0.9.15 (2018-05-30)
 ===================
 
 * Fix issues with latest urllib3. Fixes #75.
