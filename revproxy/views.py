@@ -136,6 +136,7 @@ class ProxyView(View):
         return quote_plus(path.encode('utf8'), QUOTE_SAFE)
    
     def get_encoded_query_params(self):
+        """Return encoded query params to be used in proxied request"""
         get_data = encode_items(request.GET.lists())
         return urlencode(get_data) 
 
