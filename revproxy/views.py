@@ -134,6 +134,10 @@ class ProxyView(View):
     def get_quoted_path(self, path):
         """Return quoted path to be used in proxied request"""
         return quote_plus(path.encode('utf8'), QUOTE_SAFE)
+   
+    def get_encoded_query_params(self):
+        get_data = encode_items(request.GET.lists())
+        return urlencode(get_data) 
 
     def _created_proxy_response(self, request, path):
         request_payload = request.body
@@ -146,8 +150,7 @@ class ProxyView(View):
         self.log.debug("Request URL: %s", request_url)
 
         if request.GET:
-            get_data = encode_items(request.GET.lists())
-            request_url += '?' + urlencode(get_data)
+            request_url += '?' + self.get_encoded_query_params()
             self.log.debug("Request URL: %s", request_url)
 
         try:
