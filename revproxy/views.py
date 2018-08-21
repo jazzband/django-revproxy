@@ -125,7 +125,8 @@ class ProxyView(View):
         """
         request_headers = self.get_proxy_request_headers(self.request)
 
-        if self.add_remote_user and hasattr(self.request, 'user') and self.request.user.is_active:
+        if (self.add_remote_user and hasattr(self.request, 'user')
+                and self.request.user.is_active):
             request_headers['REMOTE_USER'] = self.request.user.get_username()
             self.log.info("REMOTE_USER set")
 
