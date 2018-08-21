@@ -118,7 +118,8 @@ class ProxyView(View):
         """Return request headers that will be sent to upstream.
 
         The header REMOTE_USER is set to the current user
-        if the view's add_remote_user property is True
+        if AuthenticationMiddleware is enabled and
+        the view's add_remote_user property is True.
 
         .. versionadded:: 0.9.8
 
