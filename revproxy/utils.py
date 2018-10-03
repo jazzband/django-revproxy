@@ -129,14 +129,14 @@ def set_response_headers(response, response_headers):
 
 def normalize_request_headers(request):
     """Function used to transform header, replacing 'HTTP\_' to ''
-    and replace '_' to '-' of non empty required headers
+    and replace '_' to '-'
 
     :param request:  A HttpRequest that will be transformed
     :returns:        A dictionary with the normalized headers
     """
     norm_headers = {}
     for header, value in request.META.items():
-        if required_header(header) and value:
+        if required_header(header):
             norm_header = header.replace('HTTP_', '').title().replace('_', '-')
             norm_headers[norm_header] = value
 
