@@ -128,7 +128,7 @@ def set_response_headers(response, response_headers):
 
 
 def normalize_request_headers(request):
-    """Function used to transform header, replacing 'HTTP\_' to ''
+    r"""Function used to transform header, replacing 'HTTP\_' to ''
     and replace '_' to '-'
 
     :param request:  A HttpRequest that will be transformed
