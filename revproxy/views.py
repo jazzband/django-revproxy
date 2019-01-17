@@ -23,7 +23,7 @@ from .utils import normalize_request_headers, encode_items
 # Chars that don't need to be quoted. We use same than nginx:
 #   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
 #   (Lines 1433-1449)
-QUOTE_SAFE = '<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
+QUOTE_SAFE = r'<.;>\(}*+|~=-$/_:^@)[{]&\'!,"`'
 
 
 ERRORS_MESSAGES = {

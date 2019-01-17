@@ -128,7 +128,7 @@ def set_response_headers(response, response_headers):
 
 
 def normalize_request_headers(request):
-    """Function used to transform header, replacing 'HTTP\_' to ''
+    r"""Function used to transform header, replacing 'HTTP\_' to ''
     and replace '_' to '-'
 
     :param request:  A HttpRequest that will be transformed
@@ -191,8 +191,8 @@ def cookie_from_string(cookie_string, strict_cookies=False):
 
         cookie_parts = cookie_string.split(';')
         try:
-            cookie_dict['key'], cookie_dict['value'] = \
-                cookie_parts[0].split('=', 1)
+            key, value = cookie_parts[0].split('=', 1)
+            cookie_dict['key'], cookie_dict['value'] = key, unquote(value)
         except ValueError:
             logger.warning('Invalid cookie: `%s`', cookie_string)
             return None
@@ -221,8 +221,21 @@ def cookie_from_string(cookie_string, strict_cookies=False):
                     # function docstring
                     continue
                 else:
-                    cookie_dict[attr] = value
+                    cookie_dict[attr] = unquote(value)
             else:
                 logger.warning('Unknown cookie attribute %s', attr)
 
         return cookie_dict
+
+
+def unquote(value):
+    """Remove wrapping quotes from a string.
+
+    :param value: A string that might be wrapped in double quotes, such
+                  as a HTTP cookie value.
+    :returns: Beginning and ending quotes removed and escaped quotes (``\"``)
+              unescaped
+    """
+    if len(value) > 1 and value[0] == '"' and value[-1] == '"':
+        value = value[1:-1].replace(r'\"', '"')
+    return value
