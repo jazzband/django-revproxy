@@ -88,6 +88,19 @@ class UtilsTest(TestCase):
         self.assertIsNone(utils.cookie_from_string(invalid_cookie,
                                                    strict_cookies=True))
 
+    def test_quoted_value_cookies(self):
+        valid_cookie = '_cookie_session="1234c12d4p=312341243";' \
+                       'expires=Thu, 29 Jan 2015 13:51:41 GMT; httponly;' \
+                       'secure;Path="/gitlab"'
+        self.assertDictContainsSubset(
+            {
+                'expires': 'Thu, 29 Jan 2015 13:51:41 GMT',
+                'value': '1234c12d4p=312341243',
+                'path': '/gitlab',
+            },
+            utils.cookie_from_string(valid_cookie),
+        )
+
     def test_get_dict_in_cookie_from_string(self):
         cookie = "_cookie_session = 1266bb13c139cfba3ed1c9c68110bae9;" \
                  "expires=Thu, 29 Jan 2015 13:51:41 -0000; httponly;" \
