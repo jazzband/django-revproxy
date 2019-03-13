@@ -46,6 +46,9 @@ class ProxyView(View):
     retries = None
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
     strict_cookies = False
+    #: Do not send any body if it is empty (put ``None`` into the ``urlopen()``
+    #: call).  This is required when proxying to Shiny apps, for example.
+    suppress_empty_body = False
 
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
@@ -144,6 +147,8 @@ class ProxyView(View):
 
     def _created_proxy_response(self, request, path):
         request_payload = request.body
+        if self.suppress_empty_body and not request_payload:
+            request_payload = None
 
         self.log.debug("Request headers: %s", self.request_headers)
 
