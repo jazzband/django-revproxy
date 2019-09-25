@@ -4,7 +4,11 @@ from mock import patch
 import os
 
 from django.test import TestCase, RequestFactory
-from django.utils.six.moves.urllib.parse import ParseResult
+try:
+    from django.utils.six.moves.urllib.parse import ParseResult
+except ImportError:
+    # Django 3 has no six
+    from urllib.parse import ParseResult
 
 from revproxy.exceptions import InvalidUpstream
 from revproxy.views import ProxyView, DiazoProxyView

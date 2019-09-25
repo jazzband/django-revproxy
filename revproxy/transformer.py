@@ -5,7 +5,11 @@ from io import StringIO
 
 import logging
 
-from django.utils.six import string_types
+try:
+    from django.utils.six import string_types
+except ImportError:
+    # Django 3 has no six
+    string_types = str
 from django.template import loader
 
 try:
