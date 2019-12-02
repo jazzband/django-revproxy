@@ -1,10 +1,19 @@
-0.9.15 (2018-05-30)
-===================
+UNRELEASED
+==========
 
 * Fix issues with latest urllib3. Fixes #75.
 * Fix issues with parsing cookies. Fixes #84.
 * Drop Python 3.3, 3.4, and PyPy support.
 * Add Python 3.6 support.
+
+
+0.9.15 (2019-12-03)
+===================
+
+* Compatibility with Django 3
+* Add Python 3.7 and Django 1.11 to Travis tests
+* Fix add_remote_user when run without AuthenticationMiddleware. Fix #86
+* Add get_encoded_query_params method
 
 
 0.9.14 (2018-01-11)
