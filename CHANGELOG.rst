@@ -1,3 +1,10 @@
+UNRELEASED
+==========
+
+* Fix add_remote_user when run without AuthenticationMiddleware. Fix #86
+* Add get_encoded_query_params method
+
+
 0.9.15 (2018-05-30)
 ===================
 
