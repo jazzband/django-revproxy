@@ -23,6 +23,19 @@ env:
   - DJANGO_VERSION=2.2
   - DJANGO_VERSION=3.0
 
+jobs:
+  exclude:
+    - python: 2.7
+      env: DJANGO_VERSION=2.2
+    - python: 2.7
+      env: DJANGO_VERSION=3.0
+    - python: 3.5
+      env: DJANGO_VERSION=3.0
+    - python: 3.8
+      env: DJANGO_VERSION=1.9
+    - python: 3.8
+      env: DJANGO_VERSION=1.10
+
 install:
   - pip install coveralls flake8 urllib3
   - pip install django==${DJANGO_VERSION}
