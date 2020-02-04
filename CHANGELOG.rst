@@ -3,6 +3,8 @@ UNRELEASED
 
 * Fix add_remote_user when run without AuthenticationMiddleware. Fix #86
 * Add get_encoded_query_params method
+* Add support for Python 3.7 and 3.8.
+* Add support for Django 2.2 and 3.0.
 
 
 0.9.15 (2018-05-30)
