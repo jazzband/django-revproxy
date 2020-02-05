@@ -1,4 +1,4 @@
-UNRELEASED
+0.10.0 (2020-02-04)
 ==========
 
 * Fix add_remote_user when run without AuthenticationMiddleware. Fix #86
