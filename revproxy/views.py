@@ -32,6 +32,7 @@ ERRORS_MESSAGES = {
 }
 
 HTTP_POOLS = urllib3.PoolManager()
+HTTPS_POOLS = urllib3.PoolManager(cert_reqs='CERT_NONE')
 
 
 class ProxyView(View):
@@ -40,6 +41,7 @@ class ProxyView(View):
 
     """
     _upstream = None
+    cert_required = True
 
     add_remote_user = False
     default_content_type = 'application/octet-stream'
@@ -56,6 +58,7 @@ class ProxyView(View):
             from_re = re.compile(from_pattern)
             self._rewrite.append((from_re, to_pattern))
         self.http = HTTP_POOLS
+        self.https = HTTPS_POOLS
         self.log = logging.getLogger('revproxy.view')
         self.log.info("ProxyView created")
 
@@ -151,7 +154,10 @@ class ProxyView(View):
             self.log.debug("Request URL: %s", request_url)
 
         try:
-            proxy_response = self.http.urlopen(request.method,
+            pool = self.http
+            if not self.cert_required:
+                pool = self.https
+            proxy_response = pool.urlopen(request.method,
                                                request_url,
                                                redirect=False,
                                                retries=self.retries,

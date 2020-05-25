@@ -1,0 +1,35 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: hostedgraphite/pythonbuild:2venv
+      
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/artifacts
+      DJANGO_VERSION: "1.9"
+    steps:
+      - checkout
+      - run: configure_pypi
+      - run: mkdir -p $CIRCLE_ARTIFACTS
+      - run: cp tox-copy.ini tox-tmp.ini
+      - run: sed -e "s/PYPI_USERNAME/${PYPI_USERNAME}/" -e "s/PYPI_PASSWORD/${PYPI_PASSWORD}/" -e "s/PYPI_ENDPOINT/${PYPI_ENDPOINT}/" tox-tmp.ini > tox.ini
+      - run: rm tox-tmp.ini
+      - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+      - run: python get-pip.py
+      - run: pip install zipp\<2 setuptools==44.0.0 virtualenv\<14 tox\<3 -U
+      - run: make install
+      - run: make test
+      - run: make release
+      - run: pip install awscli --upgrade --user
+      - run: cp deb_dist/*.deb $CIRCLE_ARTIFACTS
+      - store_artifacts:
+          path: /tmp/artifacts
+      - deploy:
+          name: Try deploying to S3 if tests pass and on master
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              aws s3 sync $CIRCLE_ARTIFACTS s3://apt-prod-queue/ --exclude "*" --include "*.deb"
+              make upload
+            else
+              echo "Not on master. Not deploying"
+            fi

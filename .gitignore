@@ -49,3 +49,4 @@ htmlcov/
 
 # Docs
 docs/_build
+.history

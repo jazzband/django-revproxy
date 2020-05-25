@@ -1,10 +1,19 @@
 
 import codecs
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 import os
 import re
 
-from setuptools import setup
-
+version = '1.1.'
+try:
+    circle_build_num = os.environ['CIRCLE_BUILD_NUM']
+    version += circle_build_num
+except KeyError:
+    print("Couldn't find CIRCLE_BUILD_NUM, using 0 as minor instead")
+    version += '0'
 
 def read(*parts):
     return codecs.open(os.path.join(os.path.dirname(__file__), *parts),
@@ -27,18 +36,22 @@ setup(
     long_description=read('README.rst'),
     packages=['revproxy'],
     install_requires=[
-        'django>=1.7',
-        'urllib3>=1.12',
+        'django==1.9.13',
+        'urllib3==1.12',
+        'zipp==1.2.0',
     ],
     extras_require={
         'diazo': ['diazo>=1.0.5', 'lxml>=3.4'],
     },
-    tests_require=['mock', 'diazo', 'lxml>=3.4'],
+    tests_require=['mock', 'diazo', 'lxml>=3.4', 'zipp==1.2.0'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
     url='https://github.com/TracyWebTech/django-revproxy',
     license='MPL v2.0',
+    include_package_data=True,
+    zip_safe=False,
+    keywords='django-revproxy',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
