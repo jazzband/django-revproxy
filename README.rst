@@ -8,8 +8,9 @@ Welcome to django-revproxy
 .. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.svg
        :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
 
-.. image:: https://landscape.io/github/TracyWebTech/django-revproxy/master/landscape.svg?style=flat
-      :target: https://landscape.io/github/TracyWebTech/django-revproxy/master
+.. image:: https://api.codeclimate.com/v1/badges/1a7c55e48fa7310d5590/maintainability
+      :target: https://codeclimate.com/github/TracyWebTech/django-revproxy/maintainability
+      :alt: Maintainability
 
 
 A simple reverse proxy using Django. It allows to use Django as a
