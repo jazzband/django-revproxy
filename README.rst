@@ -12,6 +12,9 @@ Welcome to django-revproxy
       :target: https://codeclimate.com/github/TracyWebTech/django-revproxy/maintainability
       :alt: Maintainability
 
+.. image:: https://pepy.tech/badge/django-revproxy
+      :target: https://pepy.tech/project/django-revproxy
+      :alt: Downloads
 
 A simple reverse proxy using Django. It allows to use Django as a
 reverse Proxy to HTTP requests. It also allows to use Django as an
