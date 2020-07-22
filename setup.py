@@ -37,7 +37,7 @@ setup(
     packages=['revproxy'],
     install_requires=[
         'django==1.9.13',
-        'urllib3==1.12',
+        'urllib3==1.25.6',
         'zipp==1.2.0',
     ],
     extras_require={
