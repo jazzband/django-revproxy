@@ -45,22 +45,24 @@ Next, you'll need to create a View that extends ``revproxy.views.ProxyView`` and
 And now add your view in the ``urls.py``:
 
 .. code-block:: python
+    from django.urls import re_path
 
     from myapp.views import TestProxyView
 
-    urlpatterns = patterns('', 
-        url(r'^(?P<path>.*)$', TestProxyView.as_view()),
-    )
+    urlpatterns = [
+        re_path(r'(?P<path>.*)', TestProxyView.as_view()),
+    ]
 
 Alternatively you could just use the default ProxyView as follow:
 
 .. code-block:: python
+    from django.urls import re_path
 
     from revproxy.views import ProxyView
 
-    urlpatterns = patterns('', 
-        url(r'^(?P<path>.*)$', ProxyView.as_view(upstream='http://example.com/')),
-    )
+    urlpatterns = [
+        re_path(r'(?P<path>.*)', ProxyView.as_view(upstream='http://example.com/')),
+    ]
 
 
 

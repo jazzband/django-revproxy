@@ -15,11 +15,13 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
     **Example urls.py**::
 
+        from django.urls import re_path
+
         from revproxy.views import ProxyView
 
-        urlpatterns = patterns('',
-            url(r'^(?P<path>.*)$', ProxyView.as_view(upstream='http://example.com/')),
-        )
+        urlpatterns = [
+            re_path(r'(?P<path>.*)', ProxyView.as_view(upstream='http://example.com/')),
+        ]
 
 
     **Attributes**
@@ -109,6 +111,8 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
     **Example urls.py**::
 
+        from django.urls import re_path
+
         from revproxy.views import DiazoProxyView
 
         proxy_view = DiazoProxyView.as_view(
@@ -117,9 +121,9 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
             diazo_theme_template='base.html',
         )
 
-        urlpatterns = patterns('',
-            url(r'^(?P<path>.*)$', proxy_view),
-        )
+        urlpatterns = [
+            re_path(r'(?P<path>.*)', proxy_view),
+        ]
 
 
     **Example base.html**
@@ -185,6 +189,7 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
        See the example bellow::
 
+          from django.urls import re_path
 
           from revproxy.views import DiazoProxyView
 
@@ -199,9 +204,9 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
 
           # urls.py
-          urlpatterns = patterns('',
-              url(r'^(?P<path>.*)$', proxy_view),
-          )
+          urlpatterns = [
+              re_path(r'(?P<path>.*)', proxy_view),
+          ]
 
 
        And than the data will be available in the template as follow:
