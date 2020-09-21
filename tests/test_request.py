@@ -35,25 +35,30 @@ class RequestTest(TestCase):
     def tearDown(self):
         self.urlopen_patcher.stop()
 
-    def test_default_add_remote_user_attr(self):
+    def test_default_attributes(self):
         proxy_view = ProxyView()
         self.assertFalse(proxy_view.add_remote_user)
+        self.assertFalse(proxy_view.add_x_forwarded)
 
     def factory_custom_proxy_view(self, **kwargs):
         class CustomProxyView(ProxyView):
             add_remote_user = kwargs.get('add_remote_user', False)
-            upstream = kwargs.get('upstream', 'http://www.example.com')
+            add_x_forwarded = kwargs.get('add_x_forwarded', False)
+
+            url_prefix = 'https' if kwargs.get('https', False) else 'http'
+            upstream = kwargs.get('upstream', '{}://www.example.com'.format(url_prefix))
             retries = kwargs.get('retries', None)
             rewrite = kwargs.get('rewrite', tuple())
 
+        is_secure = kwargs.get('https', False)
         if kwargs.get('method') == 'POST':
             request = self.factory.post(kwargs.get('path', ''),
-                                        kwargs.get('post_data', {}))
+                                        kwargs.get('post_data', {}), secure=is_secure)
         elif kwargs.get('method') == 'PUT':
-            request = self.factory.put('path', kwargs.get('request_data', {}))
+            request = self.factory.put('path', kwargs.get('request_data', {}), secure=is_secure)
         else:
             request = self.factory.get(kwargs.get('path', ''),
-                                       kwargs.get('get_data', {}))
+                                       kwargs.get('get_data', {}), secure=is_secure)
 
         if kwargs.get('anonymous'):
             request.user = AnonymousUser()
@@ -88,6 +93,42 @@ class RequestTest(TestCase):
 
         self.factory_custom_proxy_view(**options)
         url = 'http://www.example.com/test/anonymous/'
+        headers = {'Cookie': ''}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers, body=b'')
+
+    def test_add_x_forwarded_true_http(self):
+        options = {'add_x_forwarded': True, 'path': 'test'}
+
+        self.factory_custom_proxy_view(**options)
+        url = 'http://www.example.com/test'
+        headers = {'Cookie': '', 'X-Forwarded-For': '127.0.0.1', 'X-Forwarded-Proto': 'http'}
+        self.urlopen.assert_called_with('GET', url, redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers, body=b'')
+
+    def test_add_x_forwarded_true_https(self):
+            options = {'add_x_forwarded': True, 'path': 'test', 'https': True}
+
+            self.factory_custom_proxy_view(**options)
+            url = 'https://www.example.com/test'
+            headers = {'Cookie': '', 'X-Forwarded-For': '127.0.0.1', 'X-Forwarded-Proto': 'https'}
+            self.urlopen.assert_called_with('GET', url, redirect=False,
+                                            retries=None,
+                                            preload_content=False,
+                                            decode_content=False,
+                                            headers=headers, body=b'')
+
+    def test_add_x_forwarded_false(self):
+        options = {'add_x_forwarded': False, 'path': 'test'}
+
+        self.factory_custom_proxy_view(**options)
+        url = 'http://www.example.com/test'
         headers = {'Cookie': ''}
         self.urlopen.assert_called_with('GET', url, redirect=False,
                                         retries=None,

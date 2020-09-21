@@ -37,6 +37,11 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
         Whether to add the ``REMOTE_USER`` to the request in case of an
         authenticated user. Defaults to ``False``.
 
+    .. attribute:: add_x_forwarded
+
+        Whether to add the ``X-Forwarded-For`` and ``X-Forwarded-Proto``
+        headers to the request. Defaults to ``False``.
+
     .. attribute:: default_content_type
 
         The *Content-Type* that will be added to the response in case
