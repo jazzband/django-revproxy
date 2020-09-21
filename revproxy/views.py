@@ -46,6 +46,7 @@ class ProxyView(View):
     """
     _upstream = None
 
+    add_x_forwarded = False
     add_remote_user = False
     default_content_type = 'application/octet-stream'
     retries = None
@@ -128,6 +129,13 @@ class ProxyView(View):
 
         .. versionadded:: 0.9.8
 
+        If the view's add_x_forwarded property is True, the
+        headers X-Forwarded-For and X-Forwarded-Proto are set to the
+        IP address of the requestor and the request's protocol (http or https),
+        respectively.
+
+        .. versionadded:: TODO
+
         """
         request_headers = self.get_proxy_request_headers(self.request)
 
@@ -135,6 +143,15 @@ class ProxyView(View):
                 and self.request.user.is_active):
             request_headers['REMOTE_USER'] = self.request.user.get_username()
             self.log.info("REMOTE_USER set")
+
+        if self.add_x_forwarded:
+            request_ip = self.request.META.get('REMOTE_ADDR')
+            self.log.debug("Proxy request IP: %s", request_ip)
+            request_headers['X-Forwarded-For'] = request_ip
+
+            request_proto = "https" if self.request.is_secure() else "http"
+            self.log.debug("Proxy request using %s", request_proto)
+            request_headers['X-Forwarded-Proto'] = request_proto
 
         return request_headers
 

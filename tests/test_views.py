@@ -155,9 +155,10 @@ class ViewTest(TestCase):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.html5)
 
-    def test_default_add_remote_user_attr(self):
+    def test_default_attributes(self):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.add_remote_user)
+        self.assertFalse(proxy_view.add_x_forwarded)
 
     def test_inheritance_context_mixin(self):
         mixin_view = DiazoProxyView()
