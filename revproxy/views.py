@@ -36,7 +36,7 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
-HTTP_POOLS = urllib3.PoolManager()
+HTTP_POOLS = urllib3.PoolManager(maxsize=100)
 
 
 class ProxyView(View):
