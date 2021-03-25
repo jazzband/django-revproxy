@@ -36,7 +36,7 @@ ERRORS_MESSAGES = {
                            "'http' or 'https' (%s).")
 }
 
-HTTP_POOLS = urllib3.PoolManager(maxsize=100)
+HTTP_POOLS = urllib3.PoolManager(maxsize=os.environ.get('ES_REVPROXY_POOL_SIZE',100))
 
 
 class ProxyView(View):
