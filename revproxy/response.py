@@ -45,8 +45,6 @@ def get_django_response(proxy_response, strict_cookies=False):
     logger.info('Normalizing response headers')
     set_response_headers(response, headers)
 
-    logger.debug('Response headers: %s', getattr(response, '_headers'))
-
     cookies = proxy_response.headers.getlist('set-cookie')
     logger.info('Checking for invalid cookies')
     for cookie_string in cookies:
