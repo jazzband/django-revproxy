@@ -19,6 +19,7 @@ env:
   - DJANGO_VERSION=1.11
   - DJANGO_VERSION=2.2
   - DJANGO_VERSION=3.0
+  - DJANGO_VERSION=3.2
 
 jobs:
   exclude:
@@ -28,6 +29,10 @@ jobs:
       env: DJANGO_VERSION=3.0
     - python: 3.5
       env: DJANGO_VERSION=3.0
+    - python: 2.7
+      env: DJANGO_VERSION=3.2
+    - python: 3.5
+      env: DJANGO_VERSION=3.2
     - python: 3.8
       env: DJANGO_VERSION=1.8
     - python: 3.8
@@ -36,7 +41,6 @@ jobs:
       env: DJANGO_VERSION=1.10
     - python: 3.8
       env: DJANGO_VERSION=1.11
-
 
 install:
   - pip install coveralls flake8 urllib3
