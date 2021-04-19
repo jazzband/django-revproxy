@@ -117,14 +117,24 @@ def required_header(header):
 
 
 def set_response_headers(response, response_headers):
+    # check for Django 3.2 headers interface
+    # https://code.djangoproject.com/ticket/31789
+    # check and set pointer before loop to improve efficiency
+    if hasattr(response, 'headers'):
+        headers = response.headers
+    else:
+        headers = response
 
     for header, value in response_headers.items():
         if is_hop_by_hop(header) or header.lower() == 'set-cookie':
             continue
 
-        response[header.title()] = value
+        headers[header] = value
 
-    logger.debug('Response headers: %s', getattr(response, '_headers'))
+    if hasattr(response, 'headers'):
+        logger.debug('Response headers: %s', response.headers)
+    else:
+        logger.debug('Response headers: %s', getattr(response, '_headers'))
 
 
 def normalize_request_headers(request):
