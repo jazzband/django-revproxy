@@ -1,8 +1,5 @@
 language: python
 dist: xenial
-sudo: required
-
-sudo: false
 
 cache:
   directories:
