@@ -38,13 +38,13 @@ setup(
     install_requires=[
         'django==1.9.13',
         'urllib3==1.25.6',
-        'zipp==1.2.0',
+        'zipp==0.6.0',
         'lxml>=3.4'
     ],
     extras_require={
         'diazo': ['diazo>=1.0.5'],
     },
-    tests_require=['mock', 'diazo', 'zipp==1.2.0'],
+    tests_require=['mock', 'diazo', 'zipp==0.6.0'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
