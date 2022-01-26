@@ -42,9 +42,8 @@ setup(
         'lxml>=3.4'
     ],
     extras_require={
-        'diazo': ['diazo>=1.0.5'],
+        'diazo': ['diazo>=1.0.5', 'lxml>=3.4'],
     },
-    tests_require=['mock', 'diazo', 'zipp==0.6.0'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
