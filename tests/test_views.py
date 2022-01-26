@@ -4,7 +4,11 @@ from mock import patch
 import os
 
 from django.test import TestCase, RequestFactory
-from django.utils.six.moves.urllib.parse import ParseResult
+try:
+    from django.utils.six.moves.urllib.parse import ParseResult
+except ImportError:
+    # Django 3 has no six
+    from urllib.parse import ParseResult
 
 from revproxy.exceptions import InvalidUpstream
 from revproxy.views import ProxyView, DiazoProxyView
@@ -151,9 +155,10 @@ class ViewTest(TestCase):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.html5)
 
-    def test_default_add_remote_user_attr(self):
+    def test_default_attributes(self):
         proxy_view = DiazoProxyView()
         self.assertFalse(proxy_view.add_remote_user)
+        self.assertFalse(proxy_view.add_x_forwarded)
 
     def test_inheritance_context_mixin(self):
         mixin_view = DiazoProxyView()

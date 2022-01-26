@@ -16,6 +16,8 @@ At a high level, this is what happens behind the scenes in a request proxied by 
 
 #. If the user is authenticated in Django and `add_remote_user` attribute is set to `True` the HTTP header `REMOTE_USER` will be set with `request.user.username`.
 
+#. If the `add_x_forwarded` attribute is set to `True` the HTTP headers `X-Forwarded-For` and `X-Forwarded-Proto` will be set to the IP address of the requestor and the protocol (http or https), respectively.
+
 #. The cloned request is sent to the upstream server (set in the view).
 
 #. After receiving the response from upstream, the view will process it to make sure all headers are set properly. Some headers like `Location` are treated as special cases.

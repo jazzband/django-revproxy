@@ -8,9 +8,13 @@ Welcome to django-revproxy
 .. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.svg
        :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
 
-.. image:: https://landscape.io/github/TracyWebTech/django-revproxy/master/landscape.svg?style=flat
-      :target: https://landscape.io/github/TracyWebTech/django-revproxy/master
+.. image:: https://api.codeclimate.com/v1/badges/1a7c55e48fa7310d5590/maintainability
+      :target: https://codeclimate.com/github/TracyWebTech/django-revproxy/maintainability
+      :alt: Maintainability
 
+.. image:: https://pepy.tech/badge/django-revproxy
+      :target: https://pepy.tech/project/django-revproxy
+      :alt: Downloads
 
 A simple reverse proxy using Django. It allows to use Django as a
 reverse Proxy to HTTP requests. It also allows to use Django as an
@@ -27,6 +31,7 @@ Features
 * Copy all http headers sent from the proxied server to the client (except `hop-by-hop <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.5.1>`_)
 * Basic URL rewrite
 * Sets the http header REQUEST_USER if the user is logged in Django
+* Sets the http headers X-Forwarded-For and X-Forwarded-Proto
 * Handles redirects
 * Few external dependencies
 * Apply XSLT transformation in the response (requires Diazo)
