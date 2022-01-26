@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: hostedgraphite/pythonbuild:hgapp_dep_xenial
-      
     environment:
       CIRCLE_ARTIFACTS: /tmp/artifacts
       DJANGO_VERSION: "1.9"
@@ -11,10 +10,8 @@ jobs:
       - checkout
       - run: mkdir -p $CIRCLE_ARTIFACTS
       - run: cp tox-copy.ini tox-tmp.ini
-      - run: sed -e "s/PYPI_USERNAME/${PYPI_USERNAME}/" -e "s/PYPI_PASSWORD/${PYPI_PASSWORD}/" -e "s/PYPI_ENDPOINT/${PYPI_ENDPOINT}/" tox-tmp.ini > tox.ini
+      - run: sed -e "" tox-tmp.ini > tox.ini
       - run: rm tox-tmp.ini
-      - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-      - run: python get-pip.py
       - run: pip install zipp\<2 setuptools==44.0.0 virtualenv\<14 tox\<3 -U
       - run: make install
       - run: make test
