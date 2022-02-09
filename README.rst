@@ -16,6 +16,10 @@ Welcome to django-revproxy
       :target: https://pepy.tech/project/django-revproxy
       :alt: Downloads
 
+.. image:: https://jazzband.co/static/img/badge.svg
+      :target: https://jazzband.co/
+      :alt: Jazzband
+
 A simple reverse proxy using Django. It allows to use Django as a
 reverse Proxy to HTTP requests. It also allows to use Django as an
 authentication Proxy.
