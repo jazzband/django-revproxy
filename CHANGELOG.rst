@@ -1,3 +1,10 @@
+0.11.0 (UNRELEASED)
+=================== 
+
+* Add X-Forwarded-For and X-Forwarded-Proto headers. Fixes #79.
+* Add Django 3.2 support. Fixes #126.
+
+
 0.10.0 (2020-02-05)
 ===================
 
