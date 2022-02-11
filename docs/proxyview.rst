@@ -111,7 +111,7 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
         Diazo is an awesome tool developed by Plone Community to
         perform XSLT transformations in a simpler way. In order to
-        use all Diazo power please refer to: http://diazo.org/
+        use all Diazo power please refer to: http://docs.diazo.org/en/latest/
 
 
     **Example urls.py**::
@@ -140,9 +140,7 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
             <body>
                 ...
                 <div id="content"></div>
-                ...
-            </body>
-        </html>
+                ...Fix all links in the docs (and README file etc) from old to new repo
 
 
     **Example diazo.xml**
