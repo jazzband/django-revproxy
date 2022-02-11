@@ -9,6 +9,7 @@ revproxy.views
     :members:
     :undoc-members:
     :show-inheritance:
+    :noindex:
 
 
 revproxy.response
