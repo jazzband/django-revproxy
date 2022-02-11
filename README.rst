@@ -2,9 +2,6 @@
 Welcome to django-revproxy
 ==========================
 
-.. image:: https://travis-ci.org/TracyWebTech/django-revproxy.svg?branch=master
-       :target: https://travis-ci.org/TracyWebTech/django-revproxy
-
 .. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.svg
        :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
 
