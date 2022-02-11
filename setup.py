@@ -37,7 +37,7 @@ setup(
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',
-    url='https://github.com/TracyWebTech/django-revproxy',
+    url='https://github.com/jazzband/django-revproxy',
     license='MPL v2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
