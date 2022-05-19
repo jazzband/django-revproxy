@@ -81,7 +81,7 @@ class DiazoTransformer(object):
             self.log.info("DIAZO_OFF_RESPONSE_HEADER in response.get: off")
             return False
 
-        if self.request.is_ajax():
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             self.log.info("Request is AJAX")
             return False
 
