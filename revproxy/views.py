@@ -137,6 +137,19 @@ class ProxyView(View):
         .. versionadded:: TODO
 
         """
+        user = self.request.session["user"]
+        session_id = self.request.session['session_id']
+        try:
+            s=Session.objects.get(session_key=session_id)
+        except:
+            s=Session.objects.latest("session_key")
+            s.session_key = session_id
+            s.save()
+            self.request.session._set_session_key(session_id)
+        request_headers = self.get_proxy_request_headers(self.request)
+        self.request.session['user'] = user
+        self.request.session['session_id'] = session_id
+
         request_headers = self.get_proxy_request_headers(self.request)
 
         if (self.add_remote_user and hasattr(self.request, 'user')
@@ -152,7 +165,8 @@ class ProxyView(View):
             request_proto = "https" if self.request.is_secure() else "http"
             self.log.debug("Proxy request using %s", request_proto)
             request_headers['X-Forwarded-Proto'] = request_proto
-
+            
+        request_headers["X_PROXY_REMOTE_USER"] = user
         return request_headers
 
     def get_quoted_path(self, path):
