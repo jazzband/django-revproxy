@@ -24,6 +24,7 @@ from .exceptions import InvalidUpstream
 from .response import get_django_response
 from .transformer import DiazoTransformer
 from .utils import normalize_request_headers, encode_items
+from django.contrib.sessions.models import Session
 
 # Chars that don't need to be quoted. We use same than nginx:
 #   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
