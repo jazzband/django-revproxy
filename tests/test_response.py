@@ -10,6 +10,7 @@ from django.test import RequestFactory, TestCase
 from mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
 
+from revproxy.response import get_streaming_amt, DEFAULT_AMT, NO_BUFFERING_AMT
 from .utils import (get_urlopen_mock, DEFAULT_BODY_CONTENT,
                     CustomProxyView, URLOPEN)
 
@@ -171,3 +172,14 @@ class ResponseTest(TestCase):
         else:
             response_headers = response._headers
         self.assertFalse(response.cookies)
+
+
+class TestGetDjangoResponse(TestCase):
+
+    def test_normal(self):
+        resp = urllib3.response.HTTPResponse()
+        self.assertEqual(get_streaming_amt(resp), DEFAULT_AMT)
+
+    def test_event_stream(self):
+        resp = urllib3.response.HTTPResponse(headers={'Content-Type': 'text/event-stream'})
+        self.assertEqual(get_streaming_amt(resp), NO_BUFFERING_AMT)

@@ -53,6 +53,11 @@ class ProxyView(View):
     rewrite = tuple()  # It will be overrided by a tuple inside tuple.
     strict_cookies = False
 
+    # The buffering amount for streaming HTTP response(in bytes), response will
+    # be buffered until it's length exceeds this value. `None` means using
+    # default value, override this variable to change.
+    streaming_amount = None
+
     def __init__(self, *args, **kwargs):
         super(ProxyView, self).__init__(*args, **kwargs)
 
@@ -235,7 +240,8 @@ class ProxyView(View):
         self._set_content_type(request, proxy_response)
 
         response = get_django_response(proxy_response,
-                                       strict_cookies=self.strict_cookies)
+                                       strict_cookies=self.strict_cookies,
+                                       streaming_amount=self.streaming_amount)
 
         self.log.debug("RESPONSE RETURNED: %s", response)
         return response
