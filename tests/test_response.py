@@ -1,5 +1,6 @@
 #! *-* coding: utf8 *-*
 
+import mock
 import logging
 
 import urllib3
@@ -10,7 +11,7 @@ from django.test import RequestFactory, TestCase
 from mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
 
-from revproxy.response import get_streaming_amt, DEFAULT_AMT, NO_BUFFERING_AMT
+from revproxy.response import get_streaming_amt, DEFAULT_AMT, NO_BUFFERING_AMT, get_django_response
 from .utils import (get_urlopen_mock, DEFAULT_BODY_CONTENT,
                     CustomProxyView, URLOPEN)
 
@@ -172,6 +173,24 @@ class ResponseTest(TestCase):
         else:
             response_headers = response._headers
         self.assertFalse(response.cookies)
+
+
+class TestGetDjangoResponseStreamed(TestCase):
+
+    def test_multiple_conditions(self):
+        optional_amt = 42
+        cases = [
+            ('text/event-stream', None, NO_BUFFERING_AMT),
+            ('image/jpeg', None, DEFAULT_AMT),
+            ('image/jpeg', optional_amt, optional_amt),
+        ]
+        for content_type, optional_amt, expected_amt in cases:
+            # Provide no "Content-Length" to trigger response streaming
+            resp = urllib3.response.HTTPResponse(body=b'', headers={'Content-Type': content_type}, status=200)
+            with mock.patch.object(resp, 'stream') as stream_mocker:
+                get_django_response(resp, streaming_amount=optional_amt)
+                self.assertTrue(stream_mocker.called)
+                self.assertEqual(stream_mocker.call_args[0][0], expected_amt)
 
 
 class TestGetStreamingAmt(TestCase):
