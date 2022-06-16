@@ -82,6 +82,12 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
         any cookies received from the upstream server that do not conform to
         the RFC will be dropped.
 
+    .. attribute:: streaming_amount
+
+        The buffering amount for streaming HTTP response(in bytes), response will
+        be buffered until it's length exceeds this value. ``None`` means using
+        default value, override this variable to change.
+
     **Methods**
 
     .. automethod:: revproxy.views.ProxyView.get_request_headers
