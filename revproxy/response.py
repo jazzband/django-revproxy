@@ -36,7 +36,7 @@ def get_django_response(
     logger.debug('Content-Type: %s', content_type)
 
     if should_stream(proxy_response):
-        amt = get_streaming_amt(proxy_response)
+        amt = get_streaming_amt(proxy_response) if streaming_amount is None else streaming_amount
         logger.info(('Starting streaming HTTP Response, buffering amount='
                      '"%s bytes"'), amt)
         response = StreamingHttpResponse(proxy_response.stream(amt),
