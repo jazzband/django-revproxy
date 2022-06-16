@@ -174,7 +174,7 @@ class ResponseTest(TestCase):
         self.assertFalse(response.cookies)
 
 
-class TestGetDjangoResponse(TestCase):
+class TestGetStreamingAmt(TestCase):
 
     def test_normal(self):
         resp = urllib3.response.HTTPResponse()
