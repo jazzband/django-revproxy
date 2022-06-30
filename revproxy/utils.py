@@ -134,7 +134,7 @@ def set_response_headers(response, response_headers):
     if hasattr(response, 'headers'):
         logger.debug('Response headers: %s', response.headers)
     else:
-        logger.debug('Response headers: %s', getattr(response, '_headers'))
+        logger.debug('Response headers: %s', getattr(response, '_headers', None))
 
 
 def normalize_request_headers(request):
