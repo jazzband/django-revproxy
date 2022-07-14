@@ -195,7 +195,7 @@ def cookie_from_string(cookie_string, strict_cookies=False):
 
     else:
         valid_attrs = ('path', 'domain', 'comment', 'expires',
-                       'max_age', 'httponly', 'secure', 'samesite')
+                       'max-age', 'httponly', 'secure', 'samesite')
 
         cookie_dict = {}
 
