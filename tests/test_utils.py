@@ -130,8 +130,8 @@ class UtilsTest(TestCase):
         self.assertIn('samesite', utils.cookie_from_string(cookie))
         self.assertIn('lax', utils.cookie_from_string(cookie)['samesite'])
 
-        self.assertIn('max-age', utils.cookie_from_string(cookie))
-        self.assertIn('60', utils.cookie_from_string(cookie)['max-age'])
+        self.assertIn('max_age', utils.cookie_from_string(cookie))
+        self.assertIn('60', utils.cookie_from_string(cookie)['max_age'])
 
         self.assertIn('value', utils.cookie_from_string(cookie))
         self.assertIn('1266bb13c139cfba3ed1c9c68110bae9',
