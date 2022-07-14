@@ -112,7 +112,7 @@ class UtilsTest(TestCase):
     def test_valid_attr_in_cookie_from_string(self):
         cookie = "_cookie_session=1266bb13c139cfba3ed1c9c68110bae9;" \
                  "expires=Thu, 29 Jan 2015 13:51:41 -0000; httponly;" \
-                 "secure;Path=/gitlab;samesite=lax"
+                 "secure;Path=/gitlab;max-age=60;samesite=lax"
 
         self.assertIn('path', utils.cookie_from_string(cookie))
         self.assertIn('/', utils.cookie_from_string(cookie)['path'])
@@ -129,6 +129,9 @@ class UtilsTest(TestCase):
 
         self.assertIn('samesite', utils.cookie_from_string(cookie))
         self.assertIn('lax', utils.cookie_from_string(cookie)['samesite'])
+
+        self.assertIn('max-age', utils.cookie_from_string(cookie))
+        self.assertIn('60', utils.cookie_from_string(cookie)['max-age'])
 
         self.assertIn('value', utils.cookie_from_string(cookie))
         self.assertIn('1266bb13c139cfba3ed1c9c68110bae9',
