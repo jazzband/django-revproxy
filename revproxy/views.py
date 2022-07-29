@@ -138,8 +138,12 @@ class ProxyView(View):
         .. versionadded:: TODO
 
         """
-        user = self.request.session["user"]
-        session_id = self.request.session['session_id']
+        try:
+            user = self.request.session["user"]
+            session_id = self.request.session['session_id']
+        except:
+            request_headers = self.get_proxy_request_headers(self.request)
+            return request_headers
         try:
             s=Session.objects.get(session_key=session_id)
         except:
