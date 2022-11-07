@@ -2,20 +2,26 @@
 Welcome to django-revproxy
 ==========================
 
-.. image:: https://coveralls.io/repos/TracyWebTech/django-revproxy/badge.svg
-       :target: https://coveralls.io/r/TracyWebTech/django-revproxy?branch=master
-
-.. image:: https://api.codeclimate.com/v1/badges/1a7c55e48fa7310d5590/maintainability
-      :target: https://codeclimate.com/github/TracyWebTech/django-revproxy/maintainability
-      :alt: Maintainability
-
-.. image:: https://pepy.tech/badge/django-revproxy
-      :target: https://pepy.tech/project/django-revproxy
-      :alt: Downloads
-
 .. image:: https://jazzband.co/static/img/badge.svg
-      :target: https://jazzband.co/
-      :alt: Jazzband
+    :alt: Jazzband
+    :target: https://jazzband.co/
+
+.. image:: https://img.shields.io/pypi/v/django-revproxy.svg
+    :alt: PyPI version
+    :target: https://pypi.org/project/django-revproxy/
+
+.. image:: https://img.shields.io/pypi/pyversions/django-revproxy.svg
+    :alt: Supported Python versions
+    :target: https://pypi.org/project/django-revproxy/
+
+.. image:: https://github.com/jazzband/django-revproxy/workflows/Test/badge.svg
+   :target: https://github.com/jazzband/django-revproxy/actions
+   :alt: GitHub Actions
+
+.. image:: https://codecov.io/gh/jazzband/django-revproxy/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/jazzband/django-revproxy
+   :alt: Test Coverage
+
 
 A simple reverse proxy using Django. It allows to use Django as a
 reverse Proxy to HTTP requests. It also allows to use Django as an
