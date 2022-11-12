@@ -1,4 +1,4 @@
-name: Python package
+name: Test
 
 on:
   - push
@@ -36,13 +36,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox tox-gh-actions
+        python -m pip install tox tox-gh-actions codecov
 
     - name: Test with tox
       run: |
         tox -v -- --cov --cov-append --cov-report term-missing --cov-report xml
 
+    - name: Generate coverage XML report
+      run: coverage xml
+
     - name: Upload coverage
-      uses: codecov/codecov-action@v1
-      with:
-        name: Python ${{ matrix.python-version }}
+      uses: codecov/codecov-action@v2.0.3
+      env:
+        PYTHON: ${{matrix.python-version}}
