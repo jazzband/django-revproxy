@@ -1,4 +1,3 @@
-
 import codecs
 import os
 import re
@@ -27,7 +26,7 @@ setup(
     long_description=read('README.rst'),
     packages=['revproxy'],
     install_requires=[
-        'django>=1.7',
+        'django>=3.0',
         'urllib3>=1.12',
     ],
     extras_require={
@@ -47,15 +46,15 @@ setup(
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: Proxy Servers',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries',
-        ],
+    ],
 )
