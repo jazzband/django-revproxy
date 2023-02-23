@@ -1,8 +1,12 @@
 0.11.0 (UNRELEASED)
-=================== 
+===================
 
-* Add X-Forwarded-For and X-Forwarded-Proto headers. Fixes #79.
-* Add Django 3.2 support. Fixes #126.
+* Add X-Forwarded-For and X-Forwarded-Proto headers. Fixes #79.
+* Add Django 3.2, 4.0 and 4.1 support. Fixes #126.
+* Add Python 3.8, 3.9, 3.10 and 3.11 support
+* Drop Python 3.4, 3.5 and 3.6 support
+* Drop Django <3.0 support
+* Fixed README badges
 
 
 0.10.0 (2020-02-05)
