@@ -1,10 +1,4 @@
-0.11.1 (2023-02-26)
-===================
-
-* No changes.
-
-
-0.11.0 (2023-02-25)
+0.11.0 (2023-02-26)
 ===================
 
 * Add X-Forwarded-For and X-Forwarded-Proto headers. Fixes #79.
