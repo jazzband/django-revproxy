@@ -32,7 +32,7 @@ setup(
     extras_require={
         'diazo': ['diazo>=1.0.5', 'lxml>=3.4'],
     },
-    tests_require=['mock', 'diazo', 'lxml>=3.4'],
+    tests_require=['diazo', 'lxml>=3.4'],
     test_suite="tests.run.runtests",
     author='Sergio Oliveira',
     author_email='sergio@tracy.com.br',

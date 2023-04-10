@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from mock import PropertyMock
+from unittest.mock import PropertyMock
 
 from revproxy import utils
 
