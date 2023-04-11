@@ -9,7 +9,7 @@ else:
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 
-from mock import patch
+from unittest.mock import patch
 
 from urllib3 import Retry
 

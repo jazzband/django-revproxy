@@ -4,7 +4,7 @@ import urllib3
 
 from io import BytesIO
 
-from mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock
 
 from revproxy.views import ProxyView
 

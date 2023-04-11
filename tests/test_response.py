@@ -1,6 +1,5 @@
 #! *-* coding: utf8 *-*
 
-import mock
 import logging
 
 import urllib3
@@ -8,7 +7,7 @@ import urllib3
 from wsgiref.util import is_hop_by_hop
 
 from django.test import RequestFactory, TestCase
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 from urllib3.exceptions import HTTPError
 
 from revproxy.response import get_streaming_amt, DEFAULT_AMT, NO_BUFFERING_AMT, get_django_response
@@ -187,7 +186,7 @@ class TestGetDjangoResponseStreamed(TestCase):
         for content_type, optional_amt, expected_amt in cases:
             # Provide no "Content-Length" to trigger response streaming
             resp = urllib3.response.HTTPResponse(body=b'', headers={'Content-Type': content_type}, status=200)
-            with mock.patch.object(resp, 'stream') as stream_mocker:
+            with patch.object(resp, 'stream') as stream_mocker:
                 get_django_response(resp, streaming_amount=optional_amt)
                 self.assertTrue(stream_mocker.called)
                 self.assertEqual(stream_mocker.call_args[0][0], expected_amt)

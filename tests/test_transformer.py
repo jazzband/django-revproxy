@@ -2,7 +2,7 @@
 
 from sys import version_info
 
-from mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
 
