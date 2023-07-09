@@ -37,7 +37,7 @@ Features
 * Copy all http headers sent from the client to the proxied server
 * Copy all http headers sent from the proxied server to the client (except `hop-by-hop <http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.5.1>`_)
 * Basic URL rewrite
-* Sets the http header REQUEST_USER if the user is logged in Django
+* Sets the http header REMOTE_USER if the user is logged in Django
 * Sets the http headers X-Forwarded-For and X-Forwarded-Proto
 * Handles redirects
 * Few external dependencies
