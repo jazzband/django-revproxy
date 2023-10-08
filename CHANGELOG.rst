@@ -2,6 +2,8 @@
 ===================
 
 * Declare Django 4.2 support
+* Drop mock dependency in favor of unittest.mock
+* Update README.rst with the correct Header name
 
 
 0.11.0 (2023-02-26)
