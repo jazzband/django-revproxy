@@ -4,6 +4,12 @@
 * Declare Django 4.2 support
 
 
+0.11.1 (Unreleased)
+===================
+
+* Fixed ignored headers issue.
+
+
 0.11.0 (2023-02-26)
 ===================
 
