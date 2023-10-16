@@ -41,6 +41,11 @@ MIN_STREAMING_LENGTH = 4 * 1024  # 4KB
 
 #: Regex used to find charset in a html content type
 _get_charset_re = re.compile(r';\s*charset=(?P<charset>[^\s;]+)', re.I)
+#: Regex used to clean extra HTTP prefixes in headers
+_get_header_name_re = re.compile(
+    r'((http[-|_])*)(?P<header_name>(http[-|_]).*)',
+    re.I,
+)
 
 
 def is_html_content_type(content_type):
@@ -102,15 +107,22 @@ def get_charset(content_type):
 
 
 def required_header(header):
-    """Function that verify if the header parameter is a essential header
+    """Function that verify if the header parameter is an essential header
 
     :param header:  A string represented a header
     :returns:       A boolean value that represent if the header is required
     """
-    if header in IGNORE_HEADERS:
+    matched = _get_header_name_re.search(header)
+
+    # Ensure there is only one HTTP prefix in the header
+    header_name = matched.group('header_name') if matched else header
+
+    header_name_upper = header_name.upper().replace('-', '_')
+
+    if header_name_upper in IGNORE_HEADERS:
         return False
 
-    if header.startswith('HTTP_') or header == 'CONTENT_TYPE':
+    if header_name_upper.startswith('HTTP_') or header == 'CONTENT_TYPE':
         return True
 
     return False
