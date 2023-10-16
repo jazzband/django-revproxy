@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-revproxy"
+authors = [
+    { name = "Sergio Oliveira", email = "sergio@tracy.com.br" },
+]
+
+description = "Yet another Django reverse proxy application"
+readme = "README.rst"
+
+requires-python = ">=3.7"
+keywords = ["django", "reverse proxy", "revproxy"]
+license = { text = "MPL v2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Framework :: Django",
+    "Framework :: Django :: 3.0",
+    "Framework :: Django :: 3.1",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Internet :: Proxy Servers",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "Django>=3.0",
+    "urllib3>=1.12",
+]
+optional-dependencies.diazo = [
+    "diazo>=1.0.5",
+    "lxml>=3.4",
+]
+optional-dependencies.tests = [
+    "diazo",
+    "lxml>=3.4",
+    "coverage",
+    "flake8",
+]
+
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = { attr = "revproxy.__version__" }
+
+[project.urls]
+homepage = "https://github.com/jazzband/django-revproxy"
+download = "https://pypi.org/project/django-revproxy/"
+documentation = "https://django-revproxy.readthedocs.io/en/stable/"
+changelog = "https://django-revproxy.readthedocs.io/en/latest/changelog.html"
+issues = "https://github.com/jazzband/django-revproxy/issues"
+
+[tool.setuptools]
+packages = ["revproxy"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
