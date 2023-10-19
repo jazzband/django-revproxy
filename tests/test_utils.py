@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from unittest.mock import PropertyMock
+from unittest.mock import PropertyMock, MagicMock
 
 from revproxy import utils
 
@@ -28,8 +28,28 @@ class UtilsTest(TestCase):
     def test_ignore_host_header(self):
         self.assertFalse(utils.required_header('HTTP_HOST'))
         self.assertFalse(utils.required_header('HTTP_REMOTE_USER'))
+        self.assertFalse(utils.required_header('HTTP_Remote-User'))
+        self.assertFalse(utils.required_header('HTTP-HTTP-Remote-User'))
+        self.assertFalse(utils.required_header('HTTP-Remote_User'))
+        self.assertFalse(utils.required_header('Http-Remote-User'))
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
         self.assertFalse(utils.required_header('WRONG_HEADER'))
+
+    def test_normalize_request_headers(self):
+        request = MagicMock(
+            META={
+                'HTTP_ANY_THING_AFTER_HTTP': 'value',
+                'HTTP-HTTP-Remote-User': 'username',
+                'HTTP_REMOTE_USER': 'username',
+                'Http-Remote-User': 'username',
+                'HTTP_USER_AGENT': 'useragent',
+            },
+        )
+        normalized_headers = utils.normalize_request_headers(request)
+        self.assertEqual(
+            normalized_headers,
+            {'Any-Thing-After-Http': 'value', 'User-Agent': 'useragent'},
+        )
 
     def test_ignore_accept_encoding_header(self):
         self.assertFalse(utils.required_header('HTTP_ACCEPT_ENCODING'))
