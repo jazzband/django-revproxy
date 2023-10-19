@@ -1,13 +1,11 @@
-0.12.0 (Unreleased)
+0.12.0 (2023-10-19)
 ===================
 
-* Declare Django 4.2 support
-
-
-0.11.1 (Unreleased)
-===================
-
-* Fixed ignored headers issue.
+* Declare Django 4.2 support in #167
+* Drop mock dependency in favor of unittest.mock in #168
+* Update README.rst with the correct Header name in #170. Thanks @adrgs !
+* Fixed ignored headers issue in #172. Thanks for the detailed reporting @jagotu !
+* Deprecated setup.py in github actions in #173 and #174
 
 
 0.11.0 (2023-02-26)
