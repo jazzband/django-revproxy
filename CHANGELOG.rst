@@ -71,8 +71,7 @@
 0.9.9 (2015-12-15)
 ==================
 
-* Reorder header prior to httplib request. `Host` should be always the first
-request header.
+* Reorder header prior to httplib request. `Host` should be always the first request header.
 
 
 0.9.8 (2015-12-10)
