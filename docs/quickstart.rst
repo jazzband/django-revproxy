@@ -45,6 +45,7 @@ Next, you'll need to create a View that extends ``revproxy.views.ProxyView`` and
 And now add your view in the ``urls.py``:
 
 .. code-block:: python
+
     from django.urls import re_path
 
     from myapp.views import TestProxyView
@@ -56,6 +57,7 @@ And now add your view in the ``urls.py``:
 Alternatively you could just use the default ProxyView as follow:
 
 .. code-block:: python
+
     from django.urls import re_path
 
     from revproxy.views import ProxyView
@@ -72,7 +74,7 @@ After starting your test server you should see the content of `http://example.co
 
         An example of a project can be found here:
         https://github.com/seocam/revproxy-test
-    
+
         The provided test project is a simple Django project that makes
-        uses of revproxy. It basically possess a view.py that extends 
+        uses of revproxy. It basically possess a view.py that extends
         from ProxyView and sets the upstream address to 'httpbin.org'.
