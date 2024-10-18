@@ -27,7 +27,7 @@ Start by adding revproxy to your ``settings.py`` file as follows:
     INSTALLED_APPS = (
         # ...
         'django.contrib.auth',
-        'revproxy',
+        'revproxy.apps.RevProxyConfig',
         # ...
     )
 
