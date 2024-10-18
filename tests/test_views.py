@@ -212,7 +212,7 @@ class ViewTest(TestCase):
                                         decode_content=False,
                                         headers=headers)
 
-    @override_settings(QUOTE_SPACES_AS_PLUS=False)
+    @override_settings(REVPROXY_QUOTE_SPACES_AS_PLUS=False)
     def test_space_is_escaped_disabled(self):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
