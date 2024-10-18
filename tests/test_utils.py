@@ -161,6 +161,38 @@ class UtilsTest(TestCase):
         self.assertIn('_cookie_session',
                       utils.cookie_from_string(cookie)['key'])
 
+    def test_valid_attr_in_cookie_from_string_none_max_age(self):
+        cookie = "_cookie_session=1266bb13c139cfba3ed1c9c68110bae9;"\
+                 "expires=Thu, 29 Jan 2015 13:51:41 -0000; httponly;"\
+                 "secure;Path=/gitlab;max-age=null;samesite=lax"
+
+        self.assertIn('path', utils.cookie_from_string(cookie))
+        self.assertIn('/', utils.cookie_from_string(cookie)['path'])
+
+        self.assertIn('expires', utils.cookie_from_string(cookie))
+        self.assertIn('Thu, 29 Jan 2015 13:51:41 -0000',
+                      utils.cookie_from_string(cookie)['expires'])
+
+        self.assertIn('httponly', utils.cookie_from_string(cookie))
+        self.assertTrue(utils.cookie_from_string(cookie)['httponly'])
+
+        self.assertIn('secure', utils.cookie_from_string(cookie))
+        self.assertTrue(utils.cookie_from_string(cookie)['secure'])
+
+        self.assertIn('samesite', utils.cookie_from_string(cookie))
+        self.assertIn('lax', utils.cookie_from_string(cookie)['samesite'])
+
+        self.assertIn('max_age', utils.cookie_from_string(cookie))
+        self.assertEqual(None, utils.cookie_from_string(cookie)['max_age'])
+
+        self.assertIn('value', utils.cookie_from_string(cookie))
+        self.assertIn('1266bb13c139cfba3ed1c9c68110bae9',
+                      utils.cookie_from_string(cookie)['value'])
+
+        self.assertIn('key', utils.cookie_from_string(cookie))
+        self.assertIn('_cookie_session',
+                      utils.cookie_from_string(cookie)['key'])
+
     def test_None_value_cookie_from_string(self):
         cookie = "_cookie_session="
         self.assertIn('_cookie_session',
