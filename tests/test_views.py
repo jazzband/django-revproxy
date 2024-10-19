@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 try:
     from django.utils.six.moves.urllib.parse import ParseResult
 except ImportError:
@@ -194,7 +194,7 @@ class ViewTest(TestCase):
                                         decode_content=False,
                                         headers=headers)
 
-    def test_space_is_escaped(self):
+    def test_space_is_escaped_enabled(self):
         class CustomProxyView(ProxyView):
             upstream = 'http://example.com'
 
@@ -203,6 +203,25 @@ class ViewTest(TestCase):
         CustomProxyView.as_view()(request, path)
 
         url = 'http://example.com/+test+test'
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET', url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
+
+    @override_settings(REVPROXY_QUOTE_SPACES_AS_PLUS=False)
+    def test_space_is_escaped_disabled(self):
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com'
+
+        path = ' test test'
+        request = self.factory.get(path)
+        CustomProxyView.as_view()(request, path)
+
+        url = 'http://example.com/%20test%20test'
         headers = {u'Cookie': u''}
         self.urlopen.assert_called_with('GET', url,
                                         body=b'',
