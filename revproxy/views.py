@@ -198,7 +198,7 @@ class ProxyView(View):
                                                decode_content=False,
                                                preload_content=False)
             self.log.debug("Proxy response header: %s",
-                           proxy_response.getheaders())
+                           proxy_response.headers)
         except urllib3.exceptions.HTTPError as error:
             self.log.exception(error)
             raise
