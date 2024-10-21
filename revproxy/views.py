@@ -5,6 +5,7 @@ import re
 import sys
 import mimetypes
 import logging
+from urllib.parse import quote  
 
 import urllib3
 
