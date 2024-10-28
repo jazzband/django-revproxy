@@ -1,3 +1,9 @@
+0.13.0 (Unreleased)
+===================
+
+* Added new `REVPROXY_QUOTE_SPACES_AS_PLUS` setting
+
+
 0.12.0 (2023-10-19)
 ===================
 

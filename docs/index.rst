@@ -16,6 +16,7 @@ Contents:
    quickstart
    proxyview
    modules
+   settings
    changelog
 
 
