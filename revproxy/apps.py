@@ -19,4 +19,3 @@ class RevProxyConfig(AppConfig):
         else:
             for key, value in default_settings['REVPROXY'].items():
                 settings.REVPROXY.setdefault(key, value)
-
