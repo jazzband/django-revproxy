@@ -1,7 +1,10 @@
 0.13.0 (Unreleased)
 ===================
 
-* Added new `REVPROXY_QUOTE_SPACES_AS_PLUS` setting
+* Added `REVPROXY` settings dict #192
+* Let encode spaces as `%20` or `+` #191
+* Cast int cookie dict max_age #185
+* Replaced deprecated getheader in favor of headers #184
 
 
 0.12.0 (2023-10-19)
