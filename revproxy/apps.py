@@ -10,9 +10,12 @@ class RevProxyConfig(AppConfig):
 
     def ready(self):
         super().ready()
-        for setting, default_value in REVPROXY_DEFAULT_SETTINGS.items():
-            setattr(
-                settings,
-                setting,
-                getattr(settings, setting, default_value),
-            )
+        default_settings = {
+            'REVPROXY': REVPROXY_DEFAULT_SETTINGS
+        }
+
+        if not hasattr(settings, 'REVPROXY'):
+            setattr(settings, 'REVPROXY', default_settings['REVPROXY'])
+        else:
+            for key, value in default_settings['REVPROXY'].items():
+                settings.REVPROXY.setdefault(key, value)

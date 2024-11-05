@@ -169,7 +169,7 @@ class ProxyView(View):
 
     def get_quoted_path(self, path):
         """Return quoted path to be used in proxied request"""
-        if settings.REVPROXY_QUOTE_SPACES_AS_PLUS:
+        if settings.REVPROXY["QUOTE_SPACES_AS_PLUS"]:
             return quote_plus(path.encode('utf8'), QUOTE_SAFE)
         else:
             return quote(path.encode('utf8'), QUOTE_SAFE)
