@@ -1,4 +1,4 @@
-0.13.0 (Unreleased)
+0.13.0 (2024-11-05)
 ===================
 
 * Added `REVPROXY` settings dict #192
