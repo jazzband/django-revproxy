@@ -7,6 +7,8 @@ import logging
 
 from django.template import loader
 
+from .utils import get_charset, is_html_content_type
+
 string_types = str
 
 try:
@@ -17,8 +19,6 @@ except ImportError:
 else:
     HAS_DIAZO = True
     from lxml import etree
-
-from .utils import get_charset, is_html_content_type
 
 #: Regex used to find the doctype-header in a html content
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)
