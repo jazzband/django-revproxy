@@ -349,8 +349,7 @@ class RequestTest(TestCase):
             upstream = url
 
             def get_request_headers(self):
-                request_headers = super(CustomProxyView,
-                                        self).get_request_headers()
+                request_headers = super().get_request_headers()
                 request_headers['Host'] = 'foo.bar'
                 return request_headers
 

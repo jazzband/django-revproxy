@@ -168,7 +168,7 @@ class ViewTest(TestCase):
             def get_context_data(self, **kwargs):
                 context_data = {'key': 'value'}
                 context_data.update(kwargs)
-                return super(CustomProxyView, self).get_context_data(**context_data)
+                return super().get_context_data(**context_data)
 
         class TextGetContextData(CustomProxyView):
             def get_context_data(self, **kwargs):
@@ -236,8 +236,7 @@ class ViewTest(TestCase):
             upstream = 'http://example.com'
 
             def get_proxy_request_headers(self, request):
-                headers = super(CustomProxyView, self).\
-                                get_proxy_request_headers(request)
+                headers = super().get_proxy_request_headers(request)
                 headers['DNT'] = 1
                 return headers
 
