@@ -5,12 +5,9 @@ from io import StringIO
 
 import logging
 
-try:
-    from django.utils.six import string_types
-except ImportError:
-    # Django 3 has no six
-    string_types = str
 from django.template import loader
+
+string_types = str
 
 try:
     from diazo.compiler import compile_theme

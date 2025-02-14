@@ -1,10 +1,4 @@
-
-import sys
-
-if sys.version_info >= (3, 0, 0):
-    from urllib.parse import parse_qs
-else:
-    from urlparse import parse_qs
+from urllib.parse import parse_qs
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
