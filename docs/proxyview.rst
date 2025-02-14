@@ -100,7 +100,7 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
 
               def get_request_headers(self):
                   # Call super to get default headers
-                  headers = super(CustomProxyView, self).get_request_headers()
+                  headers = super().get_request_headers()
                   # Add new header
                   headers['DNT'] = 1
                   return headers
@@ -207,7 +207,7 @@ This document covers the views provided by ``revproxy.views`` and all it's publi
               custom_attribute = 'hello'
 
               def get_context_data(self, **kwargs):
-                  context_data = super(CustomProxyView, self).get_context_data(**kwargs)
+                  context_data = super().get_context_data(**kwargs)
                   context_data.update({'foo': 'bar'})
                   return context_data
 
