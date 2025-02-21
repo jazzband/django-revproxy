@@ -5,12 +5,11 @@ from io import StringIO
 
 import logging
 
-try:
-    from django.utils.six import string_types
-except ImportError:
-    # Django 3 has no six
-    string_types = str
 from django.template import loader
+
+from .utils import get_charset, is_html_content_type
+
+string_types = str
 
 try:
     from diazo.compiler import compile_theme
@@ -20,8 +19,6 @@ except ImportError:
 else:
     HAS_DIAZO = True
     from lxml import etree
-
-from .utils import get_charset, is_html_content_type
 
 #: Regex used to find the doctype-header in a html content
 doctype_re = re.compile(br"^<!DOCTYPE\s[^>]+>\s*", re.MULTILINE)

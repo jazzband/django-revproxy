@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from sys import version_info
-
 from unittest.mock import patch, MagicMock, PropertyMock
 
 from django.test import RequestFactory, TestCase
@@ -18,10 +15,7 @@ CONTENT = """`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./
 `¡™£¢∞§¶•ªº–≠œ∑´®†\“‘«åß∂ƒ©˙∆˚¬…æΩ≈ç√∫˜µ≤≥÷
 áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜãõÃÕçÇ"""
 
-if version_info >= (3, 0, 0):
-    FILE_CONTENT = bytes(CONTENT, 'utf-8')
-else:
-    FILE_CONTENT = CONTENT
+FILE_CONTENT = bytes(CONTENT, 'utf-8')
 
 
 class CustomProxyView(DiazoProxyView):
