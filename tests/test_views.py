@@ -256,3 +256,29 @@ class ViewTest(TestCase):
                                         preload_content=False,
                                         decode_content=False,
                                         headers=custom_headers)
+
+    def test_raw_query_string_is_preserved_for_flag_params(self):
+        """
+        Regression test: preserve "flag" params (no '=') when proxying.
+
+        Example: `...?. . .&c` must NOT become `...&c=`.
+        """
+        class CustomProxyView(ProxyView):
+            upstream = 'http://example.com'
+
+        raw_qs = 'q=1&a=2&c'
+
+        # Important: set QUERY_STRING explicitly so Django keeps it in request.META
+        request = self.factory.get('/some/path', QUERY_STRING=raw_qs)
+        CustomProxyView.as_view()(request, path)
+
+        url = 'http://example.com/' + path + '?' + raw_qs
+        headers = {u'Cookie': u''}
+        self.urlopen.assert_called_with('GET',
+                                        url,
+                                        body=b'',
+                                        redirect=False,
+                                        retries=None,
+                                        preload_content=False,
+                                        decode_content=False,
+                                        headers=headers)
