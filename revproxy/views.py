@@ -10,12 +10,12 @@ import urllib3
 
 try:
     from django.utils.six.moves.urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
+        urlparse, urlencode, quote_plus, quote, parse_qsl
     )
 except ImportError:
     # Django 3 has no six
     from urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
+        urlparse, urlencode, quote_plus, quote, parse_qsl
     )
 
 from django.conf import settings
@@ -176,8 +176,12 @@ class ProxyView(View):
 
     def get_encoded_query_params(self):
         """Return encoded query params to be used in proxied request"""
-        get_data = encode_items(self.request.GET.lists())
-        return urlencode(get_data)
+        params = parse_qsl(self.request.GET.urlencode(), keep_blank_values=True)
+        custom_query = '&'.join(
+            k if v == '' else f'{k}={v}'
+            for k, v in params
+        )
+        return custom_query
 
     def _created_proxy_response(self, request, path):
         request_payload = request.body
