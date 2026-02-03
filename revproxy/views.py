@@ -10,12 +10,12 @@ import urllib3
 
 try:
     from django.utils.six.moves.urllib.parse import (
-        urlparse, urlencode, quote_plus, quote, parse_qsl
+        urlparse, quote_plus, quote, parse_qsl
     )
 except ImportError:
     # Django 3 has no six
     from urllib.parse import (
-        urlparse, urlencode, quote_plus, quote, parse_qsl
+        urlparse, quote_plus, quote, parse_qsl
     )
 
 from django.conf import settings
@@ -27,7 +27,7 @@ from django.views.generic.base import ContextMixin
 from .exceptions import InvalidUpstream
 from .response import get_django_response
 from .transformer import DiazoTransformer
-from .utils import normalize_request_headers, encode_items
+from .utils import normalize_request_headers
 
 # Chars that don't need to be quoted. We use same than nginx:
 #   https://github.com/nginx/nginx/blob/nginx-1.9/src/core/ngx_string.c
@@ -176,7 +176,10 @@ class ProxyView(View):
 
     def get_encoded_query_params(self):
         """Return encoded query params to be used in proxied request"""
-        params = parse_qsl(self.request.GET.urlencode(), keep_blank_values=True)
+        params = parse_qsl(
+            self.request.GET.urlencode(),
+            keep_blank_values=True,
+        )
         custom_query = '&'.join(
             k if v == '' else f'{k}={v}'
             for k, v in params
