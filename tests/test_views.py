@@ -267,9 +267,10 @@ class ViewTest(TestCase):
             upstream = 'http://example.com'
 
         raw_qs = 'q=1&a=2&c'
+        path = 'some/path'
 
         # Important: set QUERY_STRING explicitly so Django keeps it in request.META
-        request = self.factory.get('/some/path', QUERY_STRING=raw_qs)
+        request = self.factory.get(path, QUERY_STRING=raw_qs)
         CustomProxyView.as_view()(request, path)
 
         url = 'http://example.com/' + path + '?' + raw_qs
