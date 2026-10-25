@@ -2,10 +2,6 @@
 Welcome to django-revproxy
 ==========================
 
-.. image:: https://jazzband.co/static/img/badge.svg
-    :alt: Jazzband
-    :target: https://jazzband.co/
-
 .. image:: https://img.shields.io/pypi/v/django-revproxy.svg
     :alt: PyPI version
     :target: https://pypi.org/project/django-revproxy/
@@ -14,12 +10,12 @@ Welcome to django-revproxy
     :alt: Supported Python versions
     :target: https://pypi.org/project/django-revproxy/
 
-.. image:: https://github.com/jazzband/django-revproxy/workflows/Test/badge.svg
-   :target: https://github.com/jazzband/django-revproxy/actions
+.. image:: https://github.com/django-commons/django-revproxy/workflows/Test/badge.svg
+   :target: https://github.com/django-commons/django-revproxy/actions
    :alt: GitHub Actions
 
-.. image:: https://codecov.io/gh/jazzband/django-revproxy/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/jazzband/django-revproxy
+.. image:: https://codecov.io/gh/django-commons/django-revproxy/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/django-commons/django-revproxy
    :alt: Test Coverage
 
 
