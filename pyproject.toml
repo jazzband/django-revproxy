@@ -36,7 +36,7 @@ classifiers = [
 ]
 dependencies = [
     "Django>=4.2",
-    "urllib3>=1.12",
+    "urllib3>=2.0",
 ]
 optional-dependencies.diazo = [
     "diazo>=1.0.5",
