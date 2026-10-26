@@ -96,12 +96,14 @@ class UtilsTest(TestCase):
         valid_cookie = '_cookie_session="1234c12d4p=312341243";' \
                        'expires=Thu, 29 Jan 2015 13:51:41 GMT; httponly;' \
                        'secure;Path=/gitlab'
-        self.assertDictContainsSubset(
+        self.assertTrue(
             {
                 'expires': 'Thu, 29 Jan 2015 13:51:41 GMT',
                 'value': '1234c12d4p=312341243',
-            },
-            utils.cookie_from_string(valid_cookie, strict_cookies=True),
+            }.items() <= utils.cookie_from_string(
+                valid_cookie,
+                strict_cookies=True,
+            ).items()
         )
 
         invalid_cookie = "_cookie_session:xyz"
@@ -112,13 +114,12 @@ class UtilsTest(TestCase):
         valid_cookie = '_cookie_session="1234c12d4p=312341243";' \
                        'expires=Thu, 29 Jan 2015 13:51:41 GMT; httponly;' \
                        'secure;Path="/gitlab"'
-        self.assertDictContainsSubset(
+        self.assertTrue(
             {
                 'expires': 'Thu, 29 Jan 2015 13:51:41 GMT',
                 'value': '1234c12d4p=312341243',
                 'path': '/gitlab',
-            },
-            utils.cookie_from_string(valid_cookie),
+            }.items() <= utils.cookie_from_string(valid_cookie).items()
         )
 
     def test_get_dict_in_cookie_from_string(self):
