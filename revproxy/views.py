@@ -8,15 +8,9 @@ import logging
 
 import urllib3
 
-try:
-    from django.utils.six.moves.urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
-    )
-except ImportError:
-    # Django 3 has no six
-    from urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
-    )
+from urllib.parse import (
+    urlparse, urlencode, quote_plus, quote
+)
 
 from django.conf import settings
 from django.shortcuts import redirect
