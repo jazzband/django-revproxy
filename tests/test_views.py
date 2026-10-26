@@ -3,11 +3,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.test import TestCase, RequestFactory, override_settings
-try:
-    from django.utils.six.moves.urllib.parse import ParseResult
-except ImportError:
-    # Django 3 has no six
-    from urllib.parse import ParseResult
+from urllib.parse import ParseResult
 
 from revproxy.exceptions import InvalidUpstream
 from revproxy.views import ProxyView, DiazoProxyView
