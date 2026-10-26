@@ -48,7 +48,7 @@ Dependencies
 ------------
 
 * Python >= 3.11
-* Django >= 4.1.3
+* Django >= 4.2
 * urllib3 >= 1.12
 * diazo >= 1.0.5 (optional)
 * lxml >= 3.4, < 3.5 (optional, but diazo dependency)
