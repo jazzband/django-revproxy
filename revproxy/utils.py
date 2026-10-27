@@ -5,12 +5,7 @@ import logging
 
 from wsgiref.util import is_hop_by_hop
 
-try:
-    from http.cookies import SimpleCookie
-    COOKIE_PREFIX = ''
-except ImportError:
-    from Cookie import SimpleCookie
-    COOKIE_PREFIX = 'Set-Cookie: '
+from http.cookies import SimpleCookie
 
 
 #: List containing string constant that are used to represent headers that can
@@ -196,7 +191,7 @@ def cookie_from_string(cookie_string, strict_cookies=False):
 
     if strict_cookies:
 
-        cookies = SimpleCookie(COOKIE_PREFIX + cookie_string)
+        cookies = SimpleCookie(cookie_string)
         if not cookies.keys():
             return None
         cookie_name, = cookies.keys()

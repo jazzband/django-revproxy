@@ -8,15 +8,9 @@ import logging
 
 import urllib3
 
-try:
-    from django.utils.six.moves.urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
-    )
-except ImportError:
-    # Django 3 has no six
-    from urllib.parse import (
-        urlparse, urlencode, quote_plus, quote
-    )
+from urllib.parse import (
+    urlparse, urlencode, quote_plus, quote
+)
 
 from django.conf import settings
 from django.shortcuts import redirect
@@ -66,7 +60,7 @@ class ProxyView(View):
     streaming_amount = None
 
     def __init__(self, *args, **kwargs):
-        super(ProxyView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._rewrite = []
         # Take all elements inside tuple, and insert into _rewrite
@@ -104,7 +98,7 @@ class ProxyView(View):
 
     @classonlymethod
     def as_view(cls, **initkwargs):
-        view = super(ProxyView, cls).as_view(**initkwargs)
+        view = super().as_view(**initkwargs)
         view.csrf_exempt = True
         return view
 
@@ -280,7 +274,7 @@ class DiazoProxyView(ProxyView, ContextMixin):
         self._diazo_rules = value
 
     def dispatch(self, request, path):
-        response = super(DiazoProxyView, self).dispatch(request, path)
+        response = super().dispatch(request, path)
 
         context_data = self.get_context_data()
         diazo = DiazoTransformer(request, response)
