@@ -6,6 +6,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -41,6 +44,8 @@ jobs:
       run: coverage xml
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
       with:
         name: Python ${{ matrix.python-version }}
+        use_oidc: true
+        fail_ci_if_error: true
