@@ -45,11 +45,11 @@ dependencies = [
     "urllib3>=1.12",
 ]
 optional-dependencies.diazo = [
-    "diazo>=1.0.5",
+    "diazo==1.5.0",
     "lxml>=3.4",
 ]
 optional-dependencies.tests = [
-    "diazo",
+    "diazo==1.5.0",
     "lxml>=3.4",
     "coverage",
     "flake8",
