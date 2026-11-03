@@ -1,3 +1,10 @@
+0.14.0 (Unreleased)
+===================
+
+* Switched to trusted publisher release process with Django Commons
+* Switched from Jazzband org to Django Commons
+
+
 0.13.0 (2024-11-05)
 ===================
 

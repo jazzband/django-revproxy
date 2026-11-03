@@ -61,11 +61,11 @@ dynamic = ["version"]
 version = { attr = "revproxy.__version__" }
 
 [project.urls]
-homepage = "https://github.com/jazzband/django-revproxy"
+homepage = "https://github.com/django-commons/django-revproxy"
 download = "https://pypi.org/project/django-revproxy/"
 documentation = "https://django-revproxy.readthedocs.io/en/stable/"
 changelog = "https://django-revproxy.readthedocs.io/en/latest/changelog.html"
-issues = "https://github.com/jazzband/django-revproxy/issues"
+issues = "https://github.com/django-commons/django-revproxy/issues"
 
 [tool.setuptools]
 packages = ["revproxy"]
