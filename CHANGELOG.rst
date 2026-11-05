@@ -1,7 +1,8 @@
 Unreleased
 ==========
 
-* Require Python 3.11 or newer and Django 4.1.3 or newer.
+* Require Python 3.11 or newer and Django 4.2 or newer.
+* Test against Python 3.11, 3.12 and 3.13 with Django 4.2 and 5.2.
 * Remove the obsolete Travis CI configuration.
 
 
