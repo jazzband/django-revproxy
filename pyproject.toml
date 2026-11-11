@@ -11,7 +11,7 @@ authors = [
 description = "Yet another Django reverse proxy application"
 readme = "README.rst"
 
-requires-python = ">=3.7"
+requires-python = ">=3.11"
 keywords = ["django", "reverse proxy", "revproxy"]
 license = { text = "MPL v2.0" }
 classifiers = [
@@ -22,18 +22,12 @@ classifiers = [
     "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Framework :: Django",
-    "Framework :: Django :: 3.0",
-    "Framework :: Django :: 3.1",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet :: Proxy Servers",
@@ -41,8 +35,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-    "Django>=3.0",
-    "urllib3>=1.12",
+    "Django>=4.2",
+    "urllib3>=2.0",
 ]
 optional-dependencies.diazo = [
     "diazo>=1.0.5",

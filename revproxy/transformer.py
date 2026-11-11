@@ -5,11 +5,6 @@ from io import StringIO
 
 import logging
 
-try:
-    from django.utils.six import string_types
-except ImportError:
-    # Django 3 has no six
-    string_types = str
 from django.template import loader
 
 try:
@@ -40,7 +35,7 @@ def asbool(value):
     :returns:   A boolean value
     """
 
-    is_string = isinstance(value, string_types)
+    is_string = isinstance(value, str)
 
     if is_string:
         value = value.strip().lower()
