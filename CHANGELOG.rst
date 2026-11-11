@@ -1,6 +1,8 @@
-Unreleased
-==========
+0.14.0 (Unreleased)
+===================
 
+* Switched to trusted publisher release process with Django Commons
+* Switched from Jazzband org to Django Commons
 * Require Python 3.11 or newer and Django 4.2 or newer.
 * Test against Python 3.11, 3.12 and 3.13 with Django 4.2 and 5.2.
 * Require `urllib3 >= 2.0` or newer.
